@@ -149,7 +149,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [632, 352.0]
+    coordinate: [648, 400.0]
     rotation: 0
     state: true
 - name: blocks_throttle2_0
@@ -209,7 +209,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [496, 220.0]
+    coordinate: [448, 220.0]
     rotation: 0
     state: true
 - name: low_pass_filter_0
