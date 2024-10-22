@@ -109,24 +109,24 @@ class nuand_transmitter(gr.top_block, Qt.QWidget):
         self.blocks_wavfile_source_0 = blocks.wavfile_source('/home/gnuradio/Downloads/converted_audio.wav', True)
         self.blocks_multiply_const_vxx_1 = blocks.multiply_const_cc(1)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(2)
-        self.analog_nbfm_tx_0 = analog.nbfm_tx(
+        self.analog_wfm_tx_0 = analog.wfm_tx(
         	audio_rate=44100,
         	quad_rate=88200,
         	tau=(75e-6),
-        	max_dev=1e3,
+        	max_dev=1000,
         	fh=(-1.0),
-                )
+        )
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_nbfm_tx_0, 0), (self.blocks_multiply_const_vxx_1, 0))
-        self.connect((self.analog_nbfm_tx_0, 0), (self.qtgui_sink_x_0, 0))
+        self.connect((self.analog_wfm_tx_0, 0), (self.blocks_multiply_const_vxx_1, 0))
+        self.connect((self.analog_wfm_tx_0, 0), (self.qtgui_sink_x_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.blocks_multiply_const_vxx_1, 0), (self.soapy_bladerf_sink_0, 0))
         self.connect((self.blocks_wavfile_source_0, 0), (self.blocks_multiply_const_vxx_0, 0))
-        self.connect((self.rational_resampler_xxx_0, 0), (self.analog_nbfm_tx_0, 0))
+        self.connect((self.rational_resampler_xxx_0, 0), (self.analog_wfm_tx_0, 0))
 
 
     def closeEvent(self, event):

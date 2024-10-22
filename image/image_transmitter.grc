@@ -110,7 +110,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [80, 284.0]
+    coordinate: [16, 316.0]
     rotation: 0
     state: true
 - name: blocks_stream_to_tagged_stream_0
@@ -129,7 +129,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [440, 324.0]
+    coordinate: [336, 412.0]
     rotation: 0
     state: true
 - name: blocks_tagged_stream_mux_0
@@ -149,7 +149,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [896, 256.0]
+    coordinate: [632, 352.0]
     rotation: 0
     state: true
 - name: blocks_throttle2_0
@@ -163,14 +163,14 @@ blocks:
     maximum: '0.1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: 1.024e6
+    samples_per_second: 4e6
     type: byte
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [264, 444.0]
+    coordinate: [216, 252.0]
     rotation: 0
     state: true
 - name: digital_constellation_modulator_0
@@ -192,7 +192,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1048, 68.0]
+    coordinate: [792, 148.0]
     rotation: 0
     state: true
 - name: digital_protocol_formatter_bb_0
@@ -209,7 +209,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [664, 164.0]
+    coordinate: [496, 220.0]
     rotation: 0
     state: true
 - name: low_pass_filter_0
@@ -225,7 +225,7 @@ blocks:
     interp: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samp_rate: samp_rate
+    samp_rate: 4e6
     type: fir_filter_ccf
     width: 200e3
     win: window.WIN_HAMMING
@@ -233,7 +233,36 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1560, 116.0]
+    coordinate: [1064, 284.0]
+    rotation: 0
+    state: true
+- name: qtgui_sink_x_0
+  id: qtgui_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: samp_rate
+    comment: ''
+    fc: '0'
+    fftsize: '1024'
+    gui_hint: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '""'
+    plotconst: 'True'
+    plotfreq: 'True'
+    plottime: 'True'
+    plotwaterfall: 'True'
+    rate: '10'
+    showports: 'False'
+    showrf: 'False'
+    type: complex
+    wintype: window.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1280, 196.0]
     rotation: 0
     state: true
 - name: rational_resampler_xxx_0
@@ -253,7 +282,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1312, 140.0]
+    coordinate: [1024, 60.0]
     rotation: 0
     state: true
 - name: soapy_bladerf_sink_0
@@ -273,7 +302,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1648, 440.0]
+    coordinate: [1312, 336.0]
     rotation: 0
     state: true
 
@@ -285,6 +314,7 @@ connections:
 - [blocks_throttle2_0, '0', blocks_stream_to_tagged_stream_0, '0']
 - [digital_constellation_modulator_0, '0', rational_resampler_xxx_0, '0']
 - [digital_protocol_formatter_bb_0, '0', blocks_tagged_stream_mux_0, '0']
+- [low_pass_filter_0, '0', qtgui_sink_x_0, '0']
 - [low_pass_filter_0, '0', soapy_bladerf_sink_0, '0']
 - [rational_resampler_xxx_0, '0', low_pass_filter_0, '0']
 

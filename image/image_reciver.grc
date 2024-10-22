@@ -11,7 +11,7 @@ options:
     gen_linking: dynamic
     generate_options: qt_gui
     hier_block_src_path: '.:'
-    id: nuand_transmitter
+    id: image_reciver
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -33,11 +33,31 @@ options:
     state: enabled
 
 blocks:
+- name: qpsk
+  id: variable_constellation_rect
+  parameters:
+    comment: ''
+    const_points: '[0.707+0.707j, -0.707+0.707j, -0.707-0.707j, 0.707-0.707j]'
+    imag_sect: '2'
+    precision: '8'
+    real_sect: '2'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1, 2, 3]'
+    w_imag_sect: '1'
+    w_real_sect: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [288, 4.0]
+    rotation: 0
+    state: enabled
 - name: samp_rate
   id: variable
   parameters:
     comment: ''
-    value: 4e6
+    value: '32000'
   states:
     bus_sink: false
     bus_source: false
@@ -45,127 +65,94 @@ blocks:
     coordinate: [184, 12]
     rotation: 0
     state: enabled
-- name: analog_nbfm_tx_0
-  id: analog_nbfm_tx
+- name: blocks_file_sink_0
+  id: blocks_file_sink
   parameters:
     affinity: ''
     alias: ''
-    audio_rate: '44100'
+    append: 'False'
     comment: ''
-    fh: '-1.0'
-    max_dev: 1e3
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    quad_rate: '88200'
-    tau: 75e-6
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [680, 260.0]
-    rotation: 0
-    state: disabled
-- name: analog_wfm_tx_0
-  id: analog_wfm_tx
-  parameters:
-    affinity: ''
-    alias: ''
-    audio_rate: '44100'
-    comment: ''
-    fh: '-1.0'
-    max_dev: '1000'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    quad_rate: '88200'
-    tau: 75e-6
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [704, 132.0]
-    rotation: 0
-    state: true
-- name: blocks_multiply_const_vxx_0
-  id: blocks_multiply_const_vxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    const: '2'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: float
+    file: ''
+    type: complex
+    unbuffered: 'False'
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [272, 292.0]
+    coordinate: [1264, 220.0]
     rotation: 0
     state: true
-- name: blocks_multiply_const_vxx_1
-  id: blocks_multiply_const_vxx
+- name: digital_constellation_modulator_0
+  id: digital_constellation_modulator
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    const: '1'
+    constellation: qpsk
+    differential: 'True'
+    excess_bw: '0.35'
+    log: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
+    samples_per_symbol: '2'
+    truncate: 'False'
+    verbose: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [800, 204.0]
+    rotation: 0
+    state: true
+- name: digital_header_payload_demux_0
+  id: digital_header_payload_demux
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    guard_interval: '0'
+    header_len: ''
+    header_padding: '0'
+    items_per_symbol: ''
+    length_tag_key: '"frame_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    output_symbols: 'False'
+    samp_rate: samp_rate
+    special_tags: (,)
+    timing_tag_key: '"rx_time"'
+    trigger_tag_key: '""'
     type: complex
-    vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [880, 492.0]
+    coordinate: [928, 356.0]
     rotation: 0
     state: true
-- name: blocks_wavfile_source_0
-  id: blocks_wavfile_source
+- name: low_pass_filter_0
+  id: low_pass_filter
   parameters:
     affinity: ''
     alias: ''
+    beta: '6.76'
     comment: ''
-    file: /home/gnuradio/Downloads/converted_audio.wav
+    cutoff_freq: 1e6
+    decim: '1'
+    gain: '1'
+    interp: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    nchan: '1'
-    repeat: 'True'
+    samp_rate: samp_rate
+    type: fir_filter_ccf
+    width: 200e3
+    win: window.WIN_HAMMING
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 284.0]
-    rotation: 0
-    state: true
-- name: qtgui_sink_x_0
-  id: qtgui_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    bw: samp_rate
-    comment: ''
-    fc: 88.5e6
-    fftsize: '1024'
-    gui_hint: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    name: '""'
-    plotconst: 'True'
-    plotfreq: 'True'
-    plottime: 'True'
-    plotwaterfall: 'True'
-    rate: '10'
-    showports: 'False'
-    showrf: 'False'
-    type: complex
-    wintype: window.WIN_BLACKMAN_hARRIS
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1056, 260.0]
+    coordinate: [312, 220.0]
     rotation: 0
     state: true
 - name: rational_resampler_xxx_0
@@ -174,51 +161,48 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    decim: '11'
+    decim: '4'
     fbw: '0'
-    interp: '500'
+    interp: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
     taps: '[]'
-    type: fff
+    type: ccc
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [464, 268.0]
+    coordinate: [576, 196.0]
     rotation: 0
     state: true
-- name: soapy_bladerf_sink_0
-  id: soapy_bladerf_sink
+- name: soapy_bladerf_source_0
+  id: soapy_bladerf_source
   parameters:
     affinity: ''
     alias: ''
-    bandwidth: '0.0'
-    center_freq: 88.5e6
+    bandwidth: 1.5e6
+    center_freq: 2.4e9
     comment: ''
     dev_args: ''
     freq_correction: '0'
-    gain: '100.0'
-    samp_rate: samp_rate
+    gain: '40.0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: 4e6
     type: fc32
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 496.0]
+    coordinate: [64, 260.0]
     rotation: 0
     state: true
 
 connections:
-- [analog_nbfm_tx_0, '0', blocks_multiply_const_vxx_1, '0']
-- [analog_nbfm_tx_0, '0', qtgui_sink_x_0, '0']
-- [analog_wfm_tx_0, '0', blocks_multiply_const_vxx_1, '0']
-- [analog_wfm_tx_0, '0', qtgui_sink_x_0, '0']
-- [blocks_multiply_const_vxx_0, '0', rational_resampler_xxx_0, '0']
-- [blocks_multiply_const_vxx_1, '0', soapy_bladerf_sink_0, '0']
-- [blocks_wavfile_source_0, '0', blocks_multiply_const_vxx_0, '0']
-- [rational_resampler_xxx_0, '0', analog_nbfm_tx_0, '0']
-- [rational_resampler_xxx_0, '0', analog_wfm_tx_0, '0']
+- [digital_constellation_modulator_0, '0', digital_header_payload_demux_0, '0']
+- [low_pass_filter_0, '0', rational_resampler_xxx_0, '0']
+- [rational_resampler_xxx_0, '0', digital_constellation_modulator_0, '0']
+- [soapy_bladerf_source_0, '0', low_pass_filter_0, '0']
 
 metadata:
   file_format: 1

@@ -25,6 +25,7 @@ from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio import soapy
+import sip
 
 
 
@@ -67,6 +68,7 @@ class image_transmitter(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate = 32000
         self.qpsk = qpsk = digital.constellation_rect([0.707+0.707j, -0.707+0.707j, -0.707-0.707j, 0.707-0.707j], [0, 1, 2, 3],
         4, 2, 2, 1, 1).base()
+        self.hdr_format = hdr_format = digital.header_format_default('00011010110011111111110000011101',1, 1)
         self.excess_bw = excess_bw = 0.35
 
         ##################################################
@@ -91,15 +93,34 @@ class image_transmitter(gr.top_block, Qt.QWidget):
                 decimation=1,
                 taps=[],
                 fractional_bw=0)
+        self.qtgui_sink_x_0 = qtgui.sink_c(
+            1024, #fftsize
+            window.WIN_BLACKMAN_hARRIS, #wintype
+            0, #fc
+            samp_rate, #bw
+            "", #name
+            True, #plotfreq
+            True, #plotwaterfall
+            True, #plottime
+            True, #plotconst
+            None # parent
+        )
+        self.qtgui_sink_x_0.set_update_time(1.0/10)
+        self._qtgui_sink_x_0_win = sip.wrapinstance(self.qtgui_sink_x_0.qwidget(), Qt.QWidget)
+
+        self.qtgui_sink_x_0.enable_rf_freq(False)
+
+        self.top_layout.addWidget(self._qtgui_sink_x_0_win)
         self.low_pass_filter_0 = filter.fir_filter_ccf(
             1,
             firdes.low_pass(
                 1,
-                samp_rate,
+                4e6,
                 1e6,
                 200e3,
                 window.WIN_HAMMING,
                 6.76))
+        self.digital_protocol_formatter_bb_0 = digital.protocol_formatter_bb(hdr_format, "packet_len")
         self.digital_constellation_modulator_0 = digital.generic_mod(
             constellation=qpsk,
             differential=True,
@@ -109,7 +130,7 @@ class image_transmitter(gr.top_block, Qt.QWidget):
             verbose=False,
             log=False,
             truncate=False)
-        self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_char*1, 1.024e6, True, 0 if "auto" == "auto" else max( int(float(0.1) * 1.024e6) if "auto" == "time" else int(0.1), 1) )
+        self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_char*1, 4e6, True, 0 if "auto" == "auto" else max( int(float(0.1) * 4e6) if "auto" == "time" else int(0.1), 1) )
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
         self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 8, "packet_len")
         self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/image/flower.jpg', False, 0, 0)
@@ -120,10 +141,13 @@ class image_transmitter(gr.top_block, Qt.QWidget):
         # Connections
         ##################################################
         self.connect((self.blocks_file_source_0, 0), (self.blocks_throttle2_0, 0))
-        self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.blocks_tagged_stream_mux_0, 0))
+        self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.blocks_tagged_stream_mux_0, 1))
+        self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.digital_protocol_formatter_bb_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_constellation_modulator_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
         self.connect((self.digital_constellation_modulator_0, 0), (self.rational_resampler_xxx_0, 0))
+        self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
+        self.connect((self.low_pass_filter_0, 0), (self.qtgui_sink_x_0, 0))
         self.connect((self.low_pass_filter_0, 0), (self.soapy_bladerf_sink_0, 0))
         self.connect((self.rational_resampler_xxx_0, 0), (self.low_pass_filter_0, 0))
 
@@ -141,13 +165,19 @@ class image_transmitter(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.samp_rate, 1e6, 200e3, window.WIN_HAMMING, 6.76))
+        self.qtgui_sink_x_0.set_frequency_range(0, self.samp_rate)
 
     def get_qpsk(self):
         return self.qpsk
 
     def set_qpsk(self, qpsk):
         self.qpsk = qpsk
+
+    def get_hdr_format(self):
+        return self.hdr_format
+
+    def set_hdr_format(self, hdr_format):
+        self.hdr_format = hdr_format
 
     def get_excess_bw(self):
         return self.excess_bw
