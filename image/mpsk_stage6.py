@@ -32,7 +32,7 @@ import sip
 
 class mpsk_stage6(gr.top_block, Qt.QWidget):
 
-    def __init__(self, hdr_format=digital.header_format_default(digital.packet_utils.default_access_code, 0)):
+    def __init__(self):
         gr.top_block.__init__(self, "mpsk_stage6.grc", catch_exceptions=True)
         Qt.QWidget.__init__(self)
         self.setWindowTitle("mpsk_stage6.grc")
@@ -64,11 +64,6 @@ class mpsk_stage6(gr.top_block, Qt.QWidget):
             print(f"Qt GUI: Could not restore geometry: {str(exc)}", file=sys.stderr)
 
         ##################################################
-        # Parameters
-        ##################################################
-        self.hdr_format = hdr_format
-
-        ##################################################
         # Variables
         ##################################################
         self.sps = sps = 4
@@ -90,6 +85,7 @@ class mpsk_stage6(gr.top_block, Qt.QWidget):
         self.phase_bw = phase_bw = 6.28/100.0
         self.noise_volt = noise_volt = 0.0001
         self.if_gain = if_gain = 40
+        self.hdr_format = hdr_format = digital.header_format_default('00011010110011111111110000011101',1, 1)
         self.freq_offset = freq_offset = 0
         self.freq = freq = 433e6
         self.excess_bw = excess_bw = 0.5
@@ -516,12 +512,6 @@ class mpsk_stage6(gr.top_block, Qt.QWidget):
 
         event.accept()
 
-    def get_hdr_format(self):
-        return self.hdr_format
-
-    def set_hdr_format(self, hdr_format):
-        self.hdr_format = hdr_format
-
     def get_sps(self):
         return self.sps
 
@@ -645,6 +635,12 @@ class mpsk_stage6(gr.top_block, Qt.QWidget):
     def set_if_gain(self, if_gain):
         self.if_gain = if_gain
 
+    def get_hdr_format(self):
+        return self.hdr_format
+
+    def set_hdr_format(self, hdr_format):
+        self.hdr_format = hdr_format
+
     def get_freq_offset(self):
         return self.freq_offset
 
@@ -685,14 +681,8 @@ class mpsk_stage6(gr.top_block, Qt.QWidget):
 
 
 
-def argument_parser():
-    parser = ArgumentParser()
-    return parser
-
 
 def main(top_block_cls=mpsk_stage6, options=None):
-    if options is None:
-        options = argument_parser().parse_args()
 
     if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
         style = gr.prefs().get_string('qtgui', 'style', 'raster')
