@@ -91,7 +91,7 @@ blocks:
   id: variable
   parameters:
     comment: Set Bandwidth
-    value: '0.5'
+    value: '0.35'
   states:
     bus_sink: false
     bus_source: false
@@ -341,7 +341,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 750e3
+    value: 1.024e6
   states:
     bus_sink: false
     bus_source: false
@@ -509,7 +509,7 @@ blocks:
     bus_structure: null
     coordinate: [840, 752.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: blocks_char_to_float_0_0_0
   id: blocks_char_to_float
   parameters:
@@ -526,7 +526,7 @@ blocks:
     bus_structure: null
     coordinate: [832, 564.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_delay_0
   id: blocks_delay
   parameters:
@@ -546,7 +546,7 @@ blocks:
     bus_structure: null
     coordinate: [848, 656.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: blocks_file_sink_0
   id: blocks_file_sink
   parameters:
@@ -554,7 +554,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: /home/gnuradio/Documents/DigitalCommDesign/image/flower_rx.jpg
+    file: /home/gnuradio/Desktop/DigitalCommDesign-main/image/flower_rx.jpg
     type: byte
     unbuffered: 'False'
     vlen: '1'
@@ -572,12 +572,12 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: /home/gnuradio/Documents/DigitalCommDesign/image/flower_tx.jpg
+    file: /home/gnuradio/Desktop/DigitalCommDesign-main/image/flower_tx.jpg
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
     offset: '0'
-    repeat: 'False'
+    repeat: 'True'
     type: byte
     vlen: '1'
   states:
@@ -666,7 +666,7 @@ blocks:
     bus_structure: null
     coordinate: [1392, 388.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_throttle2_0_0
   id: blocks_throttle2
   parameters:
@@ -740,7 +740,7 @@ blocks:
     bus_structure: null
     coordinate: [368, 564.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_vector_source_x_0
   id: blocks_vector_source_x
   parameters:
@@ -781,7 +781,7 @@ blocks:
     bus_structure: null
     coordinate: [1600, 356.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: controls
   id: qtgui_tab_widget
   parameters:
@@ -1204,7 +1204,7 @@ blocks:
     bus_structure: null
     coordinate: [1424, 140.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: qtgui_freq_sink_x_1
   id: qtgui_freq_sink_x
   parameters:
@@ -1285,7 +1285,7 @@ blocks:
     bus_structure: null
     coordinate: [1952, 116.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -1479,7 +1479,7 @@ blocks:
     bus_structure: null
     coordinate: [552, 672.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: received
   id: qtgui_tab_widget
   parameters:
@@ -1533,7 +1533,7 @@ blocks:
     bus_structure: null
     coordinate: [1416, 40.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: soapy_bladerf_source_0
   id: soapy_bladerf_source
   parameters:
@@ -1555,7 +1555,7 @@ blocks:
     bus_structure: null
     coordinate: [1640, 44.0]
     rotation: 0
-    state: enabled
+    state: disabled
 
 connections:
 - [analog_random_source_x_0, '0', blocks_unpack_k_bits_bb_0_0, '0']
