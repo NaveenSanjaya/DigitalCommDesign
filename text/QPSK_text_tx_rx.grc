@@ -176,6 +176,40 @@ blocks:
     coordinate: [3328, 20.0]
     rotation: 0
     state: true
+- name: ldpc_dec
+  id: variable_ldpc_decoder_def
+  parameters:
+    comment: ''
+    dim1: '4'
+    dim2: '4'
+    file: /home/gnuradio/Documents/DigitalCommDesign/text/ldpc/n_0100_k_0042_gap_02.alist
+    max_iter: '50'
+    ndim: '0'
+    sigma: '0.5'
+    value: '"ok"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2568, 628.0]
+    rotation: 0
+    state: enabled
+- name: ldpc_enc
+  id: variable_ldpc_encoder_def
+  parameters:
+    comment: ''
+    dim1: '1'
+    dim2: '4'
+    file: /home/gnuradio/Documents/DigitalCommDesign/text/ldpc/n_0100_k_0042_gap_02.alist
+    ndim: '0'
+    value: '"ok"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2568, 548.0]
+    rotation: 0
+    state: enabled
 - name: nfilts
   id: variable
   parameters:
@@ -604,7 +638,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [576, 908.0]
+    coordinate: [552, 908.0]
     rotation: 180
     state: true
 - name: blocks_stream_to_tagged_stream_0
@@ -706,7 +740,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [936, 268.0]
+    coordinate: [888, 204.0]
     rotation: 0
     state: true
 - name: blocks_unpack_k_bits_bb_0
@@ -852,7 +886,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1160, 252.0]
+    coordinate: [1152, 212.0]
     rotation: 0
     state: enabled
 - name: digital_correlate_access_code_xx_ts_0
@@ -871,7 +905,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [792, 900.0]
+    coordinate: [800, 900.0]
     rotation: 180
     state: true
 - name: digital_costas_loop_cc_0
@@ -906,7 +940,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1544, 776.0]
+    coordinate: [1632, 564.0]
     rotation: 180
     state: enabled
 - name: digital_linear_equalizer_0
@@ -944,7 +978,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1312, 768.0]
+    coordinate: [1504, 732.0]
     rotation: 180
     state: enabled
 - name: digital_pfb_clock_sync_xxx_0
@@ -985,6 +1019,60 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [536, 212.0]
+    rotation: 0
+    state: true
+- name: fec_extended_encoder_1_0_0
+  id: fec_extended_encoder
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    encoder_list: ldpc_enc
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    puncpat: puncpat
+    threadtype: none
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1048, 20.0]
+    rotation: 0
+    state: disabled
+- name: fec_generic_decoder_0
+  id: fec_generic_decoder
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decoder: ldpc_dec
+    itype: byte
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    otype: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1240, 756.0]
+    rotation: 180
+    state: enabled
+- name: fec_generic_encoder_0
+  id: fec_generic_encoder
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    encoder: ldpc_enc
+    itype: byte
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    otype: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1048, 396.0]
     rotation: 0
     state: true
 - name: note_0
@@ -1572,7 +1660,8 @@ connections:
 - [blocks_tagged_stream_mux_0, '0', blocks_throttle2_1, '0']
 - [blocks_throttle2_0, '0', channels_channel_model_0, '0']
 - [blocks_throttle2_0_0, '0', blocks_stream_to_tagged_stream_0, '0']
-- [blocks_throttle2_1, '0', digital_constellation_modulator_0, '0']
+- [blocks_throttle2_1, '0', fec_extended_encoder_1_0_0, '0']
+- [blocks_throttle2_1, '0', fec_generic_encoder_0, '0']
 - [blocks_unpack_k_bits_bb_0, '0', blocks_char_to_float_0_0, '0']
 - [blocks_unpack_k_bits_bb_0, '0', digital_correlate_access_code_xx_ts_0, '0']
 - [blocks_unpack_k_bits_bb_0_0, '0', blocks_char_to_float_0_0_0, '0']
@@ -1590,9 +1679,12 @@ connections:
 - [digital_costas_loop_cc_0, '0', qtgui_const_sink_x_0, '0']
 - [digital_diff_decoder_bb_0, '0', digital_map_bb_0, '0']
 - [digital_linear_equalizer_0, '0', digital_costas_loop_cc_0, '0']
-- [digital_map_bb_0, '0', blocks_unpack_k_bits_bb_0, '0']
+- [digital_map_bb_0, '0', fec_generic_decoder_0, '0']
 - [digital_pfb_clock_sync_xxx_0, '0', digital_linear_equalizer_0, '0']
 - [digital_protocol_formatter_bb_0, '0', blocks_tagged_stream_mux_0, '0']
+- [fec_extended_encoder_1_0_0, '0', digital_constellation_modulator_0, '0']
+- [fec_generic_decoder_0, '0', blocks_unpack_k_bits_bb_0, '0']
+- [fec_generic_encoder_0, '0', digital_constellation_modulator_0, '0']
 - [soapy_bladerf_source_0, '0', digital_pfb_clock_sync_xxx_0, '0']
 - [soapy_bladerf_source_0, '0', qtgui_freq_sink_x_1, '0']
 

@@ -16,6 +16,7 @@ import pmt
 from gnuradio import channels
 from gnuradio.filter import firdes
 from gnuradio import digital
+from gnuradio import fec
 from gnuradio import gr
 from gnuradio.fft import window
 import sys
@@ -84,6 +85,8 @@ class mpsk_stage6(gr.top_block, Qt.QWidget):
         self.rf_gain = rf_gain = 60
         self.phase_bw = phase_bw = 6.28/100.0
         self.noise_volt = noise_volt = 0.0001
+        self.ldpc_enc = ldpc_enc = fec.ldpc_encoder_make('/home/gnuradio/Documents/DigitalCommDesign/text/ldpc/n_0100_k_0042_gap_02.alist')
+        self.ldpc_dec = ldpc_dec = fec.ldpc_decoder.make('/home/gnuradio/Documents/DigitalCommDesign/text/ldpc/n_0100_k_0042_gap_02.alist', 0.5, 50)
         self.if_gain = if_gain = 40
         self.hdr_format = hdr_format = digital.header_format_default('00011010110011111111110000011101',1, 1)
         self.freq_offset = freq_offset = 0
@@ -419,6 +422,8 @@ class mpsk_stage6(gr.top_block, Qt.QWidget):
         self._freq_range = Range(2.7e9, 2.8e9, 100e3, 2.7e9, 200)
         self._freq_win = RangeWidget(self._freq_range, self.set_freq, "'freq'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._freq_win)
+        self.fec_generic_encoder_0 = fec.encoder(ldpc_enc, gr.sizeof_char, gr.sizeof_char)
+        self.fec_generic_decoder_0 = fec.decoder(ldpc_dec, gr.sizeof_char, gr.sizeof_char)
         self._eq_gain_range = Range(0.0, 0.1, 0.001, 0.01, 200)
         self._eq_gain_win = RangeWidget(self._eq_gain_range, self.set_eq_gain, "Equalizer: rate", "slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_1.addWidget(self._eq_gain_win, 0, 1, 1, 1)
@@ -484,7 +489,7 @@ class mpsk_stage6(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_throttle2_1, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.blocks_throttle2_0_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
-        self.connect((self.blocks_throttle2_1, 0), (self.digital_constellation_modulator_0, 0))
+        self.connect((self.blocks_throttle2_1, 0), (self.fec_generic_encoder_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.digital_correlate_access_code_xx_ts_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0_0, 0), (self.blocks_char_to_float_0_0_0, 0))
@@ -499,9 +504,11 @@ class mpsk_stage6(gr.top_block, Qt.QWidget):
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_0, 0))
         self.connect((self.digital_diff_decoder_bb_0, 0), (self.digital_map_bb_0, 0))
         self.connect((self.digital_linear_equalizer_0, 0), (self.digital_costas_loop_cc_0, 0))
-        self.connect((self.digital_map_bb_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
+        self.connect((self.digital_map_bb_0, 0), (self.fec_generic_decoder_0, 0))
         self.connect((self.digital_pfb_clock_sync_xxx_0, 0), (self.digital_linear_equalizer_0, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
+        self.connect((self.fec_generic_decoder_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
+        self.connect((self.fec_generic_encoder_0, 0), (self.digital_constellation_modulator_0, 0))
 
 
     def closeEvent(self, event):
@@ -629,6 +636,18 @@ class mpsk_stage6(gr.top_block, Qt.QWidget):
     def set_noise_volt(self, noise_volt):
         self.noise_volt = noise_volt
         self.channels_channel_model_0.set_noise_voltage(self.noise_volt)
+
+    def get_ldpc_enc(self):
+        return self.ldpc_enc
+
+    def set_ldpc_enc(self, ldpc_enc):
+        self.ldpc_enc = ldpc_enc
+
+    def get_ldpc_dec(self):
+        return self.ldpc_dec
+
+    def set_ldpc_dec(self, ldpc_dec):
+        self.ldpc_dec = ldpc_dec
 
     def get_if_gain(self):
         return self.if_gain
