@@ -554,7 +554,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: /home/gnuradio/Documents/DigitalCommDesign/image/flower_rx.jpg
+    file: /home/gnuradio/Documents/DigitalCommDesign/text/rx.txt
     type: byte
     unbuffered: 'False'
     vlen: '1'
@@ -572,12 +572,12 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: /home/gnuradio/Documents/DigitalCommDesign/image/flower_tx.jpg
+    file: /home/gnuradio/Documents/DigitalCommDesign/text/tx.txt
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
     offset: '0'
-    repeat: 'False'
+    repeat: 'True'
     type: byte
     vlen: '1'
   states:
@@ -666,7 +666,7 @@ blocks:
     bus_structure: null
     coordinate: [1392, 388.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_throttle2_0_0
   id: blocks_throttle2
   parameters:
@@ -781,7 +781,7 @@ blocks:
     bus_structure: null
     coordinate: [1600, 356.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: controls
   id: qtgui_tab_widget
   parameters:
@@ -1204,7 +1204,7 @@ blocks:
     bus_structure: null
     coordinate: [1424, 140.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: qtgui_freq_sink_x_1
   id: qtgui_freq_sink_x
   parameters:
@@ -1533,7 +1533,7 @@ blocks:
     bus_structure: null
     coordinate: [1416, 40.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: soapy_bladerf_source_0
   id: soapy_bladerf_source
   parameters:
@@ -1555,7 +1555,7 @@ blocks:
     bus_structure: null
     coordinate: [1640, 44.0]
     rotation: 0
-    state: enabled
+    state: disabled
 
 connections:
 - [analog_random_source_x_0, '0', blocks_unpack_k_bits_bb_0_0, '0']
