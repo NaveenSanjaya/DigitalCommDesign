@@ -78,7 +78,6 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.polys = polys = [109, 79]
         self.nfilts = nfilts = 32
         self.k = k = 7
-        self.cc_decoder = cc_decoder = fec.cc_decoder.make(16,7, 2, [79,109], 0, (-1), fec.CC_STREAMING, True)
         self.variable_adaptive_algorithm_0 = variable_adaptive_algorithm_0 = digital.adaptive_algorithm_cma( qpsk, .0001, 4).base()
         self.tx_freq = tx_freq = 600e6
         self.timing_loop_bw = timing_loop_bw = 6.28/100.0
@@ -93,18 +92,15 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.rf_gain = rf_gain = 60
         self.phase_bw = phase_bw = 6.28/100.0
         self.noise_volt = noise_volt = 0.0001
-        self.ldpc_enc = ldpc_enc = fec.ldpc_encoder_make('/home/gnuradio/Documents/DigitalCommDesign/text/ldpc/n_0100_k_0023_gap_10.alist')
-        self.ldpc_dec = ldpc_dec = fec.ldpc_decoder.make('/home/gnuradio/Documents/DigitalCommDesign/text/ldpc/n_0100_k_0023_gap_10.alist', 0.5, 50)
         self.if_gain = if_gain = 40
         self.hdr_format = hdr_format = digital.header_format_default('00011010110011111111110000011101',1, 1)
         self.freq_offset = freq_offset = 0
         self.freq = freq = 2.7e9
         self.excess_bw = excess_bw = 0.5
         self.eq_gain = eq_gain = 0.01
-        self.enc_cc = enc_cc = fec.cc_encoder_make((MTU*8),k, 2, polys, 0, fec.CC_TERMINATED, True)
         self.delay = delay = 30
-        self.dec_cc = dec_cc = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, 2, polys, 0, (-1), fec.CC_TERMINATED, True)),range(0,1)))
-        self.cc_encoder = cc_encoder = fec.cc_encoder_make(16,7, 2, [79,109], 0, fec.CC_STREAMING, True)
+        self.cc_enc = cc_enc = fec.cc_encoder_make((MTU*8),k, 2, polys, 0, fec.CC_STREAMING, True)
+        self.cc_dec = cc_dec = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, 2, polys, 0, (-1), fec.CC_STREAMING, True)),range(0,1)))
         self.arity = arity = 4
 
         ##################################################
@@ -433,8 +429,8 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self._freq_range = Range(2.7e9, 2.8e9, 100e3, 2.7e9, 200)
         self._freq_win = RangeWidget(self._freq_range, self.set_freq, "'freq'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._freq_win)
-        self.fec_extended_tagged_encoder_0_1 = fec.extended_tagged_encoder(encoder_obj_list=enc_cc, puncpat='11', lentagname="packet_len", mtu=MTU)
-        self.fec_extended_tagged_decoder_2 = self.fec_extended_tagged_decoder_2 = fec_extended_tagged_decoder_2 = fec.extended_tagged_decoder(decoder_obj_list=dec_cc, ann=None, puncpat='11', integration_period=10000, lentagname="packet_len", mtu=MTU)
+        self.fec_extended_tagged_encoder_0_1 = fec.extended_tagged_encoder(encoder_obj_list=cc_enc, puncpat='11', lentagname="packet_len", mtu=MTU)
+        self.fec_extended_tagged_decoder_2 = self.fec_extended_tagged_decoder_2 = fec_extended_tagged_decoder_2 = fec.extended_tagged_decoder(decoder_obj_list=cc_dec, ann=None, puncpat='11', integration_period=10000, lentagname="packet_len", mtu=MTU)
         self._eq_gain_range = Range(0.0, 0.1, 0.001, 0.01, 200)
         self._eq_gain_win = RangeWidget(self._eq_gain_range, self.set_eq_gain, "Equalizer: rate", "slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_1.addWidget(self._eq_gain_win, 0, 1, 1, 1)
@@ -474,13 +470,13 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.blocks_throttle2_0_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_gr_complex*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
-        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 8, "packet_len")
+        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 16, "packet_len")
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(1, 8, "", False, gr.GR_MSB_FIRST)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/image/flower_tx.jpg', True, 0, 0)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/text/tx.txt', True, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/image/flower__x.jpg', False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/text/rx.txt', False)
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, int(delay))
         self.blocks_char_to_float_1_1 = blocks.char_to_float(1, 1)
@@ -576,12 +572,6 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
     def set_k(self, k):
         self.k = k
-
-    def get_cc_decoder(self):
-        return self.cc_decoder
-
-    def set_cc_decoder(self, cc_decoder):
-        self.cc_decoder = cc_decoder
 
     def get_variable_adaptive_algorithm_0(self):
         return self.variable_adaptive_algorithm_0
@@ -680,18 +670,6 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.noise_volt = noise_volt
         self.channels_channel_model_0.set_noise_voltage(self.noise_volt)
 
-    def get_ldpc_enc(self):
-        return self.ldpc_enc
-
-    def set_ldpc_enc(self, ldpc_enc):
-        self.ldpc_enc = ldpc_enc
-
-    def get_ldpc_dec(self):
-        return self.ldpc_dec
-
-    def set_ldpc_dec(self, ldpc_dec):
-        self.ldpc_dec = ldpc_dec
-
     def get_if_gain(self):
         return self.if_gain
 
@@ -729,12 +707,6 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
     def set_eq_gain(self, eq_gain):
         self.eq_gain = eq_gain
 
-    def get_enc_cc(self):
-        return self.enc_cc
-
-    def set_enc_cc(self, enc_cc):
-        self.enc_cc = enc_cc
-
     def get_delay(self):
         return self.delay
 
@@ -742,17 +714,17 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.delay = delay
         self.blocks_delay_0.set_dly(int(int(self.delay)))
 
-    def get_dec_cc(self):
-        return self.dec_cc
+    def get_cc_enc(self):
+        return self.cc_enc
 
-    def set_dec_cc(self, dec_cc):
-        self.dec_cc = dec_cc
+    def set_cc_enc(self, cc_enc):
+        self.cc_enc = cc_enc
 
-    def get_cc_encoder(self):
-        return self.cc_encoder
+    def get_cc_dec(self):
+        return self.cc_dec
 
-    def set_cc_encoder(self, cc_encoder):
-        self.cc_encoder = cc_encoder
+    def set_cc_dec(self, cc_dec):
+        self.cc_dec = cc_dec
 
     def get_arity(self):
         return self.arity
