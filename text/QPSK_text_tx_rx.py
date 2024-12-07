@@ -16,6 +16,7 @@ import pmt
 from gnuradio import channels
 from gnuradio.filter import firdes
 from gnuradio import digital
+from gnuradio import filter
 from gnuradio import fec
 from gnuradio import gr
 from gnuradio.fft import window
@@ -84,7 +85,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.time_offset = time_offset = 1.00
         self.taps = taps = [1.0, 0.25-0.25j, 0.50 + 0.10j, -0.3 + 0.2j]
         self.samp_rate_blade = samp_rate_blade = 750000
-        self.samp_rate = samp_rate = 750e3
+        self.samp_rate = samp_rate = 60e3
         self.rx_freq_ = rx_freq_ = 433e6
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(nfilts, nfilts, 1.0/float(sps), 0.35, 11*sps*nfilts)
         self.rf_gain_sink = rf_gain_sink = 10
@@ -98,7 +99,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.freq = freq = 2.7e9
         self.excess_bw = excess_bw = 0.5
         self.eq_gain = eq_gain = 0.01
-        self.delay = delay = 30
+        self.delay = delay = 42
         self.cc_enc = cc_enc = fec.cc_encoder_make((MTU*8),k, 2, polys, 0, fec.CC_STREAMING, True)
         self.cc_dec = cc_dec = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, 2, polys, 0, (-1), fec.CC_STREAMING, True)),range(0,1)))
         self.arity = arity = 4
@@ -123,13 +124,6 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self._timing_loop_bw_range = Range(0.0, 0.2, 0.01, 6.28/100.0, 200)
-        self._timing_loop_bw_win = RangeWidget(self._timing_loop_bw_range, self.set_timing_loop_bw, "Time: BW", "slider", float, QtCore.Qt.Horizontal)
-        self.controls_grid_layout_1.addWidget(self._timing_loop_bw_win, 0, 0, 1, 1)
-        for r in range(0, 1):
-            self.controls_grid_layout_1.setRowStretch(r, 1)
-        for c in range(0, 1):
-            self.controls_grid_layout_1.setColumnStretch(c, 1)
         self._time_offset_range = Range(0.999, 1.001, 0.0001, 1.00, 200)
         self._time_offset_win = RangeWidget(self._time_offset_range, self.set_time_offset, "Timing Offset", "counter_slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_0.addWidget(self._time_offset_win, 0, 2, 1, 1)
@@ -174,13 +168,20 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
             self.controls_grid_layout_0.setRowStretch(r, 1)
         for c in range(1, 2):
             self.controls_grid_layout_0.setColumnStretch(c, 1)
-        self._delay_range = Range(0, 200, 1, 30, 200)
+        self._delay_range = Range(0, 200, 1, 42, 200)
         self._delay_win = RangeWidget(self._delay_range, self.set_delay, "Delay", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_grid_layout.addWidget(self._delay_win, 1, 0, 1, 1)
         for r in range(1, 2):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 1):
             self.top_grid_layout.setColumnStretch(c, 1)
+        self._timing_loop_bw_range = Range(0.0, 0.2, 0.01, 6.28/100.0, 200)
+        self._timing_loop_bw_win = RangeWidget(self._timing_loop_bw_range, self.set_timing_loop_bw, "Time: BW", "slider", float, QtCore.Qt.Horizontal)
+        self.controls_grid_layout_1.addWidget(self._timing_loop_bw_win, 0, 0, 1, 1)
+        for r in range(0, 1):
+            self.controls_grid_layout_1.setRowStretch(r, 1)
+        for c in range(0, 1):
+            self.controls_grid_layout_1.setColumnStretch(c, 1)
         self._rf_gain_sink_range = Range(0, 60, 1, 10, 200)
         self._rf_gain_sink_win = RangeWidget(self._rf_gain_sink_range, self.set_rf_gain_sink, "RF gain sink", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._rf_gain_sink_win)
@@ -438,11 +439,21 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
             self.controls_grid_layout_1.setRowStretch(r, 1)
         for c in range(1, 2):
             self.controls_grid_layout_1.setColumnStretch(c, 1)
+        self.digital_symbol_sync_xx_0 = digital.symbol_sync_cc(
+            digital.TED_MUELLER_AND_MULLER,
+            sps,
+            phase_bw,
+            1.0,
+            1.0,
+            1.5,
+            1,
+            digital.constellation_bpsk().base(),
+            digital.IR_MMSE_8TAP,
+            128,
+            [12])
         self.digital_protocol_formatter_bb_0 = digital.protocol_formatter_bb(hdr_format, "packet_len")
-        self.digital_pfb_clock_sync_xxx_0 = digital.pfb_clock_sync_ccf(sps, timing_loop_bw, rrc_taps, nfilts, (nfilts/2), 1.5, 2)
         self.digital_map_bb_0_0 = digital.map_bb([-1, 1])
         self.digital_map_bb_0 = digital.map_bb([0,1,2,3])
-        self.digital_linear_equalizer_0 = digital.linear_equalizer(15, 2, variable_adaptive_algorithm_0, True, [ ], 'corr_est')
         self.digital_diff_decoder_bb_0 = digital.diff_decoder_bb(4, digital.DIFF_DIFFERENTIAL)
         self.digital_costas_loop_cc_0 = digital.costas_loop_cc(phase_bw, arity, False)
         self.digital_correlate_access_code_xx_ts_0 = digital.correlate_access_code_bb_ts('00011010110011111111110000011101',
@@ -478,7 +489,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/text/rx.txt', False)
         self.blocks_file_sink_0.set_unbuffered(False)
-        self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, int(delay))
+        self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, delay)
         self.blocks_char_to_float_1_1 = blocks.char_to_float(1, 1)
         self.blocks_char_to_float_0_0_0 = blocks.char_to_float(1, 1)
         self.blocks_char_to_float_0_0 = blocks.char_to_float(1, 1)
@@ -507,7 +518,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.digital_correlate_access_code_xx_ts_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0_0, 0), (self.blocks_char_to_float_0_0_0, 0))
-        self.connect((self.channels_channel_model_0, 0), (self.digital_pfb_clock_sync_xxx_0, 0))
+        self.connect((self.channels_channel_model_0, 0), (self.digital_symbol_sync_xx_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_freq_sink_x_1, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.blocks_char_to_float_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_diff_decoder_bb_0, 0))
@@ -517,11 +528,10 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_constellation_decoder_cb_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_0, 0))
         self.connect((self.digital_diff_decoder_bb_0, 0), (self.digital_map_bb_0, 0))
-        self.connect((self.digital_linear_equalizer_0, 0), (self.digital_costas_loop_cc_0, 0))
         self.connect((self.digital_map_bb_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
         self.connect((self.digital_map_bb_0_0, 0), (self.blocks_char_to_float_1_1, 0))
-        self.connect((self.digital_pfb_clock_sync_xxx_0, 0), (self.digital_linear_equalizer_0, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
+        self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_costas_loop_cc_0, 0))
         self.connect((self.fec_extended_tagged_decoder_2, 0), (self.blocks_repack_bits_bb_0, 0))
         self.connect((self.fec_extended_tagged_encoder_0_1, 0), (self.blocks_repack_bits_bb_0_0_0, 0))
 
@@ -590,7 +600,6 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
     def set_timing_loop_bw(self, timing_loop_bw):
         self.timing_loop_bw = timing_loop_bw
-        self.digital_pfb_clock_sync_xxx_0.set_loop_bandwidth(self.timing_loop_bw)
 
     def get_time_offset(self):
         return self.time_offset
@@ -636,7 +645,6 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
     def set_rrc_taps(self, rrc_taps):
         self.rrc_taps = rrc_taps
-        self.digital_pfb_clock_sync_xxx_0.update_taps(self.rrc_taps)
 
     def get_rf_gain_sink(self):
         return self.rf_gain_sink
@@ -662,6 +670,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
     def set_phase_bw(self, phase_bw):
         self.phase_bw = phase_bw
         self.digital_costas_loop_cc_0.set_loop_bandwidth(self.phase_bw)
+        self.digital_symbol_sync_xx_0.set_loop_bandwidth(self.phase_bw)
 
     def get_noise_volt(self):
         return self.noise_volt
@@ -712,7 +721,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
     def set_delay(self, delay):
         self.delay = delay
-        self.blocks_delay_0.set_dly(int(int(self.delay)))
+        self.blocks_delay_0.set_dly(int(self.delay))
 
     def get_cc_enc(self):
         return self.cc_enc
