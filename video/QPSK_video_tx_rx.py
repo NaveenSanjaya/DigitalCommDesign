@@ -28,7 +28,7 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio.qtgui import Range, RangeWidget
 from PyQt5 import QtCore
-import QPSK_video_tx_rx_epy_block_0 as epy_block_0  # embedded python block
+import QPSK_video_tx_rx_epy_block_1 as epy_block_1  # embedded python block
 import sip
 
 
@@ -86,7 +86,7 @@ class QPSK_video_tx_rx(gr.top_block, Qt.QWidget):
         self.time_offset = time_offset = 1.00
         self.taps = taps = [1.0, 0.25-0.25j, 0.50 + 0.10j, -0.3 + 0.2j]
         self.samp_rate_blade = samp_rate_blade = 750000
-        self.samp_rate = samp_rate = 60e3
+        self.samp_rate = samp_rate = 60e4
         self.rx_freq_ = rx_freq_ = 433e6
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(nfilts, nfilts, 1.0/float(sps), 0.35, 11*sps*nfilts)
         self.rf_gain_sink = rf_gain_sink = 10
@@ -440,7 +440,7 @@ class QPSK_video_tx_rx(gr.top_block, Qt.QWidget):
             self.controls_grid_layout_1.setRowStretch(r, 1)
         for c in range(1, 2):
             self.controls_grid_layout_1.setColumnStretch(c, 1)
-        self.epy_block_0 = epy_block_0.blk(video_path="/home/gnuradio/Documents/DigitalCommDesign/video/video_rx.ts")
+        self.epy_block_1 = epy_block_1.VideoStreamer(video_path="/home/gnuradio/Documents/DigitalCommDesign/video/video_rx.ts")
         self.digital_symbol_sync_xx_0 = digital.symbol_sync_cc(
             digital.TED_MUELLER_AND_MULLER,
             sps,
@@ -491,6 +491,7 @@ class QPSK_video_tx_rx(gr.top_block, Qt.QWidget):
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/video/video_rx.ts', False)
         self.blocks_file_sink_0.set_unbuffered(False)
+        self.blocks_delay_0_0_1 = blocks.delay(gr.sizeof_char*1, 1000000)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, delay)
         self.blocks_char_to_float_1_1 = blocks.char_to_float(1, 1)
         self.blocks_char_to_float_0_0_0 = blocks.char_to_float(1, 1)
@@ -506,7 +507,9 @@ class QPSK_video_tx_rx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_char_to_float_0_0_0, 0), (self.blocks_delay_0, 0))
         self.connect((self.blocks_char_to_float_1_1, 0), (self.fec_extended_tagged_decoder_2, 0))
         self.connect((self.blocks_delay_0, 0), (self.qtgui_time_sink_x_0_0, 1))
+        self.connect((self.blocks_delay_0_0_1, 0), (self.epy_block_1, 0))
         self.connect((self.blocks_file_source_0, 0), (self.blocks_throttle2_0_0, 0))
+        self.connect((self.blocks_repack_bits_bb_0, 0), (self.blocks_delay_0_0_1, 0))
         self.connect((self.blocks_repack_bits_bb_0, 0), (self.blocks_file_sink_0, 0))
         self.connect((self.blocks_repack_bits_bb_0_0, 0), (self.fec_extended_tagged_encoder_0_1, 0))
         self.connect((self.blocks_repack_bits_bb_0_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))

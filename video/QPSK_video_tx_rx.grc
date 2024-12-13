@@ -443,7 +443,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 60e3
+    value: 60e4
   states:
     bus_sink: false
     bus_source: false
@@ -698,6 +698,26 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [792, 2488.0]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_0_1
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: '1000000'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    showports: 'False'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1752, 1100.0]
     rotation: 0
     state: enabled
 - name: blocks_file_sink_0
@@ -1292,9 +1312,56 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1800, 928.0]
+    coordinate: [1936, 1012.0]
     rotation: 0
-    state: true
+    state: disabled
+- name: epy_block_1
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
+      from gnuradio import gr\nimport subprocess\nimport os\nimport threading\nimport\
+      \ time\n\nclass VideoStreamer(gr.sync_block):\n    \"\"\"\n    A custom GNU\
+      \ Radio block to view video using VLC\n    \"\"\"\n\n    def __init__(self,video_path=None):\n\
+      \        gr.sync_block.__init__(\n            self,\n            name=\"Video\
+      \ Streamer\",  # Block name\n            in_sig=[np.uint8],      # Input is\
+      \ a byte stream\n            out_sig=None            # No output signal\n  \
+      \      )\n        self.video_path = video_path\n        # Initialize VLC player\n\
+      \  \n    def start(self):\n        def open_program():\n            time.sleep(5)\n\
+      \            vlc_command = \"vlc\"  # VLC command for Linux\n    \n        \
+      \    if not os.path.exists(self.video_path):\n                print(f\"Error:\
+      \ File not found: {self.video_path}\")\n                return\n           \
+      \ \n            try:\n\n                # Launch VLC minimized with the video\
+      \ file\n                subprocess.run([vlc_command, \"--qt-start-minimized\"\
+      , self.video_path])\n            except FileNotFoundError:\n               \
+      \ print(\"Error: VLC Media Player is not installed. Install it using your package\
+      \ manager (e.g., sudo apt install vlc).\")\n\n\n        # Create and start a\
+      \ thread\n        program_thread = threading.Thread(target=open_program)\n \
+      \       program_thread.start()\n\n    def stop(self):\n        # Stop the VLC\
+      \ player\n        try:\n            subprocess.run([\"pkill\", \"vlc\"])\n \
+      \           print(\"VLC closed successfully.\")\n        except Exception as\
+      \ e:\n            print(f\"Error closing VLC: {e}\")\n\n    def work(self, input_items,\
+      \ output_items):\n        \n        # Consume all input\n        return len(input_items[0])\n\
+      \n\n\n\n# Main thread can continue doing other tasks\nprint(\"Program is running\
+      \ in a separate thread.\")\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    video_path: '"/home/gnuradio/Documents/DigitalCommDesign/video/video_rx.ts"'
+  states:
+    _io_cache: ('Video Streamer', 'VideoStreamer', [('video_path', 'None')], [('0',
+      'byte', 1)], [], '\n    A custom GNU Radio block to view video using VLC\n    ',
+      ['video_path'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1936, 1100.0]
+    rotation: 0
+    state: enabled
 - name: fec_extended_decoder_0
   id: fec_extended_decoder
   parameters:
@@ -2029,6 +2096,7 @@ connections:
 - [blocks_char_to_float_1, '0', fec_extended_decoder_0, '0']
 - [blocks_char_to_float_1_1, '0', fec_extended_tagged_decoder_2, '0']
 - [blocks_delay_0, '0', qtgui_time_sink_x_0_0, '1']
+- [blocks_delay_0_0_1, '0', epy_block_1, '0']
 - [blocks_file_source_0, '0', blocks_throttle2_0_0, '0']
 - [blocks_repack_bits_bb_0, '0', digital_crc32_bb_0_0, '0']
 - [blocks_repack_bits_bb_0_0, '0', fec_extended_tagged_encoder_0_1, '0']
@@ -2057,6 +2125,7 @@ connections:
 - [digital_costas_loop_cc_0, '0', digital_constellation_decoder_cb_0, '0']
 - [digital_costas_loop_cc_0, '0', qtgui_const_sink_x_0, '0']
 - [digital_crc32_bb_0, '0', blocks_repack_bits_bb_0_0, '0']
+- [digital_crc32_bb_0_0, '0', blocks_delay_0_0_1, '0']
 - [digital_crc32_bb_0_0, '0', blocks_file_sink_0, '0']
 - [digital_diff_decoder_bb_0, '0', digital_map_bb_0, '0']
 - [digital_linear_equalizer_0, '0', digital_costas_loop_cc_0, '0']
@@ -2070,6 +2139,7 @@ connections:
 - [fec_extended_tagged_decoder_2, '0', blocks_repack_bits_bb_0, '0']
 - [fec_extended_tagged_encoder_0_1, '0', blocks_repack_bits_bb_0_0_0, '0']
 - [soapy_bladerf_source_0, '0', digital_pfb_clock_sync_xxx_0, '0']
+- [soapy_bladerf_source_0, '0', digital_symbol_sync_xx_0, '0']
 - [soapy_bladerf_source_0, '0', qtgui_freq_sink_x_1, '0']
 - [virtual_source_0, '0', blocks_throttle2_1, '0']
 - [virtual_source_0, '0', blocks_unpack_k_bits_bb_0_0, '0']

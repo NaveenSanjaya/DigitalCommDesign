@@ -84,8 +84,8 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.timing_loop_bw = timing_loop_bw = 6.28/100.0
         self.time_offset = time_offset = 1.00
         self.taps = taps = [1.0, 0.25-0.25j, 0.50 + 0.10j, -0.3 + 0.2j]
-        self.samp_rate_blade = samp_rate_blade = 750000
-        self.samp_rate = samp_rate = 60e3
+        self.samp_rate_blade = samp_rate_blade = 600e3
+        self.samp_rate = samp_rate = 600e3
         self.rx_freq_ = rx_freq_ = 433e6
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(nfilts, nfilts, 1.0/float(sps), 0.35, 11*sps*nfilts)
         self.rf_gain_sink = rf_gain_sink = 10
@@ -96,12 +96,13 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.if_gain = if_gain = 40
         self.hdr_format = hdr_format = digital.header_format_default('00011010110011111111110000011101',1, 1)
         self.freq_offset = freq_offset = 0
-        self.freq = freq = 2.7e9
-        self.excess_bw = excess_bw = 0.5
+        self.freq = freq = 2.4e9
+        self.excess_bw = excess_bw = .5
         self.eq_gain = eq_gain = 0.01
         self.delay = delay = 42
         self.cc_enc = cc_enc = fec.cc_encoder_make((MTU*8),k, 2, polys, 0, fec.CC_STREAMING, True)
         self.cc_dec = cc_dec = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, 2, polys, 0, (-1), fec.CC_STREAMING, True)),range(0,1)))
+        self.bw = bw = 10e3
         self.arity = arity = 4
 
         ##################################################
@@ -379,6 +380,47 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
+        self.qtgui_const_sink_x_1 = qtgui.const_sink_c(
+            1024, #size
+            "symbol sync", #name
+            1, #number of inputs
+            None # parent
+        )
+        self.qtgui_const_sink_x_1.set_update_time(0.10)
+        self.qtgui_const_sink_x_1.set_y_axis((-2), 2)
+        self.qtgui_const_sink_x_1.set_x_axis((-2), 2)
+        self.qtgui_const_sink_x_1.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, "")
+        self.qtgui_const_sink_x_1.enable_autoscale(False)
+        self.qtgui_const_sink_x_1.enable_grid(False)
+        self.qtgui_const_sink_x_1.enable_axis_labels(True)
+
+
+        labels = ['', '', '', '', '',
+            '', '', '', '', '']
+        widths = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        colors = ["blue", "red", "red", "red", "red",
+            "red", "red", "red", "red", "red"]
+        styles = [0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0]
+        markers = [0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0]
+        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0, 1.0, 1.0]
+
+        for i in range(1):
+            if len(labels[i]) == 0:
+                self.qtgui_const_sink_x_1.set_line_label(i, "Data {0}".format(i))
+            else:
+                self.qtgui_const_sink_x_1.set_line_label(i, labels[i])
+            self.qtgui_const_sink_x_1.set_line_width(i, widths[i])
+            self.qtgui_const_sink_x_1.set_line_color(i, colors[i])
+            self.qtgui_const_sink_x_1.set_line_style(i, styles[i])
+            self.qtgui_const_sink_x_1.set_line_marker(i, markers[i])
+            self.qtgui_const_sink_x_1.set_line_alpha(i, alphas[i])
+
+        self._qtgui_const_sink_x_1_win = sip.wrapinstance(self.qtgui_const_sink_x_1.qwidget(), Qt.QWidget)
+        self.top_layout.addWidget(self._qtgui_const_sink_x_1_win)
         self.qtgui_const_sink_x_0 = qtgui.const_sink_c(
             1024, #size
             "", #name
@@ -427,7 +469,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self._if_gain_range = Range(0, 50, 1, 40, 200)
         self._if_gain_win = RangeWidget(self._if_gain_range, self.set_if_gain, "IF gain", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._if_gain_win)
-        self._freq_range = Range(2.7e9, 2.8e9, 100e3, 2.7e9, 200)
+        self._freq_range = Range(2e9, 6e9, 100e3, 2.4e9, 200)
         self._freq_win = RangeWidget(self._freq_range, self.set_freq, "'freq'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._freq_win)
         self.fec_extended_tagged_encoder_0_1 = fec.extended_tagged_encoder(encoder_obj_list=cc_enc, puncpat='11', lentagname="packet_len", mtu=MTU)
@@ -440,7 +482,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         for c in range(1, 2):
             self.controls_grid_layout_1.setColumnStretch(c, 1)
         self.digital_symbol_sync_xx_0 = digital.symbol_sync_cc(
-            digital.TED_MUELLER_AND_MULLER,
+            digital.TED_MOD_MUELLER_AND_MULLER,
             sps,
             phase_bw,
             1.0,
@@ -488,7 +530,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/text/tx.txt', True, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/text/rx.txt', False)
-        self.blocks_file_sink_0.set_unbuffered(False)
+        self.blocks_file_sink_0.set_unbuffered(True)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, delay)
         self.blocks_char_to_float_1_1 = blocks.char_to_float(1, 1)
         self.blocks_char_to_float_0_0_0 = blocks.char_to_float(1, 1)
@@ -532,6 +574,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_map_bb_0_0, 0), (self.blocks_char_to_float_1_1, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_costas_loop_cc_0, 0))
+        self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1, 0))
         self.connect((self.fec_extended_tagged_decoder_2, 0), (self.blocks_repack_bits_bb_0, 0))
         self.connect((self.fec_extended_tagged_encoder_0_1, 0), (self.blocks_repack_bits_bb_0_0_0, 0))
 
@@ -734,6 +777,12 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
     def set_cc_dec(self, cc_dec):
         self.cc_dec = cc_dec
+
+    def get_bw(self):
+        return self.bw
+
+    def set_bw(self, bw):
+        self.bw = bw
 
     def get_arity(self):
         return self.arity

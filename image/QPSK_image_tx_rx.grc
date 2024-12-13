@@ -443,7 +443,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 60e3
+    value: 60e4
   states:
     bus_sink: false
     bus_source: false
@@ -859,7 +859,7 @@ blocks:
     bus_structure: null
     coordinate: [928, 1780.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_throttle2_0_0
   id: blocks_throttle2
   parameters:
@@ -974,7 +974,7 @@ blocks:
     bus_structure: null
     coordinate: [1200, 1748.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: controls
   id: qtgui_tab_widget
   parameters:
@@ -1883,7 +1883,7 @@ blocks:
     bus_structure: null
     coordinate: [856, 1380.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: soapy_bladerf_source_0
   id: soapy_bladerf_source
   parameters:
@@ -1905,7 +1905,7 @@ blocks:
     bus_structure: null
     coordinate: [1360, 1364.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: virtual_sink_0
   id: virtual_sink
   parameters:
@@ -2014,6 +2014,7 @@ connections:
 - [digital_constellation_decoder_cb_0, '0', blocks_char_to_float_0, '0']
 - [digital_constellation_decoder_cb_0, '0', digital_diff_decoder_bb_0, '0']
 - [digital_constellation_modulator_0, '0', blocks_throttle2_0, '0']
+- [digital_constellation_modulator_0, '0', digital_symbol_sync_xx_0, '0']
 - [digital_constellation_modulator_0, '0', qtgui_freq_sink_x_0, '0']
 - [digital_constellation_modulator_0, '0', soapy_bladerf_sink_0, '0']
 - [digital_correlate_access_code_xx_ts_0, '0', blocks_char_to_float_1, '0']
