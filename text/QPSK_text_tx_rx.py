@@ -11,6 +11,7 @@
 from packaging.version import Version as StrictVersion
 from PyQt5 import Qt
 from gnuradio import qtgui
+from PyQt5.QtCore import QObject, pyqtSlot
 from gnuradio import blocks
 import pmt
 from gnuradio import channels
@@ -79,13 +80,14 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.polys = polys = [109, 79]
         self.nfilts = nfilts = 32
         self.k = k = 7
+        self.variable_qtgui_chooser_0 = variable_qtgui_chooser_0 = 0
         self.variable_adaptive_algorithm_0 = variable_adaptive_algorithm_0 = digital.adaptive_algorithm_cma( qpsk, .0001, 4).base()
         self.tx_freq = tx_freq = 600e6
         self.timing_loop_bw = timing_loop_bw = 6.28/100.0
         self.time_offset = time_offset = 1.00
         self.taps = taps = [1.0, 0.25-0.25j, 0.50 + 0.10j, -0.3 + 0.2j]
-        self.samp_rate_blade = samp_rate_blade = 600e3
-        self.samp_rate = samp_rate = 600e3
+        self.samp_rate_blade = samp_rate_blade = 750e3
+        self.samp_rate = samp_rate = 750e3
         self.rx_freq_ = rx_freq_ = 433e6
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(nfilts, nfilts, 1.0/float(sps), 0.35, 11*sps*nfilts)
         self.rf_gain_sink = rf_gain_sink = 10
@@ -176,6 +178,22 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 1):
             self.top_grid_layout.setColumnStretch(c, 1)
+        # Create the options list
+        self._variable_qtgui_chooser_0_options = [0, 1, 2]
+        # Create the labels list
+        self._variable_qtgui_chooser_0_labels = ['0', '1', '2']
+        # Create the combo box
+        self._variable_qtgui_chooser_0_tool_bar = Qt.QToolBar(self)
+        self._variable_qtgui_chooser_0_tool_bar.addWidget(Qt.QLabel("choosr" + ": "))
+        self._variable_qtgui_chooser_0_combo_box = Qt.QComboBox()
+        self._variable_qtgui_chooser_0_tool_bar.addWidget(self._variable_qtgui_chooser_0_combo_box)
+        for _label in self._variable_qtgui_chooser_0_labels: self._variable_qtgui_chooser_0_combo_box.addItem(_label)
+        self._variable_qtgui_chooser_0_callback = lambda i: Qt.QMetaObject.invokeMethod(self._variable_qtgui_chooser_0_combo_box, "setCurrentIndex", Qt.Q_ARG("int", self._variable_qtgui_chooser_0_options.index(i)))
+        self._variable_qtgui_chooser_0_callback(self.variable_qtgui_chooser_0)
+        self._variable_qtgui_chooser_0_combo_box.currentIndexChanged.connect(
+            lambda i: self.set_variable_qtgui_chooser_0(self._variable_qtgui_chooser_0_options[i]))
+        # Create the radio buttons
+        self.top_layout.addWidget(self._variable_qtgui_chooser_0_tool_bar)
         self._timing_loop_bw_range = Range(0.0, 0.2, 0.01, 6.28/100.0, 200)
         self._timing_loop_bw_win = RangeWidget(self._timing_loop_bw_range, self.set_timing_loop_bw, "Time: BW", "slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_1.addWidget(self._timing_loop_bw_win, 0, 0, 1, 1)
@@ -296,6 +314,9 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
             self.received_grid_layout_1.setRowStretch(r, 1)
         for c in range(0, 1):
             self.received_grid_layout_1.setColumnStretch(c, 1)
+        self.qtgui_graphicitem_0 = self._qtgui_graphicitem_0_win = qtgui.GrGraphicItem('/home/gnuradio/Downloads/pngwing.png',False,False,0,0)
+        self._qtgui_graphicitem_0_win = self._qtgui_graphicitem_0_win
+        self.top_layout.addWidget(self._qtgui_graphicitem_0_win)
         self.qtgui_freq_sink_x_1 = qtgui.freq_sink_c(
             1024, #size
             window.WIN_BLACKMAN_hARRIS, #wintype
@@ -482,20 +503,21 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         for c in range(1, 2):
             self.controls_grid_layout_1.setColumnStretch(c, 1)
         self.digital_symbol_sync_xx_0 = digital.symbol_sync_cc(
-            digital.TED_MOD_MUELLER_AND_MULLER,
+            digital.TED_SIGNAL_TIMES_SLOPE_ML,
             sps,
             phase_bw,
             1.0,
             1.0,
             1.5,
-            1,
+            4,
             digital.constellation_bpsk().base(),
-            digital.IR_MMSE_8TAP,
-            128,
-            [12])
+            digital.IR_PFB_MF,
+            32,
+            rrc_taps)
         self.digital_protocol_formatter_bb_0 = digital.protocol_formatter_bb(hdr_format, "packet_len")
         self.digital_map_bb_0_0 = digital.map_bb([-1, 1])
         self.digital_map_bb_0 = digital.map_bb([0,1,2,3])
+        self.digital_linear_equalizer_0_0 = digital.linear_equalizer(15, 4, variable_adaptive_algorithm_0, True, [ ], 'corr_est')
         self.digital_diff_decoder_bb_0 = digital.diff_decoder_bb(4, digital.DIFF_DIFFERENTIAL)
         self.digital_costas_loop_cc_0 = digital.costas_loop_cc(phase_bw, arity, False)
         self.digital_correlate_access_code_xx_ts_0 = digital.correlate_access_code_bb_ts('00011010110011111111110000011101',
@@ -523,13 +545,13 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.blocks_throttle2_0_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_gr_complex*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
-        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 16, "packet_len")
+        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 512, "packet_len")
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(1, 8, "", False, gr.GR_MSB_FIRST)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/text/tx.txt', True, 0, 0)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Downloads/pngwing.png', True, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/text/rx.txt', False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Downloads/rx.png', False)
         self.blocks_file_sink_0.set_unbuffered(True)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, delay)
         self.blocks_char_to_float_1_1 = blocks.char_to_float(1, 1)
@@ -570,10 +592,11 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_constellation_decoder_cb_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_0, 0))
         self.connect((self.digital_diff_decoder_bb_0, 0), (self.digital_map_bb_0, 0))
+        self.connect((self.digital_linear_equalizer_0_0, 0), (self.digital_costas_loop_cc_0, 0))
         self.connect((self.digital_map_bb_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
         self.connect((self.digital_map_bb_0_0, 0), (self.blocks_char_to_float_1_1, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_costas_loop_cc_0, 0))
+        self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_linear_equalizer_0_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1, 0))
         self.connect((self.fec_extended_tagged_decoder_2, 0), (self.blocks_repack_bits_bb_0, 0))
         self.connect((self.fec_extended_tagged_encoder_0_1, 0), (self.blocks_repack_bits_bb_0_0_0, 0))
@@ -625,6 +648,13 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
     def set_k(self, k):
         self.k = k
+
+    def get_variable_qtgui_chooser_0(self):
+        return self.variable_qtgui_chooser_0
+
+    def set_variable_qtgui_chooser_0(self, variable_qtgui_chooser_0):
+        self.variable_qtgui_chooser_0 = variable_qtgui_chooser_0
+        self._variable_qtgui_chooser_0_callback(self.variable_qtgui_chooser_0)
 
     def get_variable_adaptive_algorithm_0(self):
         return self.variable_adaptive_algorithm_0
