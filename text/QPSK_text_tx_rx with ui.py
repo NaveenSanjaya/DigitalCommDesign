@@ -35,7 +35,7 @@ import sip
 
 class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
-    def __init__(self, MTU=1500, file_path=""):
+    def __init__(self, MTU=1500, file_path=""):  # Add file_path parameter
         gr.top_block.__init__(self, "QPSK_text_tx_rxgrc", catch_exceptions=True)
         Qt.QWidget.__init__(self)
         self.setWindowTitle("QPSK_text_tx_rxgrc")
@@ -99,7 +99,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.hdr_format = hdr_format = digital.header_format_default('00011010110011111111110000011101',1, 1)
         self.freq_offset = freq_offset = 0
         self.freq = freq = 2.4e9
-        self.file_path = file_path = file_path
+        self.file_path = file_path
         self.excess_bw = excess_bw = .5
         self.eq_gain = eq_gain = 0.01
         self.delay = delay = 42
@@ -547,7 +547,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(1, 8, "", False, gr.GR_MSB_FIRST)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, file_path, True, 0, 0)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, file_path, True, 0, 0) # file_path variable
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/text/rx.txt', False)
         self.blocks_file_sink_0.set_unbuffered(True)
@@ -780,7 +780,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
     def set_file_path(self, file_path):
         self.file_path = file_path
-        self.set_file_path(self.file_path)
+        self.blocks_file_source_0.open(self.file_path, True)
 
     def get_excess_bw(self):
         return self.excess_bw
@@ -849,7 +849,7 @@ def main(top_block_cls=QPSK_text_tx_rx, options=None):
         Qt.QApplication.setGraphicsSystem(style)
     qapp = Qt.QApplication(sys.argv)
 
-    tb = top_block_cls(MTU=options.MTU, file_path=file_path)
+    tb = top_block_cls(MTU=options.MTU, file_path=file_path) # Added file_path argument
 
     tb.start()
 
