@@ -35,7 +35,7 @@ import sip
 
 class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
-    def __init__(self, MTU=1500, file_path=""):
+    def __init__(self, MTU=1500):
         gr.top_block.__init__(self, "QPSK_text_tx_rxgrc", catch_exceptions=True)
         Qt.QWidget.__init__(self)
         self.setWindowTitle("QPSK_text_tx_rxgrc")
@@ -83,6 +83,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.variable_qtgui_chooser_0 = variable_qtgui_chooser_0 = 0
         self.variable_adaptive_algorithm_0 = variable_adaptive_algorithm_0 = digital.adaptive_algorithm_cma( qpsk, .0001, 4).base()
         self.tx_freq = tx_freq = 600e6
+        self.toggle = toggle = 0
         self.timing_loop_bw = timing_loop_bw = 6.28/100.0
         self.time_offset = time_offset = 1.00
         self.taps = taps = [1.0, 0.25-0.25j, 0.50 + 0.10j, -0.3 + 0.2j]
@@ -99,12 +100,11 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.hdr_format = hdr_format = digital.header_format_default('00011010110011111111110000011101',1, 1)
         self.freq_offset = freq_offset = 0
         self.freq = freq = 2.4e9
-        self.file_path = file_path = file_path
         self.excess_bw = excess_bw = .5
         self.eq_gain = eq_gain = 0.01
         self.delay = delay = 42
-        self.cc_enc = cc_enc = fec.cc_encoder_make((MTU*8),k, 2, polys, 0, fec.CC_STREAMING, True)
-        self.cc_dec = cc_dec = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, 2, polys, 0, (-1), fec.CC_STREAMING, True)),range(0,1)))
+        self.cc_enc = cc_enc = fec.cc_encoder_make((MTU*8),k, 2, polys, 0, fec.CC_TAILBITING, True)
+        self.cc_dec = cc_dec = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, 2, polys, 0, (-1), fec.CC_TAILBITING, True)),range(0,1)))
         self.bw = bw = 10e3
         self.arity = arity = 4
 
@@ -195,6 +195,13 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
             lambda i: self.set_variable_qtgui_chooser_0(self._variable_qtgui_chooser_0_options[i]))
         # Create the radio buttons
         self.top_layout.addWidget(self._variable_qtgui_chooser_0_tool_bar)
+        self._toggle_choices = {'Pressed': 0, 'Released': 1}
+
+        _toggle_toggle_button = qtgui.ToggleButton(self.set_toggle, 'switch', self._toggle_choices, False, 'value')
+        _toggle_toggle_button.setColors("gray", "default", "default", "default")
+        self.toggle = _toggle_toggle_button
+
+        self.top_layout.addWidget(_toggle_toggle_button)
         self._timing_loop_bw_range = Range(0.0, 0.2, 0.01, 6.28/100.0, 200)
         self._timing_loop_bw_win = RangeWidget(self._timing_loop_bw_range, self.set_timing_loop_bw, "Time: BW", "slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_1.addWidget(self._timing_loop_bw_win, 0, 0, 1, 1)
@@ -491,6 +498,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self._freq_range = Range(2e9, 6e9, 100e3, 2.4e9, 200)
         self._freq_win = RangeWidget(self._freq_range, self.set_freq, "'freq'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._freq_win)
+        self.fec_extended_tagged_encoder_0_1_0 = fec.extended_tagged_encoder(encoder_obj_list=cc_enc, puncpat='11', lentagname="packet_len", mtu=MTU)
         self.fec_extended_tagged_encoder_0_1 = fec.extended_tagged_encoder(encoder_obj_list=cc_enc, puncpat='11', lentagname="packet_len", mtu=MTU)
         self.fec_extended_tagged_decoder_2 = self.fec_extended_tagged_decoder_2 = fec_extended_tagged_decoder_2 = fec.extended_tagged_decoder(decoder_obj_list=cc_dec, ann=None, puncpat='11', integration_period=10000, lentagname="packet_len", mtu=MTU)
         self._eq_gain_range = Range(0.0, 0.1, 0.001, 0.01, 200)
@@ -512,6 +520,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
             digital.IR_PFB_MF,
             32,
             rrc_taps)
+        self.digital_protocol_formatter_bb_0_0 = digital.protocol_formatter_bb(hdr_format, "packet_len")
         self.digital_protocol_formatter_bb_0 = digital.protocol_formatter_bb(hdr_format, "packet_len")
         self.digital_map_bb_0_0 = digital.map_bb([-1, 1])
         self.digital_map_bb_0 = digital.map_bb([0,1,2,3])
@@ -540,15 +549,28 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.blocks_unpack_k_bits_bb_0_0 = blocks.unpack_k_bits_bb(8)
         self.blocks_unpack_k_bits_bb_0 = blocks.unpack_k_bits_bb(2)
         self.blocks_throttle2_1 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
+        self.blocks_throttle2_0_0_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_throttle2_0_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_gr_complex*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
+        self.blocks_tagged_stream_mux_0_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
-        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 512, "packet_len")
+        self.blocks_stream_to_tagged_stream_0_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 128, "packet_len")
+        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 128, "packet_len")
+        self.blocks_selector_0_0_0 = blocks.selector(gr.sizeof_char*1,0,1)
+        self.blocks_selector_0_0_0.set_enabled(True)
+        self.blocks_selector_0_0 = blocks.selector(gr.sizeof_char*1,1,0)
+        self.blocks_selector_0_0.set_enabled(True)
+        self.blocks_repack_bits_bb_0_0_1 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
+        self.blocks_repack_bits_bb_0_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(1, 8, "", False, gr.GR_MSB_FIRST)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, file_path, True, 0, 0)
+        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/text/sync.txt', True, 0, 0)
+        self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/text/tx.txt', True, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
+        self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/text/rx_temp.txt', False)
+        self.blocks_file_sink_0_0.set_unbuffered(True)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/text/rx.txt', False)
         self.blocks_file_sink_0.set_unbuffered(True)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, delay)
@@ -561,21 +583,33 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         ##################################################
         # Connections
         ##################################################
+        self.msg_connect((self.toggle, 'state'), (self.blocks_selector_0_0, 'iindex'))
+        self.msg_connect((self.toggle, 'state'), (self.blocks_selector_0_0_0, 'oindex'))
         self.connect((self.blocks_char_to_float_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.blocks_char_to_float_0_0, 0), (self.qtgui_time_sink_x_0_0, 0))
         self.connect((self.blocks_char_to_float_0_0_0, 0), (self.blocks_delay_0, 0))
         self.connect((self.blocks_char_to_float_1_1, 0), (self.fec_extended_tagged_decoder_2, 0))
         self.connect((self.blocks_delay_0, 0), (self.qtgui_time_sink_x_0_0, 1))
         self.connect((self.blocks_file_source_0, 0), (self.blocks_throttle2_0_0, 0))
-        self.connect((self.blocks_repack_bits_bb_0, 0), (self.blocks_file_sink_0, 0))
+        self.connect((self.blocks_file_source_0_0, 0), (self.blocks_throttle2_0_0_0, 0))
+        self.connect((self.blocks_repack_bits_bb_0, 0), (self.blocks_selector_0_0_0, 0))
         self.connect((self.blocks_repack_bits_bb_0_0, 0), (self.fec_extended_tagged_encoder_0_1, 0))
         self.connect((self.blocks_repack_bits_bb_0_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))
         self.connect((self.blocks_repack_bits_bb_0_0_0, 0), (self.digital_protocol_formatter_bb_0, 0))
+        self.connect((self.blocks_repack_bits_bb_0_0_0_0, 0), (self.blocks_tagged_stream_mux_0_0, 1))
+        self.connect((self.blocks_repack_bits_bb_0_0_0_0, 0), (self.digital_protocol_formatter_bb_0_0, 0))
+        self.connect((self.blocks_repack_bits_bb_0_0_1, 0), (self.fec_extended_tagged_encoder_0_1_0, 0))
+        self.connect((self.blocks_selector_0_0, 0), (self.blocks_throttle2_1, 0))
+        self.connect((self.blocks_selector_0_0, 0), (self.blocks_unpack_k_bits_bb_0_0, 0))
+        self.connect((self.blocks_selector_0_0_0, 0), (self.blocks_file_sink_0, 0))
+        self.connect((self.blocks_selector_0_0_0, 1), (self.blocks_file_sink_0_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.blocks_repack_bits_bb_0_0, 0))
-        self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_throttle2_1, 0))
-        self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_unpack_k_bits_bb_0_0, 0))
+        self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.blocks_repack_bits_bb_0_0_1, 0))
+        self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_selector_0_0, 0))
+        self.connect((self.blocks_tagged_stream_mux_0_0, 0), (self.blocks_selector_0_0, 1))
         self.connect((self.blocks_throttle2_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.blocks_throttle2_0_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
+        self.connect((self.blocks_throttle2_0_0_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
         self.connect((self.blocks_throttle2_1, 0), (self.digital_constellation_modulator_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.digital_correlate_access_code_xx_ts_0, 0))
@@ -594,10 +628,12 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_map_bb_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
         self.connect((self.digital_map_bb_0_0, 0), (self.blocks_char_to_float_1_1, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
+        self.connect((self.digital_protocol_formatter_bb_0_0, 0), (self.blocks_tagged_stream_mux_0_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_linear_equalizer_0_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1, 0))
         self.connect((self.fec_extended_tagged_decoder_2, 0), (self.blocks_repack_bits_bb_0, 0))
         self.connect((self.fec_extended_tagged_encoder_0_1, 0), (self.blocks_repack_bits_bb_0_0_0, 0))
+        self.connect((self.fec_extended_tagged_encoder_0_1_0, 0), (self.blocks_repack_bits_bb_0_0_0_0, 0))
 
 
     def closeEvent(self, event):
@@ -666,6 +702,12 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
     def set_tx_freq(self, tx_freq):
         self.tx_freq = tx_freq
 
+    def get_toggle(self):
+        return self.toggle
+
+    def set_toggle(self, toggle):
+        self.toggle = toggle
+
     def get_timing_loop_bw(self):
         return self.timing_loop_bw
 
@@ -699,6 +741,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate
         self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
         self.blocks_throttle2_0_0.set_sample_rate(self.samp_rate)
+        self.blocks_throttle2_0_0_0.set_sample_rate(self.samp_rate)
         self.blocks_throttle2_1.set_sample_rate(self.samp_rate)
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_freq_sink_x_1.set_frequency_range(0, self.samp_rate)
@@ -775,13 +818,6 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
     def set_freq(self, freq):
         self.freq = freq
 
-    def get_file_path(self):
-        return self.file_path
-
-    def set_file_path(self, file_path):
-        self.file_path = file_path
-        self.set_file_path(self.file_path)
-
     def get_excess_bw(self):
         return self.excess_bw
 
@@ -832,8 +868,6 @@ def argument_parser():
     parser.add_argument(
         "--MTU", dest="MTU", type=intx, default=1500,
         help="Set MTU [default=%(default)r]")
-    parser.add_argument( # Added file_path argument
-        "file_path", type=str, help="Path to the file to be processed")
     return parser
 
 
@@ -841,15 +875,12 @@ def main(top_block_cls=QPSK_text_tx_rx, options=None):
     if options is None:
         options = argument_parser().parse_args()
 
-    file_path = options.file_path # Added file_path argument
-    print(f"Processing file: {file_path}")
-
     if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
         style = gr.prefs().get_string('qtgui', 'style', 'raster')
         Qt.QApplication.setGraphicsSystem(style)
     qapp = Qt.QApplication(sys.argv)
 
-    tb = top_block_cls(MTU=options.MTU, file_path=file_path)
+    tb = top_block_cls(MTU=options.MTU)
 
     tb.start()
 
