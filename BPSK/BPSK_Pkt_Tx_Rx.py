@@ -13,19 +13,19 @@ from packaging.version import Version as StrictVersion
 from PyQt5 import Qt
 from gnuradio import qtgui
 from gnuradio import blocks
-from gnuradio import channels
-from gnuradio.filter import firdes
 from gnuradio import digital
 from gnuradio import filter
-from gnuradio import eng_notation
 from gnuradio import fec
 from gnuradio import gr
+from gnuradio.filter import firdes
 from gnuradio.fft import window
 import sys
 import signal
 from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
+from gnuradio import eng_notation
+from gnuradio import soapy
 import BPSK_Pkt_Tx_Rx_epy_block_0 as epy_block_0  # embedded python block
 import sip
 
@@ -33,7 +33,7 @@ import sip
 
 class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
 
-    def __init__(self, MTU=1500, puncpat='11'):
+    def __init__(self, MTU=1500, puncpat='11', file_path=""):
         gr.top_block.__init__(self, "BPSK_Pkt_Tx_Rx", catch_exceptions=True)
         Qt.QWidget.__init__(self)
         self.setWindowTitle("BPSK_Pkt_Tx_Rx")
@@ -73,7 +73,7 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate = samp_rate = 600000
+        self.samp_rate = samp_rate = 750e3
         self.rate = rate = 2
         self.polys = polys = [109, 79]
         self.k = k = 7
@@ -81,11 +81,13 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.usrp_rate = usrp_rate = 768000
         self.thresh = thresh = 1
         self.sps = sps = 4
+        self.samp_rate_blade = samp_rate_blade = 600e3
         self.rs_ratio = rs_ratio = 1.040
         self.phase_bw = phase_bw = 0.0628
         self.low_pass_filter_taps = low_pass_filter_taps = firdes.low_pass(1.0, samp_rate, 20000,2000, window.WIN_HAMMING, 6.76)
         self.hdr_format = hdr_format = digital.header_format_default(access_key, 0)
-        self.file_name = file_name = ''
+        self.freq = freq = 2.437e9
+        self.file_path = file_path = file_path
         self.excess_bw = excess_bw = 1
         self.enc_cc = enc_cc = fec.cc_encoder_make((MTU*8),k, rate, polys, 0, fec.CC_TAILBITING, True)
         self.dec_cc = dec_cc = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, rate, polys, 0, (-1), fec.CC_TAILBITING, True)),range(0,1)))
@@ -96,9 +98,35 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         # Blocks
         ##################################################
 
+        self.soapy_bladerf_source_0 = None
+        dev = 'driver=bladerf'
+        stream_args = ''
+        tune_args = ['']
+        settings = ['']
+
+        self.soapy_bladerf_source_0 = soapy.source(dev, "fc32", 1, '',
+                                  stream_args, tune_args, settings)
+        self.soapy_bladerf_source_0.set_sample_rate(0, samp_rate_blade)
+        self.soapy_bladerf_source_0.set_bandwidth(0, excess_bw)
+        self.soapy_bladerf_source_0.set_frequency(0, freq)
+        self.soapy_bladerf_source_0.set_frequency_correction(0, 0)
+        self.soapy_bladerf_source_0.set_gain(0, min(max(60, -1.0), 60.0))
+        self.soapy_bladerf_sink_0 = None
+        dev = 'driver=bladerf'
+        stream_args = ''
+        tune_args = ['']
+        settings = ['']
+
+        self.soapy_bladerf_sink_0 = soapy.sink(dev, "fc32", 1, '',
+                                  stream_args, tune_args, settings)
+        self.soapy_bladerf_sink_0.set_sample_rate(0, samp_rate_blade)
+        self.soapy_bladerf_sink_0.set_bandwidth(0, excess_bw)
+        self.soapy_bladerf_sink_0.set_frequency(0, freq)
+        self.soapy_bladerf_sink_0.set_frequency_correction(0, 0)
+        self.soapy_bladerf_sink_0.set_gain(0, min(max(60, 17.0), 73.0))
         self.qtgui_const_sink_x_0_0 = qtgui.const_sink_c(
             1024, #size
-            "", #name
+            "Transmitter", #name
             1, #number of inputs
             None # parent
         )
@@ -139,7 +167,7 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.top_layout.addWidget(self._qtgui_const_sink_x_0_0_win)
         self.qtgui_const_sink_x_0 = qtgui.const_sink_c(
             1024, #size
-            "", #name
+            "Reciver", #name
             1, #number of inputs
             None # parent
         )
@@ -178,16 +206,9 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
 
         self._qtgui_const_sink_x_0_win = sip.wrapinstance(self.qtgui_const_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_const_sink_x_0_win)
-        self._file_name_tool_bar = Qt.QToolBar(self)
-        self._file_name_tool_bar.addWidget(Qt.QLabel("'file_name'" + ": "))
-        self._file_name_line_edit = Qt.QLineEdit(str(self.file_name))
-        self._file_name_tool_bar.addWidget(self._file_name_line_edit)
-        self._file_name_line_edit.returnPressed.connect(
-            lambda: self.set_file_name(str(str(self._file_name_line_edit.text()))))
-        self.top_layout.addWidget(self._file_name_tool_bar)
         self.fec_extended_tagged_encoder_0_1 = fec.extended_tagged_encoder(encoder_obj_list=enc_cc, puncpat='11', lentagname="packet_len", mtu=MTU)
         self.fec_extended_tagged_decoder_2 = self.fec_extended_tagged_decoder_2 = fec_extended_tagged_decoder_2 = fec.extended_tagged_decoder(decoder_obj_list=dec_cc, ann=None, puncpat=puncpat, integration_period=10000, lentagname="packet_len", mtu=MTU)
-        self.epy_block_0 = epy_block_0.blk(FileName='tx.jpg', Pkt_len=60)
+        self.epy_block_0 = epy_block_0.blk(FileName=file_path, Pkt_len=60)
         self.digital_symbol_sync_xx_0 = digital.symbol_sync_cc(
             digital.TED_MUELLER_AND_MULLER,
             sps,
@@ -219,19 +240,12 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
             log=False,
             truncate=False)
         self.digital_constellation_decoder_cb_0 = digital.constellation_decoder_cb(bpsk)
-        self.channels_channel_model_0 = channels.channel_model(
-            noise_voltage=0.0,
-            frequency_offset=0.0,
-            epsilon=1.0,
-            taps=[1.0 + 1.0j],
-            noise_seed=0,
-            block_tags=False)
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, 'packet_len', 0)
         self.blocks_repack_bits_bb_1_0 = blocks.repack_bits_bb(1, 8, "packet_len", False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
-        self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, './output.tmp', False)
+        self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, './BPSK/output.tmp', False)
         self.blocks_file_sink_0_0.set_unbuffered(True)
         self.blocks_char_to_float_1_1 = blocks.char_to_float(1, 1)
 
@@ -246,10 +260,9 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_repack_bits_bb_1_0, 0), (self.digital_crc32_bb_0_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_constellation_modulator_0_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.digital_crc32_bb_0, 0))
-        self.connect((self.channels_channel_model_0, 0), (self.digital_symbol_sync_xx_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_diff_decoder_bb_0, 0))
-        self.connect((self.digital_constellation_modulator_0_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.digital_constellation_modulator_0_0, 0), (self.qtgui_const_sink_x_0_0, 0))
+        self.connect((self.digital_constellation_modulator_0_0, 0), (self.soapy_bladerf_sink_0, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0, 0), (self.digital_map_bb_0_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_constellation_decoder_cb_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_0, 0))
@@ -263,6 +276,7 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.connect((self.epy_block_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.fec_extended_tagged_decoder_2, 0), (self.blocks_repack_bits_bb_1_0, 0))
         self.connect((self.fec_extended_tagged_encoder_0_1, 0), (self.blocks_repack_bits_bb_0_0_0, 0))
+        self.connect((self.soapy_bladerf_source_0, 0), (self.digital_symbol_sync_xx_0, 0))
 
 
     def closeEvent(self, event):
@@ -336,6 +350,14 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
     def set_sps(self, sps):
         self.sps = sps
 
+    def get_samp_rate_blade(self):
+        return self.samp_rate_blade
+
+    def set_samp_rate_blade(self, samp_rate_blade):
+        self.samp_rate_blade = samp_rate_blade
+        self.soapy_bladerf_sink_0.set_sample_rate(0, self.samp_rate_blade)
+        self.soapy_bladerf_source_0.set_sample_rate(0, self.samp_rate_blade)
+
     def get_rs_ratio(self):
         return self.rs_ratio
 
@@ -362,18 +384,29 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
     def set_hdr_format(self, hdr_format):
         self.hdr_format = hdr_format
 
-    def get_file_name(self):
-        return self.file_name
+    def get_freq(self):
+        return self.freq
 
-    def set_file_name(self, file_name):
-        self.file_name = file_name
-        Qt.QMetaObject.invokeMethod(self._file_name_line_edit, "setText", Qt.Q_ARG("QString", str(self.file_name)))
+    def set_freq(self, freq):
+        self.freq = freq
+        self.soapy_bladerf_sink_0.set_frequency(0, self.freq)
+        self.soapy_bladerf_source_0.set_frequency(0, self.freq)
+
+    def get_file_path(self):
+        return self.file_path
+
+    def set_file_path(self, file_path):
+        self.file_path = file_path
+        self.set_file_path(self.file_path)
+        self.epy_block_0.FileName = self.file_path
 
     def get_excess_bw(self):
         return self.excess_bw
 
     def set_excess_bw(self, excess_bw):
         self.excess_bw = excess_bw
+        self.soapy_bladerf_sink_0.set_bandwidth(0, self.excess_bw)
+        self.soapy_bladerf_source_0.set_bandwidth(0, self.excess_bw)
 
     def get_enc_cc(self):
         return self.enc_cc
@@ -407,6 +440,8 @@ def argument_parser():
     parser.add_argument(
         "--MTU", dest="MTU", type=intx, default=1500,
         help="Set MTU [default=%(default)r]")
+    parser.add_argument( # Added file_path argument
+        "file_path", type=str, help="Path to the file to be processed")
     return parser
 
 
@@ -414,12 +449,15 @@ def main(top_block_cls=BPSK_Pkt_Tx_Rx, options=None):
     if options is None:
         options = argument_parser().parse_args()
 
+    file_path = options.file_path # Added file_path argument
+    print(f"Processing file: {file_path}")
+
     if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
         style = gr.prefs().get_string('qtgui', 'style', 'raster')
         Qt.QApplication.setGraphicsSystem(style)
     qapp = Qt.QApplication(sys.argv)
 
-    tb = top_block_cls(MTU=options.MTU)
+    tb = top_block_cls(MTU=options.MTU, file_path=file_path)
 
     tb.start()
 
