@@ -1,16 +1,45 @@
-# Example binary string
-binary_string = "1100101011110000"
+# from Crypto.Cipher import AES
 
-# Ensure the length of the binary string is a multiple of 8
-if len(binary_string) % 8 != 0:
-    binary_string = binary_string.zfill(((len(binary_string) // 8) + 1) * 8)
 
-# Convert binary string to an integer
-integer_value = int(binary_string, 2)
 
-# Convert the integer to a byte stream
-# len(binary_string) // 8 gives the number of bytes needed
-byte_stream = integer_value.to_bytes(len(binary_string) // 8, byteorder='big')
 
-print("Binary string:", binary_string)
-print("Byte stream:", byte_stream)
+def add_preamble():
+        # Example binary string
+    binarypreamble = b'11000110101100111111010110101000011010110011111000110101100'
+    file_path = '/home/gnuradio/Documents/DigitalCommDesign/QPSK/tx.png'
+    with open(file_path, 'rb') as file:
+        plaintext = file.read()
+    preamble = binarypreamble * 3000
+    detect_sequence = b'0011001100110011'  # Sequence to detect preamble
+    
+    with open('/home/gnuradio/Documents/DigitalCommDesign/QPSK/tx.tmp', 'wb') as output_file:
+        output_file.write(preamble + detect_sequence + plaintext + detect_sequence + preamble)
+
+
+
+
+# #Encryption
+# def pad(data):
+#     # Padding the data to be a multiple of 16 bytes
+#     return data + b"\0" * (AES.block_size - len(data) % AES.block_size)
+
+# def encrypt_file(file_path, key):
+#     global ciphertext
+    
+#     plaintext = pad(plaintext)
+#     cipher = AES.new(key, AES.MODE_ECB)  
+#     ciphertext = cipher.encrypt(plaintext)
+
+  
+
+
+
+# # Encryption details
+
+# predefined_key = b'Hello_IamMihiran'
+
+# # Encrypt the file
+# encrypt_file(file_path, predefined_key)
+
+#Adds the preamble
+add_preamble()

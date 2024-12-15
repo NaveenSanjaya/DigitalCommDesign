@@ -146,6 +146,30 @@ blocks:
     bus_structure: null
     coordinate: [984, 12.0]
     rotation: 0
+    state: disabled
+- name: file_path
+  id: variable
+  parameters:
+    comment: ''
+    value: file_path
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [64, 420.0]
+    rotation: 0
+    state: true
+- name: freq
+  id: variable
+  parameters:
+    comment: ''
+    value: 2.437e9
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1216, 12.0]
+    rotation: 0
     state: true
 - name: hdr_format
   id: variable
@@ -241,12 +265,24 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '600000'
+    value: 750e3
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: samp_rate_blade
+  id: variable
+  parameters:
+    comment: ''
+    value: 600e3
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1088, 12.0]
     rotation: 0
     state: enabled
 - name: sps
@@ -326,7 +362,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: ./output.tmp
+    file: ./BPSK/output.tmp
     type: byte
     unbuffered: 'True'
     vlen: '1'
@@ -344,12 +380,12 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: /home/gnuradio/Downloads/pngwing.png
+    file: /home/gnuradio/Documents/DigitalCommDesign/BPSK/tx.tmp
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
     offset: '0'
-    repeat: 'True'
+    repeat: 'False'
     type: byte
     vlen: '1'
   states:
@@ -451,7 +487,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [248, 172.0]
+    coordinate: [368, 172.0]
     rotation: 0
     state: disabled
 - name: blocks_tagged_stream_mux_0
@@ -494,7 +530,7 @@ blocks:
     bus_structure: null
     coordinate: [272, 372.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: blocks_throttle2_0_0
   id: blocks_throttle2
   parameters:
@@ -514,6 +550,27 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [2752, 520.0]
+    rotation: 0
+    state: disabled
+- name: blocks_throttle2_0_1
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [232, 100.0]
     rotation: 0
     state: disabled
 - name: blocks_unpack_k_bits_bb_0
@@ -552,7 +609,7 @@ blocks:
     bus_structure: null
     coordinate: [360, 1548.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: digital_constellation_decoder_cb_0
   id: digital_constellation_decoder_cb
   parameters:
@@ -681,6 +738,48 @@ blocks:
     coordinate: [1320, 964.0]
     rotation: 0
     state: enabled
+- name: digital_gmsk_demod_0
+  id: digital_gmsk_demod
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq_error: '0.0'
+    gain_mu: '0.175'
+    log: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mu: '0.5'
+    omega_relative_limit: '0.005'
+    samples_per_symbol: '2'
+    verbose: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1040, 1028.0]
+    rotation: 0
+    state: disabled
+- name: digital_gmsk_mod_0
+  id: digital_gmsk_mod
+  parameters:
+    affinity: ''
+    alias: ''
+    bt: '0.35'
+    comment: ''
+    do_unpack: 'True'
+    log: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_symbol: '2'
+    verbose: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2024, 236.0]
+    rotation: 0
+    state: disabled
 - name: digital_map_bb_0
   id: digital_map_bb
   parameters:
@@ -776,7 +875,7 @@ blocks:
 - name: epy_block_0
   id: epy_block
   parameters:
-    FileName: '''tx.jpg'''
+    FileName: file_path
     Pkt_len: '60'
     _source_code: "\"\"\"\nEmbedded Python Block: File Source to Tagged Stream\n\"\
       \"\"\n\nimport numpy as np\nfrom gnuradio import gr\nimport time\nimport pmt\n\
@@ -1010,7 +1109,7 @@ blocks:
     marker7: '0'
     marker8: '0'
     marker9: '0'
-    name: '""'
+    name: '"Reciver"'
     nconnections: '1'
     size: '1024'
     style1: '0'
@@ -1102,7 +1201,7 @@ blocks:
     marker7: '0'
     marker8: '0'
     marker9: '0'
-    name: '""'
+    name: '"Transmitter"'
     nconnections: '1'
     size: '1024'
     style1: '0'
@@ -1140,7 +1239,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2272, 168.0]
+    coordinate: [2240, 52.0]
     rotation: 0
     state: true
 - name: soapy_bladerf_sink_0
@@ -1149,12 +1248,12 @@ blocks:
     affinity: ''
     alias: ''
     bandwidth: excess_bw
-    center_freq: 2.4e9
+    center_freq: freq
     comment: ''
     dev_args: ''
     freq_correction: '0'
     gain: '60'
-    samp_rate: '520834'
+    samp_rate: samp_rate_blade
     type: fc32
   states:
     bus_sink: false
@@ -1162,21 +1261,21 @@ blocks:
     bus_structure: null
     coordinate: [2936, 344.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: soapy_bladerf_source_0
   id: soapy_bladerf_source
   parameters:
     affinity: ''
     alias: ''
     bandwidth: excess_bw
-    center_freq: 2.4e9
+    center_freq: freq
     comment: ''
     dev_args: ''
     freq_correction: '0'
     gain: '60'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samp_rate: '520834'
+    samp_rate: samp_rate_blade
     type: fc32
   states:
     bus_sink: false
@@ -1184,7 +1283,7 @@ blocks:
     bus_structure: null
     coordinate: [32, 1092.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: virtual_sink_0
   id: virtual_sink
   parameters:
@@ -1197,7 +1296,7 @@ blocks:
     bus_structure: null
     coordinate: [640, 1584.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_sink_2
   id: virtual_sink
   parameters:
@@ -1210,7 +1309,7 @@ blocks:
     bus_structure: null
     coordinate: [2936, 252.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_source_0
   id: virtual_source
   parameters:
@@ -1223,7 +1322,7 @@ blocks:
     bus_structure: null
     coordinate: [40, 980.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_source_1
   id: virtual_source
   parameters:
@@ -1236,11 +1335,11 @@ blocks:
     bus_structure: null
     coordinate: [48, 1584.0]
     rotation: 0
-    state: enabled
+    state: disabled
 
 connections:
 - [blocks_char_to_float_1_1, '0', fec_extended_tagged_decoder_2, '0']
-- [blocks_file_source_0, '0', blocks_stream_to_tagged_stream_0, '0']
+- [blocks_file_source_0, '0', blocks_throttle2_0_1, '0']
 - [blocks_pack_k_bits_bb_0, '0', digital_crc32_bb_0_0, '0']
 - [blocks_repack_bits_bb_0_0, '0', fec_extended_tagged_encoder_0_1, '0']
 - [blocks_repack_bits_bb_0_0_0, '0', blocks_tagged_stream_mux_0, '1']
@@ -1248,8 +1347,10 @@ connections:
 - [blocks_repack_bits_bb_1_0, '0', digital_crc32_bb_0_0, '0']
 - [blocks_stream_to_tagged_stream_0, '0', digital_crc32_bb_0, '0']
 - [blocks_tagged_stream_mux_0, '0', digital_constellation_modulator_0_0, '0']
+- [blocks_tagged_stream_mux_0, '0', digital_gmsk_mod_0, '0']
 - [blocks_throttle2_0, '0', digital_crc32_bb_0, '0']
 - [blocks_throttle2_0_0, '0', soapy_bladerf_sink_0, '0']
+- [blocks_throttle2_0_1, '0', blocks_stream_to_tagged_stream_0, '0']
 - [blocks_unpack_k_bits_bb_0, '0', fec_extended_tagged_encoder_0_1, '0']
 - [channels_channel_model_0, '0', virtual_sink_0, '0']
 - [digital_constellation_decoder_cb_0, '0', digital_diff_decoder_bb_0, '0']
@@ -1259,11 +1360,16 @@ connections:
 - [digital_constellation_modulator_0_0, '0', virtual_sink_2, '0']
 - [digital_correlate_access_code_xx_ts_0, '0', digital_map_bb_0_0, '0']
 - [digital_costas_loop_cc_0, '0', digital_constellation_decoder_cb_0, '0']
+- [digital_costas_loop_cc_0, '0', digital_gmsk_demod_0, '0']
 - [digital_costas_loop_cc_0, '0', qtgui_const_sink_x_0, '0']
 - [digital_crc32_bb_0, '0', blocks_repack_bits_bb_0_0, '0']
 - [digital_crc32_bb_0, '0', blocks_unpack_k_bits_bb_0, '0']
 - [digital_crc32_bb_0_0, '0', blocks_file_sink_0_0, '0']
 - [digital_diff_decoder_bb_0, '0', digital_map_bb_0, '0']
+- [digital_gmsk_demod_0, '0', digital_diff_decoder_bb_0, '0']
+- [digital_gmsk_mod_0, '0', qtgui_const_sink_x_0_0, '0']
+- [digital_gmsk_mod_0, '0', soapy_bladerf_sink_0, '0']
+- [digital_gmsk_mod_0, '0', virtual_sink_2, '0']
 - [digital_map_bb_0, '0', digital_correlate_access_code_xx_ts_0, '0']
 - [digital_map_bb_0_0, '0', blocks_char_to_float_1_1, '0']
 - [digital_map_bb_1, '0', blocks_repack_bits_bb_0_0_0, '0']

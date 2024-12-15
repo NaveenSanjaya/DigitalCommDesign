@@ -1,8 +1,7 @@
-
-
 # Function to remove both front and back preambles and sequence from file
 def remove_preamble(file_path):
     global content
+    
     detect_sequence = b'0011001100110011'
     preamble = bytes([0b10101010]) * 3000
 
@@ -35,5 +34,7 @@ def remove_preamble(file_path):
 
 
 # Remove both front and back preambles and sequence from the output.tmp file
-remove_preamble('/home/praveen/Desktop/out.txt')
+remove_preamble('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.tmp')
+with open('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.png', 'wb') as file:
+                file.write(content)
 
