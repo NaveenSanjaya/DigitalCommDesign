@@ -7,7 +7,7 @@ class App:
     def __init__(self, root):
         self.root = root
         self.root.title("GNU Radio File Selector")
-        self.root.geometry("800x600")
+        self.root.geometry("480x320")
 
         self.text_file_path = ctk.StringVar()
         self.audio_file_path = ctk.StringVar()
