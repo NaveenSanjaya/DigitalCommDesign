@@ -11,7 +11,7 @@ options:
     gen_linking: dynamic
     generate_options: qt_gui
     hier_block_src_path: '.:'
-    id: QPSK_text_tx_rx
+    id: QPSK_Pkt_Tx_Rx
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -22,7 +22,7 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: QPSK_text_tx_rxgrc
+    title: QPSK_Pkt_Tx_Rx
     window_size: (1000,1000)
   states:
     bus_sink: false
@@ -1379,24 +1379,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [968, 1416.0]
-    rotation: 0
-    state: disabled
-- name: fec_extended_encoder_0
-  id: fec_extended_encoder
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    encoder_list: cc_encoder
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    puncpat: '''11'''
-    threadtype: capillary
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [736, 112.0]
     rotation: 0
     state: disabled
 - name: fec_extended_tagged_decoder_2

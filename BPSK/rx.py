@@ -2,8 +2,8 @@
 def remove_preamble(file_path):
     global content
     
-    detect_sequence = b'0011001100110011'
-    preamble = bytes([0b10101010]) * 3000
+    detect_sequence = b'sts'
+    preamble = bytes([0b10101010]) * 300
 
     with open(file_path, 'rb') as file:
         content = file.read()
@@ -34,7 +34,7 @@ def remove_preamble(file_path):
 
 
 # Remove both front and back preambles and sequence from the output.tmp file
-remove_preamble('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.tmp')
-with open('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.png', 'wb') as file:
+remove_preamble('/home/gnuradio/Documents/DigitalCommDesign/BPSK/output.tmp')
+with open('/home/gnuradio/Documents/DigitalCommDesign/BPSK/output.png', 'wb') as file:
                 file.write(content)
 

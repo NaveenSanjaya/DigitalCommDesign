@@ -2,8 +2,8 @@
 def remove_preamble(file_path):
     global content
     
-    detect_sequence = b'0011001100110011'
-    preamble = bytes([0b10101010]) * 3000
+    detect_sequence = b'sts'
+    preamble = bytes([0b10101010]) * 300
 
     with open(file_path, 'rb') as file:
         content = file.read()
