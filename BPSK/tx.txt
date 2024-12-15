@@ -1,6 +1,3 @@
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-😄
+GNU Radio is a free software development toolkit that provides signal processing blocks to implement software-defined radios and signal processing systems. 
+It can be used with external radio frequency (RF) hardware to create software-defined radios, or without hardware in a simulation-like environment. 
+It is widely used in hobbyist, academic, and commercial environments to support both wireless communications research and real-world radio systems.

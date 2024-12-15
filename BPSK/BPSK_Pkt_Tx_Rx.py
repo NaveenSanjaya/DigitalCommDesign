@@ -13,19 +13,19 @@ from packaging.version import Version as StrictVersion
 from PyQt5 import Qt
 from gnuradio import qtgui
 from gnuradio import blocks
+from gnuradio import channels
+from gnuradio.filter import firdes
 from gnuradio import digital
 from gnuradio import filter
 from gnuradio import eng_notation
 from gnuradio import fec
 from gnuradio import gr
-from gnuradio.filter import firdes
 from gnuradio.fft import window
 import sys
 import signal
 from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
-from gnuradio import soapy
 import BPSK_Pkt_Tx_Rx_epy_block_0 as epy_block_0  # embedded python block
 import sip
 
@@ -73,14 +73,17 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
+        self.samp_rate = samp_rate = 600000
         self.rate = rate = 2
         self.polys = polys = [109, 79]
         self.k = k = 7
         self.access_key = access_key = '11100001010110101110100010010011'
+        self.usrp_rate = usrp_rate = 768000
         self.thresh = thresh = 1
         self.sps = sps = 4
-        self.samp_rate = samp_rate = 600000
+        self.rs_ratio = rs_ratio = 1.040
         self.phase_bw = phase_bw = 0.0628
+        self.low_pass_filter_taps = low_pass_filter_taps = firdes.low_pass(1.0, samp_rate, 20000,2000, window.WIN_HAMMING, 6.76)
         self.hdr_format = hdr_format = digital.header_format_default(access_key, 0)
         self.file_name = file_name = ''
         self.excess_bw = excess_bw = 1
@@ -93,32 +96,6 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         # Blocks
         ##################################################
 
-        self.soapy_bladerf_source_0 = None
-        dev = 'driver=bladerf'
-        stream_args = ''
-        tune_args = ['']
-        settings = ['']
-
-        self.soapy_bladerf_source_0 = soapy.source(dev, "fc32", 1, '',
-                                  stream_args, tune_args, settings)
-        self.soapy_bladerf_source_0.set_sample_rate(0, 520834)
-        self.soapy_bladerf_source_0.set_bandwidth(0, excess_bw)
-        self.soapy_bladerf_source_0.set_frequency(0, 2.7e9)
-        self.soapy_bladerf_source_0.set_frequency_correction(0, 0)
-        self.soapy_bladerf_source_0.set_gain(0, min(max(60, -1.0), 60.0))
-        self.soapy_bladerf_sink_0 = None
-        dev = 'driver=bladerf'
-        stream_args = ''
-        tune_args = ['']
-        settings = ['']
-
-        self.soapy_bladerf_sink_0 = soapy.sink(dev, "fc32", 1, '',
-                                  stream_args, tune_args, settings)
-        self.soapy_bladerf_sink_0.set_sample_rate(0, 520834)
-        self.soapy_bladerf_sink_0.set_bandwidth(0, excess_bw)
-        self.soapy_bladerf_sink_0.set_frequency(0, 2.7e9)
-        self.soapy_bladerf_sink_0.set_frequency_correction(0, 0)
-        self.soapy_bladerf_sink_0.set_gain(0, min(max(60, 17.0), 73.0))
         self.qtgui_const_sink_x_0_0 = qtgui.const_sink_c(
             1024, #size
             "", #name
@@ -242,6 +219,14 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
             log=False,
             truncate=False)
         self.digital_constellation_decoder_cb_0 = digital.constellation_decoder_cb(bpsk)
+        self.channels_channel_model_0 = channels.channel_model(
+            noise_voltage=0.0,
+            frequency_offset=0.0,
+            epsilon=1.0,
+            taps=[1.0 + 1.0j],
+            noise_seed=0,
+            block_tags=False)
+        self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, 'packet_len', 0)
         self.blocks_repack_bits_bb_1_0 = blocks.repack_bits_bb(1, 8, "packet_len", False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
@@ -260,9 +245,11 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_repack_bits_bb_0_0_0, 0), (self.digital_protocol_formatter_bb_0, 0))
         self.connect((self.blocks_repack_bits_bb_1_0, 0), (self.digital_crc32_bb_0_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_constellation_modulator_0_0, 0))
+        self.connect((self.blocks_throttle2_0, 0), (self.digital_crc32_bb_0, 0))
+        self.connect((self.channels_channel_model_0, 0), (self.digital_symbol_sync_xx_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_diff_decoder_bb_0, 0))
+        self.connect((self.digital_constellation_modulator_0_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.digital_constellation_modulator_0_0, 0), (self.qtgui_const_sink_x_0_0, 0))
-        self.connect((self.digital_constellation_modulator_0_0, 0), (self.soapy_bladerf_sink_0, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0, 0), (self.digital_map_bb_0_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_constellation_decoder_cb_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_0, 0))
@@ -273,10 +260,9 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_map_bb_0_0, 0), (self.blocks_char_to_float_1_1, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_costas_loop_cc_0, 0))
-        self.connect((self.epy_block_0, 0), (self.digital_crc32_bb_0, 0))
+        self.connect((self.epy_block_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.fec_extended_tagged_decoder_2, 0), (self.blocks_repack_bits_bb_1_0, 0))
         self.connect((self.fec_extended_tagged_encoder_0_1, 0), (self.blocks_repack_bits_bb_0_0_0, 0))
-        self.connect((self.soapy_bladerf_source_0, 0), (self.digital_symbol_sync_xx_0, 0))
 
 
     def closeEvent(self, event):
@@ -298,6 +284,14 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
 
     def set_puncpat(self, puncpat):
         self.puncpat = puncpat
+
+    def get_samp_rate(self):
+        return self.samp_rate
+
+    def set_samp_rate(self, samp_rate):
+        self.samp_rate = samp_rate
+        self.set_low_pass_filter_taps(firdes.low_pass(1.0, self.samp_rate, 20000, 2000, window.WIN_HAMMING, 6.76))
+        self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
 
     def get_rate(self):
         return self.rate
@@ -324,6 +318,12 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.access_key = access_key
         self.set_hdr_format(digital.header_format_default(self.access_key, 0))
 
+    def get_usrp_rate(self):
+        return self.usrp_rate
+
+    def set_usrp_rate(self, usrp_rate):
+        self.usrp_rate = usrp_rate
+
     def get_thresh(self):
         return self.thresh
 
@@ -336,11 +336,11 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
     def set_sps(self, sps):
         self.sps = sps
 
-    def get_samp_rate(self):
-        return self.samp_rate
+    def get_rs_ratio(self):
+        return self.rs_ratio
 
-    def set_samp_rate(self, samp_rate):
-        self.samp_rate = samp_rate
+    def set_rs_ratio(self, rs_ratio):
+        self.rs_ratio = rs_ratio
 
     def get_phase_bw(self):
         return self.phase_bw
@@ -349,6 +349,12 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.phase_bw = phase_bw
         self.digital_costas_loop_cc_0.set_loop_bandwidth(self.phase_bw)
         self.digital_symbol_sync_xx_0.set_loop_bandwidth(self.phase_bw)
+
+    def get_low_pass_filter_taps(self):
+        return self.low_pass_filter_taps
+
+    def set_low_pass_filter_taps(self, low_pass_filter_taps):
+        self.low_pass_filter_taps = low_pass_filter_taps
 
     def get_hdr_format(self):
         return self.hdr_format
@@ -368,8 +374,6 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
 
     def set_excess_bw(self, excess_bw):
         self.excess_bw = excess_bw
-        self.soapy_bladerf_sink_0.set_bandwidth(0, self.excess_bw)
-        self.soapy_bladerf_source_0.set_bandwidth(0, self.excess_bw)
 
     def get_enc_cc(self):
         return self.enc_cc
