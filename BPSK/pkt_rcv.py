@@ -74,7 +74,7 @@ class pkt_rcv(gr.top_block, Qt.QWidget):
         self.usrp_rate = usrp_rate = 768000
         self.thresh = thresh = 1
         self.sps = sps = 4
-        self.samp_rate = samp_rate = 48000
+        self.samp_rate = samp_rate = 768000
         self.phase_bw = phase_bw = 0.0628
         self.excess_bw = excess_bw = 0.35
         self.cc_dec = cc_dec = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, 2, polys, 0, (-1), fec.CC_TAILBITING, True)),range(0,1)))

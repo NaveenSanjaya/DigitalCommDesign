@@ -74,7 +74,7 @@ class pkt_xmt(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate = samp_rate = 48000
+        self.samp_rate = samp_rate = 768000
         self.polys = polys = [109, 79]
         self.k = k = 7
         self.access_key = access_key = '11100001010110101110100010010011'
@@ -148,7 +148,7 @@ class pkt_xmt(gr.top_block, Qt.QWidget):
         self.fft_filter_xxx_0_0_0 = filter.fft_filter_ccc(1, low_pass_filter_taps, 1)
         self.fft_filter_xxx_0_0_0.declare_sample_delay(0)
         self.fec_extended_tagged_encoder_0_1 = fec.extended_tagged_encoder(encoder_obj_list=cc_enc, puncpat='11', lentagname="packet_len", mtu=MTU)
-        self.epy_block_0 = epy_block_0.blk(FileName='flower_tx.jpg', Pkt_len=60)
+        self.epy_block_0 = epy_block_0.blk(FileName='tx.txt', Pkt_len=60)
         self.digital_protocol_formatter_bb_0 = digital.protocol_formatter_bb(hdr_format, "packet_len")
         self.digital_crc32_bb_0 = digital.crc32_bb(False, "packet_len", True)
         self.digital_constellation_modulator_0 = digital.generic_mod(

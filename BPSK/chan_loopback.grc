@@ -179,7 +179,7 @@ blocks:
     bus_structure: null
     coordinate: [872, 324.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -200,13 +200,13 @@ blocks:
     bus_structure: null
     coordinate: [576, 300.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: soapy_bladerf_sink_0
   id: soapy_bladerf_sink
   parameters:
     affinity: ''
     alias: ''
-    bandwidth: '0.0'
+    bandwidth: '1000'
     center_freq: freq
     comment: ''
     dev_args: ''
@@ -220,13 +220,13 @@ blocks:
     bus_structure: null
     coordinate: [464, 176.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: soapy_bladerf_source_0
   id: soapy_bladerf_source
   parameters:
     affinity: ''
     alias: ''
-    bandwidth: '0.0'
+    bandwidth: '1000'
     center_freq: freq
     comment: ''
     dev_args: ''
@@ -242,7 +242,7 @@ blocks:
     bus_structure: null
     coordinate: [928, 164.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: zeromq_pub_sink_0
   id: zeromq_pub_sink
   parameters:
