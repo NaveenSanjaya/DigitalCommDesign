@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: QPSK_text_tx_rxgrc
+# Title: QPSK_Pkt_Tx_Rx
 # GNU Radio version: 3.10.7.0
 
 from packaging.version import Version as StrictVersion
@@ -29,15 +29,15 @@ from gnuradio import soapy
 from gnuradio.qtgui import Range, RangeWidget
 from PyQt5 import QtCore
 import sip
+import os
 
 
-
-class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
+class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
 
     def __init__(self, MTU=1500):
-        gr.top_block.__init__(self, "QPSK_text_tx_rxgrc", catch_exceptions=True)
+        gr.top_block.__init__(self, "QPSK_Pkt_Tx_Rx", catch_exceptions=True)
         Qt.QWidget.__init__(self)
-        self.setWindowTitle("QPSK_text_tx_rxgrc")
+        self.setWindowTitle("QPSK_Pkt_Tx_Rx")
         qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
@@ -55,7 +55,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.top_grid_layout = Qt.QGridLayout()
         self.top_layout.addLayout(self.top_grid_layout)
 
-        self.settings = Qt.QSettings("GNU Radio", "QPSK_text_tx_rx")
+        self.settings = Qt.QSettings("GNU Radio", "QPSK_Pkt_Tx_Rx")
 
         try:
             if StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
@@ -80,12 +80,16 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.nfilts = nfilts = 32
         self.k = k = 7
         self.variable_adaptive_algorithm_0 = variable_adaptive_algorithm_0 = digital.adaptive_algorithm_cma( qpsk, .0001, 4).base()
+        self.txgain = txgain = 50
+        self.txbw = txbw = 9000
         self.tx_freq = tx_freq = 600e6
         self.timing_loop_bw = timing_loop_bw = 6.28/100.0
         self.time_offset = time_offset = 1.00
         self.taps = taps = [1.0, 0.25-0.25j, 0.50 + 0.10j, -0.3 + 0.2j]
-        self.samp_rate_blade = samp_rate_blade = 750e3
-        self.samp_rate = samp_rate = 750e3
+        self.spr = spr = 750000
+        self.samp_rate_blade = samp_rate_blade = 600e3
+        self.samp_rate = samp_rate = 600e3
+        self.rxbw = rxbw = 10000
         self.rx_freq_ = rx_freq_ = 433e6
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(nfilts, nfilts, 1.0/float(sps), 0.35, 11*sps*nfilts)
         self.rf_gain_sink = rf_gain_sink = 10
@@ -94,15 +98,14 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.phase_bw = phase_bw = 6.28/100.0
         self.noise_volt = noise_volt = 0.0001
         self.if_gain = if_gain = 40
-        self.hdr_format = hdr_format = digital.header_format_default('00011010110011111111110000011101',1, 1)
+        self.hdr_format = hdr_format = digital.header_format_default('11100001010110101110100010010011',1, 1)
         self.freq_offset = freq_offset = 0
         self.freq = freq = 2.4e9
         self.excess_bw = excess_bw = .5
         self.eq_gain = eq_gain = 0.01
         self.delay = delay = 42
-        self.cc_enc = cc_enc = fec.cc_encoder_make((MTU*8),k, 2, polys, 0, fec.CC_TERMINATED, True)
-        self.cc_dec = cc_dec = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, 2, polys, 0, (-1), fec.CC_TERMINATED, True)),range(0,1)))
-        self.bw = bw = 10e3
+        self.cc_enc = cc_enc = fec.cc_encoder_make((MTU*8),k, 2, polys, 0, fec.CC_TAILBITING, True)
+        self.cc_dec = cc_dec = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, 2, polys, 0, (-1), fec.CC_TAILBITING, True)),range(0,1)))
         self.arity = arity = 4
 
         ##################################################
@@ -125,6 +128,9 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
+        self._txgain_range = Range(18, 60, 1, 50, 200)
+        self._txgain_win = RangeWidget(self._txgain_range, self.set_txgain, "'txgain'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._txgain_win)
         self.received = Qt.QTabWidget()
         self.received_widget_0 = Qt.QWidget()
         self.received_layout_0 = Qt.QBoxLayout(Qt.QBoxLayout.TopToBottom, self.received_widget_0)
@@ -181,7 +187,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.soapy_bladerf_source_0 = soapy.source(dev, "fc32", 1, 'bladerf=0',
                                   stream_args, tune_args, settings)
         self.soapy_bladerf_source_0.set_sample_rate(0, samp_rate_blade)
-        self.soapy_bladerf_source_0.set_bandwidth(0, bw)
+        self.soapy_bladerf_source_0.set_bandwidth(0, rxbw)
         self.soapy_bladerf_source_0.set_frequency(0, freq)
         self.soapy_bladerf_source_0.set_frequency_correction(0, 0)
         self.soapy_bladerf_source_0.set_gain(0, min(max(30.0, -1.0), 60.0))
@@ -194,10 +200,10 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.soapy_bladerf_sink_0 = soapy.sink(dev, "fc32", 1, 'bladerf=0',
                                   stream_args, tune_args, settings)
         self.soapy_bladerf_sink_0.set_sample_rate(0, samp_rate_blade)
-        self.soapy_bladerf_sink_0.set_bandwidth(0, bw)
+        self.soapy_bladerf_sink_0.set_bandwidth(0, 10000)
         self.soapy_bladerf_sink_0.set_frequency(0, freq)
         self.soapy_bladerf_sink_0.set_frequency_correction(0, 0)
-        self.soapy_bladerf_sink_0.set_gain(0, min(max(60.0, 17.0), 73.0))
+        self.soapy_bladerf_sink_0.set_gain(0, min(max(txgain, 17.0), 73.0))
         self._rf_gain_sink_range = Range(0, 60, 1, 10, 200)
         self._rf_gain_sink_win = RangeWidget(self._rf_gain_sink_range, self.set_rf_gain_sink, "RF gain sink", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._rf_gain_sink_win)
@@ -395,47 +401,6 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
-        self.qtgui_const_sink_x_1 = qtgui.const_sink_c(
-            1024, #size
-            "symbol sync", #name
-            1, #number of inputs
-            None # parent
-        )
-        self.qtgui_const_sink_x_1.set_update_time(0.10)
-        self.qtgui_const_sink_x_1.set_y_axis((-2), 2)
-        self.qtgui_const_sink_x_1.set_x_axis((-2), 2)
-        self.qtgui_const_sink_x_1.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, "")
-        self.qtgui_const_sink_x_1.enable_autoscale(False)
-        self.qtgui_const_sink_x_1.enable_grid(False)
-        self.qtgui_const_sink_x_1.enable_axis_labels(True)
-
-
-        labels = ['', '', '', '', '',
-            '', '', '', '', '']
-        widths = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        colors = ["blue", "red", "red", "red", "red",
-            "red", "red", "red", "red", "red"]
-        styles = [0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0]
-        markers = [0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_const_sink_x_1.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_const_sink_x_1.set_line_label(i, labels[i])
-            self.qtgui_const_sink_x_1.set_line_width(i, widths[i])
-            self.qtgui_const_sink_x_1.set_line_color(i, colors[i])
-            self.qtgui_const_sink_x_1.set_line_style(i, styles[i])
-            self.qtgui_const_sink_x_1.set_line_marker(i, markers[i])
-            self.qtgui_const_sink_x_1.set_line_alpha(i, alphas[i])
-
-        self._qtgui_const_sink_x_1_win = sip.wrapinstance(self.qtgui_const_sink_x_1.qwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_const_sink_x_1_win)
         self.qtgui_const_sink_x_0 = qtgui.const_sink_c(
             1024, #size
             "", #name
@@ -525,7 +490,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.digital_linear_equalizer_0_0 = digital.linear_equalizer(15, 4, variable_adaptive_algorithm_0, True, [ ], 'corr_est')
         self.digital_diff_decoder_bb_0 = digital.diff_decoder_bb(4, digital.DIFF_DIFFERENTIAL)
         self.digital_costas_loop_cc_0 = digital.costas_loop_cc(phase_bw, arity, False)
-        self.digital_correlate_access_code_xx_ts_0 = digital.correlate_access_code_bb_ts('00011010110011111111110000011101',
+        self.digital_correlate_access_code_xx_ts_0 = digital.correlate_access_code_bb_ts('11100001010110101110100010010011',
           2, "packet_len")
         self.digital_constellation_modulator_0 = digital.generic_mod(
             constellation=qpsk,
@@ -540,16 +505,17 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.blocks_unpack_k_bits_bb_0_0 = blocks.unpack_k_bits_bb(8)
         self.blocks_unpack_k_bits_bb_0 = blocks.unpack_k_bits_bb(2)
         self.blocks_throttle2_1 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
-        self.blocks_throttle2_0_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
+        self.blocks_throttle2_0_0 = blocks.throttle( gr.sizeof_char*1, spr, True, 0 if "auto" == "auto" else max( int(float(0.1) * spr) if "auto" == "time" else int(0.1), 1) )
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
-        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 16, "packet_len")
+        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 8, "packet_len")
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
-        self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(1, 8, "", False, gr.GR_MSB_FIRST)
+        self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(1, 8, '', True, gr.GR_MSB_FIRST)
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(0.8)
         self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/QPSK/tx.tmp', False, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.tmp', False)
-        self.blocks_file_sink_0.set_unbuffered(True)
+        self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, delay)
         self.blocks_char_to_float_1_1 = blocks.char_to_float(1, 1)
         self.blocks_char_to_float_0_0_0 = blocks.char_to_float(1, 1)
@@ -566,6 +532,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_char_to_float_1_1, 0), (self.fec_extended_tagged_decoder_2, 0))
         self.connect((self.blocks_delay_0, 0), (self.qtgui_time_sink_x_0_0, 1))
         self.connect((self.blocks_file_source_0, 0), (self.blocks_throttle2_0_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.soapy_bladerf_sink_0, 0))
         self.connect((self.blocks_repack_bits_bb_0, 0), (self.blocks_file_sink_0, 0))
         self.connect((self.blocks_repack_bits_bb_0_0, 0), (self.fec_extended_tagged_encoder_0_1, 0))
         self.connect((self.blocks_repack_bits_bb_0_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))
@@ -580,8 +547,8 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_unpack_k_bits_bb_0_0, 0), (self.blocks_char_to_float_0_0_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.blocks_char_to_float_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_diff_decoder_bb_0, 0))
+        self.connect((self.digital_constellation_modulator_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.digital_constellation_modulator_0, 0), (self.qtgui_freq_sink_x_0, 0))
-        self.connect((self.digital_constellation_modulator_0, 0), (self.soapy_bladerf_sink_0, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0, 0), (self.digital_map_bb_0_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_constellation_decoder_cb_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_0, 0))
@@ -591,7 +558,6 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_map_bb_0_0, 0), (self.blocks_char_to_float_1_1, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_linear_equalizer_0_0, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1, 0))
         self.connect((self.fec_extended_tagged_decoder_2, 0), (self.blocks_repack_bits_bb_0, 0))
         self.connect((self.fec_extended_tagged_encoder_0_1, 0), (self.blocks_repack_bits_bb_0_0_0, 0))
         self.connect((self.soapy_bladerf_source_0, 0), (self.digital_symbol_sync_xx_0, 0))
@@ -599,7 +565,7 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
 
     def closeEvent(self, event):
-        self.settings = Qt.QSettings("GNU Radio", "QPSK_text_tx_rx")
+        self.settings = Qt.QSettings("GNU Radio", "QPSK_Pkt_Tx_Rx")
         self.settings.setValue("geometry", self.saveGeometry())
         self.stop()
         self.wait()
@@ -651,6 +617,19 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
     def set_variable_adaptive_algorithm_0(self, variable_adaptive_algorithm_0):
         self.variable_adaptive_algorithm_0 = variable_adaptive_algorithm_0
 
+    def get_txgain(self):
+        return self.txgain
+
+    def set_txgain(self, txgain):
+        self.txgain = txgain
+        self.soapy_bladerf_sink_0.set_gain(0, min(max(self.txgain, 17.0), 73.0))
+
+    def get_txbw(self):
+        return self.txbw
+
+    def set_txbw(self, txbw):
+        self.txbw = txbw
+
     def get_tx_freq(self):
         return self.tx_freq
 
@@ -675,6 +654,13 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
     def set_taps(self, taps):
         self.taps = taps
 
+    def get_spr(self):
+        return self.spr
+
+    def set_spr(self, spr):
+        self.spr = spr
+        self.blocks_throttle2_0_0.set_sample_rate(self.spr)
+
     def get_samp_rate_blade(self):
         return self.samp_rate_blade
 
@@ -688,12 +674,18 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.blocks_throttle2_0_0.set_sample_rate(self.samp_rate)
         self.blocks_throttle2_1.set_sample_rate(self.samp_rate)
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_freq_sink_x_1.set_frequency_range(0, self.samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_0_0.set_samp_rate(self.samp_rate)
+
+    def get_rxbw(self):
+        return self.rxbw
+
+    def set_rxbw(self, rxbw):
+        self.rxbw = rxbw
+        self.soapy_bladerf_source_0.set_bandwidth(0, self.rxbw)
 
     def get_rx_freq_(self):
         return self.rx_freq_
@@ -796,14 +788,6 @@ class QPSK_text_tx_rx(gr.top_block, Qt.QWidget):
     def set_cc_dec(self, cc_dec):
         self.cc_dec = cc_dec
 
-    def get_bw(self):
-        return self.bw
-
-    def set_bw(self, bw):
-        self.bw = bw
-        self.soapy_bladerf_sink_0.set_bandwidth(0, self.bw)
-        self.soapy_bladerf_source_0.set_bandwidth(0, self.bw)
-
     def get_arity(self):
         return self.arity
 
@@ -820,7 +804,7 @@ def argument_parser():
     return parser
 
 
-def main(top_block_cls=QPSK_text_tx_rx, options=None):
+def main(top_block_cls=QPSK_Pkt_Tx_Rx, options=None):
     if options is None:
         options = argument_parser().parse_args()
 

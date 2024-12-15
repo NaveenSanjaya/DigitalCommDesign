@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 #
 # SPDX-License-Identifier: GPL-3.0
 #
@@ -88,11 +87,11 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.low_pass_filter_taps = low_pass_filter_taps = firdes.low_pass(1.0, samp_rate, 20000,2000, window.WIN_HAMMING, 6.76)
         self.hdr_format = hdr_format = digital.header_format_default(access_key, 0)
         self.freq = freq = 2.437e9
-        self.excess_bw = excess_bw = 10000
+        self.excess_bw = excess_bw = 1
         self.enc_cc = enc_cc = fec.cc_encoder_make((MTU*8),k, rate, polys, 0, fec.CC_TAILBITING, True)
         self.dec_cc = dec_cc = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, rate, polys, 0, (-1), fec.CC_TAILBITING, True)),range(0,1)))
         self.bpsk = bpsk = digital.constellation_bpsk().base()
-        self.arity = arity = 4
+        self.arity = arity = 2
 
         ##################################################
         # Blocks
@@ -244,7 +243,6 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.blocks_repack_bits_bb_1_0 = blocks.repack_bits_bb(1, 8, "packet_len", False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
-        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(.8)
         self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/BPSK/tx.tmp', False, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
         self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/BPSK/output.tmp', False)
@@ -257,7 +255,6 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         ##################################################
         self.connect((self.blocks_char_to_float_1_1, 0), (self.fec_extended_tagged_decoder_2, 0))
         self.connect((self.blocks_file_source_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
-        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.soapy_bladerf_sink_0, 0))
         self.connect((self.blocks_repack_bits_bb_0_0, 0), (self.fec_extended_tagged_encoder_0_1, 0))
         self.connect((self.blocks_repack_bits_bb_0_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))
         self.connect((self.blocks_repack_bits_bb_0_0_0, 0), (self.digital_protocol_formatter_bb_0, 0))
@@ -265,8 +262,8 @@ class BPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.digital_crc32_bb_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_constellation_modulator_0_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_diff_decoder_bb_0, 0))
-        self.connect((self.digital_constellation_modulator_0_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.digital_constellation_modulator_0_0, 0), (self.qtgui_const_sink_x_0_0, 0))
+        self.connect((self.digital_constellation_modulator_0_0, 0), (self.soapy_bladerf_sink_0, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0, 0), (self.digital_map_bb_0_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_constellation_decoder_cb_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_0, 0))
@@ -436,37 +433,6 @@ def argument_parser():
         "--MTU", dest="MTU", type=intx, default=1500,
         help="Set MTU [default=%(default)r]")
     return parser
-
-
-def main(top_block_cls=BPSK_Pkt_Tx_Rx, options=None):
-    if options is None:
-        options = argument_parser().parse_args()
-
-    if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
-        style = gr.prefs().get_string('qtgui', 'style', 'raster')
-        Qt.QApplication.setGraphicsSystem(style)
-    qapp = Qt.QApplication(sys.argv)
-
-    tb = top_block_cls(MTU=options.MTU)
-
-    tb.start()
-
-    tb.show()
-
-    def sig_handler(sig=None, frame=None):
-        tb.stop()
-        tb.wait()
-
-        Qt.QApplication.quit()
-
-    signal.signal(signal.SIGINT, sig_handler)
-    signal.signal(signal.SIGTERM, sig_handler)
-
-    timer = Qt.QTimer()
-    timer.start(500)
-    timer.timeout.connect(lambda: None)
-
-    qapp.exec_()
 
 def add_preamble():
         # Example binary string

@@ -6,8 +6,8 @@ def add_preamble():
     file_path = '/home/gnuradio/Documents/DigitalCommDesign/BPSK/tx.png'
     with open(file_path, 'rb') as file:
         plaintext = file.read()
-    preamble = binarypreamble * 3000
-    detect_sequence = b'0011001100110011'  # Sequence to detect preamble
+    preamble = binarypreamble * 300
+    detect_sequence = b'sts'  # Sequence to detect preamble
     
     with open('/home/gnuradio/Documents/DigitalCommDesign/BPSK/tx.tmp', 'wb') as output_file:
         output_file.write(preamble + detect_sequence + plaintext + detect_sequence + preamble)
