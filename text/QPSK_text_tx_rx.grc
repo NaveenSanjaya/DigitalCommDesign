@@ -869,25 +869,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2696, 748.0]
-    rotation: 0
-    state: enabled
-- name: blocks_file_sink_0_0
-  id: blocks_file_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    append: 'False'
-    comment: ''
-    file: /home/gnuradio/Documents/DigitalCommDesign/text/rx_temp.txt
-    type: byte
-    unbuffered: 'True'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [2704, 1004.0]
+    coordinate: [2360, 820.0]
     rotation: 0
     state: enabled
 - name: blocks_file_source_0
@@ -1055,29 +1037,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [2096, 456.0]
-    rotation: 0
-    state: enabled
-- name: blocks_selector_0_0_0
-  id: blocks_selector
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    enabled: 'True'
-    input_index: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    num_inputs: '1'
-    num_outputs: '2'
-    output_index: '1'
-    showports: 'False'
-    type: byte
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [2416, 912.0]
     rotation: 0
     state: enabled
 - name: blocks_stream_to_tagged_stream_0
@@ -1458,7 +1417,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2176, 756.0]
+    coordinate: [2064, 820.0]
     rotation: 0
     state: bypassed
 - name: digital_crc32_bb_0_1
@@ -2603,8 +2562,6 @@ connections:
 - [blocks_repack_bits_bb_0_0_0_0, '0', digital_protocol_formatter_bb_0_0, '0']
 - [blocks_repack_bits_bb_0_0_1, '0', fec_extended_tagged_encoder_0_1_0, '0']
 - [blocks_selector_0_0, '0', virtual_sink_0_0, '0']
-- [blocks_selector_0_0_0, '0', blocks_file_sink_0, '0']
-- [blocks_selector_0_0_0, '1', blocks_file_sink_0_0, '0']
 - [blocks_stream_to_tagged_stream_0, '0', digital_crc32_bb_0, '0']
 - [blocks_stream_to_tagged_stream_0_0, '0', digital_crc32_bb_0_1, '0']
 - [blocks_tagged_stream_mux_0, '0', blocks_selector_0_0, '0']
@@ -2630,7 +2587,7 @@ connections:
 - [digital_costas_loop_cc_0, '0', digital_constellation_decoder_cb_0, '0']
 - [digital_costas_loop_cc_0, '0', qtgui_const_sink_x_0, '0']
 - [digital_crc32_bb_0, '0', blocks_repack_bits_bb_0_0, '0']
-- [digital_crc32_bb_0_0, '0', blocks_selector_0_0_0, '0']
+- [digital_crc32_bb_0_0, '0', blocks_file_sink_0, '0']
 - [digital_crc32_bb_0_1, '0', blocks_repack_bits_bb_0_0_1, '0']
 - [digital_diff_decoder_bb_0, '0', digital_map_bb_0, '0']
 - [digital_linear_equalizer_0, '0', digital_costas_loop_cc_0, '0']
@@ -2651,7 +2608,6 @@ connections:
 - [soapy_bladerf_source_0, '0', digital_symbol_sync_xx_0, '0']
 - [soapy_bladerf_source_0, '0', qtgui_freq_sink_x_1, '0']
 - [toggle, state, blocks_selector_0_0, iindex]
-- [toggle, state, blocks_selector_0_0_0, oindex]
 - [virtual_source_0, '0', blocks_throttle2_1, '0']
 - [virtual_source_0, '0', blocks_unpack_k_bits_bb_0_0, '0']
 - [virtual_source_1, '0', virtual_sink_0_0, '0']
