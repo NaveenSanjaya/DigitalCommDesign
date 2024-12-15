@@ -1,14 +1,31 @@
 import customtkinter as ctk
-from tkinter import filedialog, simpledialog
+from tkinter import filedialog
 from PIL import Image, ImageTk
 import subprocess
+
+class CTkInputDialog(ctk.CTkToplevel):
+    def __init__(self, master=None, title="Input", prompt="Type your text:"):
+        super().__init__(master)
+        self.title(title)
+        self.geometry("480x220")
+        self.transient(master)
+        self.prompt_label = ctk.CTkLabel(self, text=prompt)
+        self.prompt_label.pack(pady=10)
+        self.input_entry = ctk.CTkEntry(self, width=430, height=80)
+        self.input_entry.pack(pady=10)
+        self.ok_button = ctk.CTkButton(self, text="Save", command=self.on_ok, )
+        self.ok_button.pack(pady=10, padx=20, fill="both")
+        self.result = None
+
+    def on_ok(self):
+        self.result = self.input_entry.get()
+        self.destroy()
 
 class App:
     def __init__(self, root):
         self.root = root
-        self.root.title("GNU Radio File Selector")
-        self.root.geometry("480x320")
-
+        self.root.title("File Selector")
+        self.root.geometry("480x210")
         self.text_file_path = ctk.StringVar()
         self.audio_file_path = ctk.StringVar()
         self.image_file_path = ctk.StringVar()
@@ -40,7 +57,7 @@ class App:
             with open(file_path, 'r') as file:
                 content = file.read()
             self.preview_label.configure(text=content)
-            subprocess.Popen(["python", "../DigitalCommDesign/text/QPSK_text_tx_rx.py", file_path])
+            subprocess.Popen(["python", "../DigitalCommDesign/BPSK/BPSK_Pkt_tx_rx.py", file_path])
 
     def select_audio_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("Audio files", "*.wav *.mp3 *.ts")])
@@ -48,7 +65,7 @@ class App:
             self.audio_file_path.set(file_path)
             print(f"Selected Audio File: {file_path}")
             self.preview_label.configure(text="Audio file selected: " + file_path)
-            subprocess.Popen(["python", "../DigitalCommDesign/audio/QPSK_audio_tx_rx.py", file_path])
+            subprocess.Popen(["python", "../DigitalCommDesign/BPSK/BPSK_Pkt_tx_rx.py", file_path])
 
     def select_image_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg")])
@@ -60,18 +77,18 @@ class App:
             photo = ImageTk.PhotoImage(image)
             self.preview_label.configure(image=photo, text="")
             self.preview_label.image = photo
-            subprocess.Popen(["python", "../DigitalCommDesign/image/QPSK_image_tx_rx.py", file_path])
+            subprocess.Popen(["python", "../DigitalCommDesign/BPSK/BPSK_Pkt_tx_rx.py", file_path])
 
     def select_video_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("Video files", "*.mp4 *.avi")])
         if file_path:
             self.video_file_path.set(file_path)
             print(f"Selected Video File: {file_path}")
-            self.preview_label.configure(text="Video file selected: " + file_path)
-            subprocess.Popen(["python", "../DigitalCommDesign/video/QPSK_video_tx_rx.py", file_path])
 
     def type_and_save_text(self):
-        text = simpledialog.askstring("Input", "Type your text:")
+        dialog = CTkInputDialog(self.root)
+        self.root.wait_window(dialog)
+        text = dialog.result
         if text:
             file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
             if file_path:
@@ -81,9 +98,6 @@ class App:
                 self.preview_label.configure(text=text)
 
 if __name__ == "__main__":
-    ctk.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
-    ctk.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
-
     root = ctk.CTk()
     app = App(root)
     root.mainloop()
