@@ -28,7 +28,7 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio.qtgui import Range, RangeWidget
 from PyQt5 import QtCore
-import QPSK_video_tx_rx_epy_block_1_0 as epy_block_1_0  # embedded python block
+import QPSK_video_tx_rx_epy_block_1 as epy_block_1  # embedded python block
 import sip
 
 
@@ -101,8 +101,8 @@ class QPSK_video_tx_rx(gr.top_block, Qt.QWidget):
         self.excess_bw = excess_bw = 0.5
         self.eq_gain = eq_gain = 0.01
         self.delay = delay = 42
-        self.cc_enc = cc_enc = fec.cc_encoder_make((MTU*8),k, 2, polys, 0, fec.CC_STREAMING, True)
-        self.cc_dec = cc_dec = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, 2, polys, 0, (-1), fec.CC_STREAMING, True)),range(0,1)))
+        self.cc_enc = cc_enc = fec.cc_encoder_make((MTU*8),k, 2, polys, 0, fec.CC_TAILBITING, True)
+        self.cc_dec = cc_dec = list(map( (lambda a: fec.cc_decoder.make((MTU*8),k, 2, polys, 0, (-1), fec.CC_TAILBITING, True)),range(0,1)))
         self.arity = arity = 4
 
         ##################################################
@@ -481,7 +481,7 @@ class QPSK_video_tx_rx(gr.top_block, Qt.QWidget):
             self.controls_grid_layout_1.setRowStretch(r, 1)
         for c in range(1, 2):
             self.controls_grid_layout_1.setColumnStretch(c, 1)
-        self.epy_block_1_0 = epy_block_1_0.VideoStreamer(video_path="/home/gnuradio/Documents/DigitalCommDesign/video/video_rx.ts")
+        self.epy_block_1 = epy_block_1.VideoStreamer(video_path="/home/gnuradio/Documents/DigitalCommDesign/video/video_rx.ts")
         self.digital_symbol_sync_xx_0_0 = digital.symbol_sync_cc(
             digital.TED_SIGNAL_TIMES_SLOPE_ML,
             sps,
@@ -549,7 +549,7 @@ class QPSK_video_tx_rx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_char_to_float_0_0_0, 0), (self.blocks_delay_0, 0))
         self.connect((self.blocks_char_to_float_1_1, 0), (self.fec_extended_tagged_decoder_2, 0))
         self.connect((self.blocks_delay_0, 0), (self.qtgui_time_sink_x_0_0, 1))
-        self.connect((self.blocks_delay_0_0_1, 0), (self.epy_block_1_0, 0))
+        self.connect((self.blocks_delay_0_0_1, 0), (self.epy_block_1, 0))
         self.connect((self.blocks_file_source_0, 0), (self.blocks_throttle2_0_0, 0))
         self.connect((self.blocks_repack_bits_bb_0, 0), (self.blocks_delay_0_0_1, 0))
         self.connect((self.blocks_repack_bits_bb_0, 0), (self.blocks_file_sink_0, 0))

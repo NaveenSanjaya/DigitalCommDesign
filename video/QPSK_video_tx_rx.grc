@@ -735,7 +735,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1656, 780.0]
+    coordinate: [1792, 796.0]
     rotation: 0
     state: enabled
 - name: blocks_file_source_0
@@ -1382,7 +1382,7 @@ blocks:
     bus_structure: null
     coordinate: [1936, 1100.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: epy_block_1_0
   id: epy_block
   parameters:
@@ -1429,7 +1429,7 @@ blocks:
     bus_structure: null
     coordinate: [1944, 1172.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: fec_extended_decoder_0
   id: fec_extended_decoder
   parameters:
