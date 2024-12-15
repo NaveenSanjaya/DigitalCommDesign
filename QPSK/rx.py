@@ -37,4 +37,3 @@ def remove_preamble(file_path):
 remove_preamble('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.tmp')
 with open('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.png', 'wb') as file:
                 file.write(content)
-
