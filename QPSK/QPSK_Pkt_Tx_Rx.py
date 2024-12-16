@@ -13,11 +13,12 @@ from PyQt5 import Qt
 from gnuradio import qtgui
 from gnuradio import blocks
 import pmt
+from gnuradio import channels
+from gnuradio.filter import firdes
 from gnuradio import digital
 from gnuradio import filter
 from gnuradio import fec
 from gnuradio import gr
-from gnuradio.filter import firdes
 from gnuradio.fft import window
 import sys
 import signal
@@ -25,10 +26,10 @@ from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
-from gnuradio import soapy
 from gnuradio.qtgui import Range, RangeWidget
 from PyQt5 import QtCore
 import sip
+
 
 
 class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
@@ -127,9 +128,13 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self._txgain_range = Range(18, 60, 1, 50, 200)
-        self._txgain_win = RangeWidget(self._txgain_range, self.set_txgain, "'txgain'", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._txgain_win)
+        self._time_offset_range = Range(0.999, 1.001, 0.0001, 1.00, 200)
+        self._time_offset_win = RangeWidget(self._time_offset_range, self.set_time_offset, "Timing Offset", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.controls_grid_layout_0.addWidget(self._time_offset_win, 0, 2, 1, 1)
+        for r in range(0, 1):
+            self.controls_grid_layout_0.setRowStretch(r, 1)
+        for c in range(2, 3):
+            self.controls_grid_layout_0.setColumnStretch(c, 1)
         self.received = Qt.QTabWidget()
         self.received_widget_0 = Qt.QWidget()
         self.received_layout_0 = Qt.QBoxLayout(Qt.QBoxLayout.TopToBottom, self.received_widget_0)
@@ -153,9 +158,20 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
             self.controls_grid_layout_1.setRowStretch(r, 1)
         for c in range(2, 3):
             self.controls_grid_layout_1.setColumnStretch(c, 1)
-        self._freq_range = Range(2e9, 6e9, 100e3, 2.4e9, 200)
-        self._freq_win = RangeWidget(self._freq_range, self.set_freq, "'freq'", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._freq_win)
+        self._noise_volt_range = Range(0, 1, 0.01, 0.0001, 200)
+        self._noise_volt_win = RangeWidget(self._noise_volt_range, self.set_noise_volt, "Noise Voltage", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.controls_grid_layout_0.addWidget(self._noise_volt_win, 0, 0, 1, 1)
+        for r in range(0, 1):
+            self.controls_grid_layout_0.setRowStretch(r, 1)
+        for c in range(0, 1):
+            self.controls_grid_layout_0.setColumnStretch(c, 1)
+        self._freq_offset_range = Range(-0.1, 0.1, 0.001, 0, 200)
+        self._freq_offset_win = RangeWidget(self._freq_offset_range, self.set_freq_offset, "Frequency Offset", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.controls_grid_layout_0.addWidget(self._freq_offset_win, 0, 1, 1, 1)
+        for r in range(0, 1):
+            self.controls_grid_layout_0.setRowStretch(r, 1)
+        for c in range(1, 2):
+            self.controls_grid_layout_0.setColumnStretch(c, 1)
         self._delay_range = Range(0, 200, 1, 42, 200)
         self._delay_win = RangeWidget(self._delay_range, self.set_delay, "Delay", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_grid_layout.addWidget(self._delay_win, 1, 0, 1, 1)
@@ -163,6 +179,9 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 1):
             self.top_grid_layout.setColumnStretch(c, 1)
+        self._txgain_range = Range(18, 60, 1, 50, 200)
+        self._txgain_win = RangeWidget(self._txgain_range, self.set_txgain, "'txgain'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._txgain_win)
         self._timing_loop_bw_range = Range(0.0, 0.2, 0.01, 6.28/100.0, 200)
         self._timing_loop_bw_win = RangeWidget(self._timing_loop_bw_range, self.set_timing_loop_bw, "Time: BW", "slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_1.addWidget(self._timing_loop_bw_win, 0, 0, 1, 1)
@@ -170,39 +189,6 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
             self.controls_grid_layout_1.setRowStretch(r, 1)
         for c in range(0, 1):
             self.controls_grid_layout_1.setColumnStretch(c, 1)
-        self._time_offset_range = Range(0.999, 1.001, 0.0001, 1.00, 200)
-        self._time_offset_win = RangeWidget(self._time_offset_range, self.set_time_offset, "Timing Offset", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.controls_grid_layout_0.addWidget(self._time_offset_win, 0, 2, 1, 1)
-        for r in range(0, 1):
-            self.controls_grid_layout_0.setRowStretch(r, 1)
-        for c in range(2, 3):
-            self.controls_grid_layout_0.setColumnStretch(c, 1)
-        self.soapy_bladerf_source_0 = None
-        dev = 'driver=bladerf'
-        stream_args = ''
-        tune_args = ['']
-        settings = ['']
-
-        self.soapy_bladerf_source_0 = soapy.source(dev, "fc32", 1, 'bladerf=0',
-                                  stream_args, tune_args, settings)
-        self.soapy_bladerf_source_0.set_sample_rate(0, samp_rate_blade)
-        self.soapy_bladerf_source_0.set_bandwidth(0, rxbw)
-        self.soapy_bladerf_source_0.set_frequency(0, freq)
-        self.soapy_bladerf_source_0.set_frequency_correction(0, 0)
-        self.soapy_bladerf_source_0.set_gain(0, min(max(30.0, -1.0), 60.0))
-        self.soapy_bladerf_sink_0 = None
-        dev = 'driver=bladerf'
-        stream_args = ''
-        tune_args = ['']
-        settings = ['']
-
-        self.soapy_bladerf_sink_0 = soapy.sink(dev, "fc32", 1, 'bladerf=0',
-                                  stream_args, tune_args, settings)
-        self.soapy_bladerf_sink_0.set_sample_rate(0, samp_rate_blade)
-        self.soapy_bladerf_sink_0.set_bandwidth(0, 10000)
-        self.soapy_bladerf_sink_0.set_frequency(0, freq)
-        self.soapy_bladerf_sink_0.set_frequency_correction(0, 0)
-        self.soapy_bladerf_sink_0.set_gain(0, min(max(txgain, 17.0), 73.0))
         self._rf_gain_sink_range = Range(0, 60, 1, 10, 200)
         self._rf_gain_sink_win = RangeWidget(self._rf_gain_sink_range, self.set_rf_gain_sink, "RF gain sink", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._rf_gain_sink_win)
@@ -445,23 +431,12 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
             self.received_grid_layout_0.setRowStretch(r, 1)
         for c in range(0, 1):
             self.received_grid_layout_0.setColumnStretch(c, 1)
-        self._noise_volt_range = Range(0, 1, 0.01, 0.0001, 200)
-        self._noise_volt_win = RangeWidget(self._noise_volt_range, self.set_noise_volt, "Noise Voltage", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.controls_grid_layout_0.addWidget(self._noise_volt_win, 0, 0, 1, 1)
-        for r in range(0, 1):
-            self.controls_grid_layout_0.setRowStretch(r, 1)
-        for c in range(0, 1):
-            self.controls_grid_layout_0.setColumnStretch(c, 1)
         self._if_gain_range = Range(0, 50, 1, 40, 200)
         self._if_gain_win = RangeWidget(self._if_gain_range, self.set_if_gain, "IF gain", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._if_gain_win)
-        self._freq_offset_range = Range(-0.1, 0.1, 0.001, 0, 200)
-        self._freq_offset_win = RangeWidget(self._freq_offset_range, self.set_freq_offset, "Frequency Offset", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.controls_grid_layout_0.addWidget(self._freq_offset_win, 0, 1, 1, 1)
-        for r in range(0, 1):
-            self.controls_grid_layout_0.setRowStretch(r, 1)
-        for c in range(1, 2):
-            self.controls_grid_layout_0.setColumnStretch(c, 1)
+        self._freq_range = Range(2e9, 6e9, 100e3, 2.4e9, 200)
+        self._freq_win = RangeWidget(self._freq_range, self.set_freq, "'freq'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._freq_win)
         self.fec_extended_tagged_encoder_0_1 = fec.extended_tagged_encoder(encoder_obj_list=cc_enc, puncpat='11', lentagname="packet_len", mtu=MTU)
         self.fec_extended_tagged_decoder_2 = self.fec_extended_tagged_decoder_2 = fec_extended_tagged_decoder_2 = fec.extended_tagged_decoder(decoder_obj_list=cc_dec, ann=None, puncpat='11', integration_period=10000, lentagname="packet_len", mtu=MTU)
         self._eq_gain_range = Range(0.0, 0.1, 0.001, 0.01, 200)
@@ -501,19 +476,26 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
             log=False,
             truncate=False)
         self.digital_constellation_decoder_cb_0 = digital.constellation_decoder_cb(qpsk)
+        self.channels_channel_model_0 = channels.channel_model(
+            noise_voltage=noise_volt,
+            frequency_offset=freq_offset,
+            epsilon=time_offset,
+            taps=taps,
+            noise_seed=0,
+            block_tags=False)
         self.blocks_unpack_k_bits_bb_0_0 = blocks.unpack_k_bits_bb(8)
         self.blocks_unpack_k_bits_bb_0 = blocks.unpack_k_bits_bb(2)
         self.blocks_throttle2_1 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_throttle2_0_0 = blocks.throttle( gr.sizeof_char*1, spr, True, 0 if "auto" == "auto" else max( int(float(0.1) * spr) if "auto" == "time" else int(0.1), 1) )
+        self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_gr_complex*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
         self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 8, "packet_len")
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(1, 8, '', True, gr.GR_MSB_FIRST)
-        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(0.8)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/QPSK/tx.tmp', False, 0, 0)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Desktop/DigitalCommDesign/src/tx.tmp', False, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.tmp', False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/gnuradio/Desktop/DigitalCommDesign/src/rx.tmp', False)
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, delay)
         self.blocks_char_to_float_1_1 = blocks.char_to_float(1, 1)
@@ -531,7 +513,6 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_char_to_float_1_1, 0), (self.fec_extended_tagged_decoder_2, 0))
         self.connect((self.blocks_delay_0, 0), (self.qtgui_time_sink_x_0_0, 1))
         self.connect((self.blocks_file_source_0, 0), (self.blocks_throttle2_0_0, 0))
-        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.soapy_bladerf_sink_0, 0))
         self.connect((self.blocks_repack_bits_bb_0, 0), (self.blocks_file_sink_0, 0))
         self.connect((self.blocks_repack_bits_bb_0_0, 0), (self.fec_extended_tagged_encoder_0_1, 0))
         self.connect((self.blocks_repack_bits_bb_0_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))
@@ -539,14 +520,17 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.blocks_repack_bits_bb_0_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_throttle2_1, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_unpack_k_bits_bb_0_0, 0))
+        self.connect((self.blocks_throttle2_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.blocks_throttle2_0_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
         self.connect((self.blocks_throttle2_1, 0), (self.digital_constellation_modulator_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.digital_correlate_access_code_xx_ts_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0_0, 0), (self.blocks_char_to_float_0_0_0, 0))
+        self.connect((self.channels_channel_model_0, 0), (self.digital_symbol_sync_xx_0, 0))
+        self.connect((self.channels_channel_model_0, 0), (self.qtgui_freq_sink_x_1, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.blocks_char_to_float_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_diff_decoder_bb_0, 0))
-        self.connect((self.digital_constellation_modulator_0, 0), (self.blocks_multiply_const_vxx_0, 0))
+        self.connect((self.digital_constellation_modulator_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.digital_constellation_modulator_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0, 0), (self.digital_map_bb_0_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_constellation_decoder_cb_0, 0))
@@ -559,8 +543,6 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_linear_equalizer_0_0, 0))
         self.connect((self.fec_extended_tagged_decoder_2, 0), (self.blocks_repack_bits_bb_0, 0))
         self.connect((self.fec_extended_tagged_encoder_0_1, 0), (self.blocks_repack_bits_bb_0_0_0, 0))
-        self.connect((self.soapy_bladerf_source_0, 0), (self.digital_symbol_sync_xx_0, 0))
-        self.connect((self.soapy_bladerf_source_0, 0), (self.qtgui_freq_sink_x_1, 0))
 
 
     def closeEvent(self, event):
@@ -621,7 +603,6 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
 
     def set_txgain(self, txgain):
         self.txgain = txgain
-        self.soapy_bladerf_sink_0.set_gain(0, min(max(self.txgain, 17.0), 73.0))
 
     def get_txbw(self):
         return self.txbw
@@ -646,12 +627,14 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
 
     def set_time_offset(self, time_offset):
         self.time_offset = time_offset
+        self.channels_channel_model_0.set_timing_offset(self.time_offset)
 
     def get_taps(self):
         return self.taps
 
     def set_taps(self, taps):
         self.taps = taps
+        self.channels_channel_model_0.set_taps(self.taps)
 
     def get_spr(self):
         return self.spr
@@ -665,14 +648,13 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
 
     def set_samp_rate_blade(self, samp_rate_blade):
         self.samp_rate_blade = samp_rate_blade
-        self.soapy_bladerf_sink_0.set_sample_rate(0, self.samp_rate_blade)
-        self.soapy_bladerf_source_0.set_sample_rate(0, self.samp_rate_blade)
 
     def get_samp_rate(self):
         return self.samp_rate
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
+        self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
         self.blocks_throttle2_1.set_sample_rate(self.samp_rate)
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_freq_sink_x_1.set_frequency_range(0, self.samp_rate)
@@ -684,7 +666,6 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
 
     def set_rxbw(self, rxbw):
         self.rxbw = rxbw
-        self.soapy_bladerf_source_0.set_bandwidth(0, self.rxbw)
 
     def get_rx_freq_(self):
         return self.rx_freq_
@@ -729,6 +710,7 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
 
     def set_noise_volt(self, noise_volt):
         self.noise_volt = noise_volt
+        self.channels_channel_model_0.set_noise_voltage(self.noise_volt)
 
     def get_if_gain(self):
         return self.if_gain
@@ -747,14 +729,13 @@ class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
 
     def set_freq_offset(self, freq_offset):
         self.freq_offset = freq_offset
+        self.channels_channel_model_0.set_frequency_offset(self.freq_offset)
 
     def get_freq(self):
         return self.freq
 
     def set_freq(self, freq):
         self.freq = freq
-        self.soapy_bladerf_sink_0.set_frequency(0, self.freq)
-        self.soapy_bladerf_source_0.set_frequency(0, self.freq)
 
     def get_excess_bw(self):
         return self.excess_bw
@@ -803,60 +784,6 @@ def argument_parser():
     return parser
 
 
-def argument_parser():
-    parser = ArgumentParser()
-    parser.add_argument(
-        "--MTU", dest="MTU", type=intx, default=1500,
-        help="Set MTU [default=%(default)r]")
-    return parser
-
-import os
-def add_preamble(file_path):
-        # Example binary string
-    binarypreamble = b'11000110101100111111010110101000011010110011111000110101100'
-    file_path = file_path #'/home/gnuradio/Documents/DigitalCommDesign/QPSK/tx.txt'
-    with open(file_path, 'rb') as file:
-        plaintext = file.read()
-    preamble = binarypreamble * 300
-    detect_sequence = b'dat'  # Sequence to detect preamble
-    
-    with open('/home/gnuradio/Documents/DigitalCommDesign/QPSK/tx.tmp', 'wb') as output_file:
-        output_file.write(preamble + detect_sequence + plaintext + detect_sequence + preamble)
-    return os.path.splitext(file_path)[1]
-
-
-def remove_preamble(file_path):
-    global content
-    
-    detect_sequence = b'dat'
-    preamble = bytes([0b10101010]) * 300
-
-    with open(file_path, 'rb') as file:
-        content = file.read()
-
-    start_index = content.find(detect_sequence)
-    if start_index != -1:
-        content = content[start_index + len(detect_sequence):]
-
-    end_index = content.rfind(detect_sequence)
-    if end_index != -1:
-        content = content[:end_index]
-
-    preamble_length = len(preamble)
-    while True:
-        start_index = content.find(preamble)
-        if start_index == -1:
-            break
-        else:
-            content = content[start_index + preamble_length:]
-
-    while True:
-        end_index = content.rfind(preamble)
-        if end_index == -1:
-            break
-        else:
-            content = content[:end_index]
-
 def main(top_block_cls=QPSK_Pkt_Tx_Rx, options=None):
     if options is None:
         options = argument_parser().parse_args()
@@ -886,19 +813,6 @@ def main(top_block_cls=QPSK_Pkt_Tx_Rx, options=None):
     timer.timeout.connect(lambda: None)
 
     qapp.exec_()
-    remove_preamble('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.tmp')
-    print(ext)
-    with open('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx' + ext, 'wb') as file:
-                file.write(content)
 
 if __name__ == '__main__':
-    '''temp_file = "../DigitalCommDesign/QPSK/qpsk_file_path.txt"
-    with open(temp_file, "r") as f:
-        file_path = f.read()
-    print(f"Received file path: {file_path}")'''
-
-    file_path = os.getenv("FILE_PATH", "No file path provided")
-    
-    file_path = file_path
-    ext = add_preamble(file_path)
     main()
