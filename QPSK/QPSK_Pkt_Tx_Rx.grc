@@ -686,7 +686,7 @@ blocks:
     bus_structure: null
     coordinate: [1008, 1776.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: blocks_char_to_float_0_0_0
   id: blocks_char_to_float
   parameters:
@@ -703,7 +703,7 @@ blocks:
     bus_structure: null
     coordinate: [568, 1936.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_char_to_float_1_1
   id: blocks_char_to_float
   parameters:
@@ -740,7 +740,7 @@ blocks:
     bus_structure: null
     coordinate: [800, 1936.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_file_sink_0
   id: blocks_file_sink
   parameters:
@@ -780,7 +780,7 @@ blocks:
     bus_structure: null
     coordinate: [16, 188.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_multiply_const_vxx_0
   id: blocks_multiply_const_vxx
   parameters:
@@ -798,7 +798,7 @@ blocks:
     bus_structure: null
     coordinate: [816, 1060.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_repack_bits_bb_0
   id: blocks_repack_bits_bb
   parameters:
@@ -838,7 +838,7 @@ blocks:
     bus_structure: null
     coordinate: [784, 220.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_repack_bits_bb_0_0_0
   id: blocks_repack_bits_bb
   parameters:
@@ -858,7 +858,7 @@ blocks:
     bus_structure: null
     coordinate: [1376, 228.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_stream_to_tagged_stream_0
   id: blocks_stream_to_tagged_stream
   parameters:
@@ -877,7 +877,7 @@ blocks:
     bus_structure: null
     coordinate: [504, 220.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_tagged_stream_mux_0
   id: blocks_tagged_stream_mux
   parameters:
@@ -897,7 +897,7 @@ blocks:
     bus_structure: null
     coordinate: [1784, 224.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_throttle2_0
   id: blocks_throttle2
   parameters:
@@ -939,7 +939,7 @@ blocks:
     bus_structure: null
     coordinate: [296, 220.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_throttle2_1
   id: blocks_throttle2
   parameters:
@@ -960,7 +960,7 @@ blocks:
     bus_structure: null
     coordinate: [280, 1224.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_unpack_k_bits_bb_0
   id: blocks_unpack_k_bits_bb
   parameters:
@@ -992,7 +992,7 @@ blocks:
     bus_structure: null
     coordinate: [344, 1944.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -1086,7 +1086,7 @@ blocks:
     bus_structure: null
     coordinate: [560, 1176.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: digital_correlate_access_code_xx_ts_0
   id: digital_correlate_access_code_xx_ts
   parameters:
@@ -1211,7 +1211,7 @@ blocks:
     bus_structure: null
     coordinate: [1608, 68.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: digital_symbol_sync_xx_0
   id: digital_symbol_sync_xx
   parameters:
@@ -1278,7 +1278,7 @@ blocks:
     bus_structure: null
     coordinate: [1072, 196.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_const_sink_x_0
   id: qtgui_const_sink_x
   parameters:
@@ -1451,7 +1451,7 @@ blocks:
     bus_structure: null
     coordinate: [880, 1432.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_freq_sink_x_1
   id: qtgui_freq_sink_x
   parameters:
@@ -1726,7 +1726,7 @@ blocks:
     bus_structure: null
     coordinate: [976, 1888.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: received
   id: qtgui_tab_widget
   parameters:
@@ -1780,7 +1780,7 @@ blocks:
     bus_structure: null
     coordinate: [1040, 1060.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: soapy_bladerf_source_0
   id: soapy_bladerf_source
   parameters:
@@ -1815,7 +1815,7 @@ blocks:
     bus_structure: null
     coordinate: [2144, 188.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_sink_1
   id: virtual_sink
   parameters:
@@ -1841,7 +1841,7 @@ blocks:
     bus_structure: null
     coordinate: [24, 1488.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_source_2
   id: virtual_source
   parameters:
