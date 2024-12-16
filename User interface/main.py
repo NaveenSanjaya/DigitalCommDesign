@@ -55,14 +55,14 @@ class App:
         self.image_file_path = ctk.StringVar()
         self.video_file_path = ctk.StringVar()
 
+        
+
         # Create frames for layout
         self.left_frame = ctk.CTkFrame(root)
         self.left_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
         self.right_frame = ctk.CTkFrame(root)
-        self.right_frame.pack(side="right", fill="y", padx=10, pady=10)
-
-    
+        self.right_frame.pack(side="right", fill="y", padx=10, pady=10)    
 
         # Add buttons to the right frame
         ctk.CTkButton(
@@ -147,7 +147,7 @@ class App:
             self.image_file_path.set(file_path)
             print(f"Selected Image File: {file_path}")
             image = Image.open(file_path)
-            image = image.resize((200, 200), Image.LANCZOS)
+            image.thumbnail((200, 200), Image.LANCZOS)
             photo = ImageTk.PhotoImage(image)
             self.preview_label.configure(image=photo, text="")
             self.preview_label.image = photo

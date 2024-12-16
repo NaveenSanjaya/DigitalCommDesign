@@ -29,7 +29,6 @@ from gnuradio import soapy
 from gnuradio.qtgui import Range, RangeWidget
 from PyQt5 import QtCore
 import sip
-import os
 
 
 class QPSK_Pkt_Tx_Rx(gr.top_block, Qt.QWidget):
@@ -811,7 +810,7 @@ def argument_parser():
         help="Set MTU [default=%(default)r]")
     return parser
 
-
+import os
 def add_preamble(file_path):
         # Example binary string
     binarypreamble = b'11000110101100111111010110101000011010110011111000110101100'
