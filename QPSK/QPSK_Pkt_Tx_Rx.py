@@ -818,7 +818,7 @@ def add_preamble(file_path):
     with open(file_path, 'rb') as file:
         plaintext = file.read()
     preamble = binarypreamble * 300
-    detect_sequence = b'sts'  # Sequence to detect preamble
+    detect_sequence = b'dat'  # Sequence to detect preamble
     
     with open('/home/gnuradio/Documents/DigitalCommDesign/QPSK/tx.tmp', 'wb') as output_file:
         output_file.write(preamble + detect_sequence + plaintext + detect_sequence + preamble)
@@ -828,7 +828,7 @@ def add_preamble(file_path):
 def remove_preamble(file_path):
     global content
     
-    detect_sequence = b'sts'
+    detect_sequence = b'dat'
     preamble = bytes([0b10101010]) * 300
 
     with open(file_path, 'rb') as file:
