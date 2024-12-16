@@ -35,5 +35,5 @@ def remove_preamble(file_path):
 
 # Remove both front and back preambles and sequence from the output.tmp file
 remove_preamble('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.tmp')
-with open('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.png', 'wb') as file:
+with open('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.mp4', 'wb') as file:
                 file.write(content)

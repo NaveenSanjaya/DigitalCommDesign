@@ -804,6 +804,60 @@ def argument_parser():
     return parser
 
 
+def argument_parser():
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--MTU", dest="MTU", type=intx, default=1500,
+        help="Set MTU [default=%(default)r]")
+    return parser
+
+
+def add_preamble(file_path):
+        # Example binary string
+    binarypreamble = b'11000110101100111111010110101000011010110011111000110101100'
+    file_path = file_path #'/home/gnuradio/Documents/DigitalCommDesign/QPSK/tx.txt'
+    with open(file_path, 'rb') as file:
+        plaintext = file.read()
+    preamble = binarypreamble * 300
+    detect_sequence = b'sts'  # Sequence to detect preamble
+    
+    with open('/home/gnuradio/Documents/DigitalCommDesign/QPSK/tx.tmp', 'wb') as output_file:
+        output_file.write(preamble + detect_sequence + plaintext + detect_sequence + preamble)
+    return os.path.splitext(file_path)[1]
+
+
+def remove_preamble(file_path):
+    global content
+    
+    detect_sequence = b'sts'
+    preamble = bytes([0b10101010]) * 300
+
+    with open(file_path, 'rb') as file:
+        content = file.read()
+
+    start_index = content.find(detect_sequence)
+    if start_index != -1:
+        content = content[start_index + len(detect_sequence):]
+
+    end_index = content.rfind(detect_sequence)
+    if end_index != -1:
+        content = content[:end_index]
+
+    preamble_length = len(preamble)
+    while True:
+        start_index = content.find(preamble)
+        if start_index == -1:
+            break
+        else:
+            content = content[start_index + preamble_length:]
+
+    while True:
+        end_index = content.rfind(preamble)
+        if end_index == -1:
+            break
+        else:
+            content = content[:end_index]
+
 def main(top_block_cls=QPSK_Pkt_Tx_Rx, options=None):
     if options is None:
         options = argument_parser().parse_args()
@@ -833,6 +887,19 @@ def main(top_block_cls=QPSK_Pkt_Tx_Rx, options=None):
     timer.timeout.connect(lambda: None)
 
     qapp.exec_()
+    remove_preamble('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx.tmp')
+    print(ext)
+    with open('/home/gnuradio/Documents/DigitalCommDesign/QPSK/rx' + ext, 'wb') as file:
+                file.write(content)
 
 if __name__ == '__main__':
+    '''temp_file = "../DigitalCommDesign/QPSK/qpsk_file_path.txt"
+    with open(temp_file, "r") as f:
+        file_path = f.read()
+    print(f"Received file path: {file_path}")'''
+
+    file_path = os.getenv("FILE_PATH", "No file path provided")
+    
+    file_path = file_path
+    ext = add_preamble(file_path)
     main()
