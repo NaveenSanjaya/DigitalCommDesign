@@ -1,16 +1,20 @@
+import os
+
+
 # from Crypto.Cipher import AES
 
 def add_preamble():
         # Example binary string
     binarypreamble = b'11000110101100111111010110101000011010110011111000110101100'
-    file_path = '/home/gnuradio/Desktop/DigitalCommDesign/src/tx.txt'
+    file_path = '/home/gnuradio/Desktop/DigitalCommDesign/src/tx.ts'
+    file_extension = os.path.splitext(file_path)[1].encode()
     with open(file_path, 'rb') as file:
         plaintext = file.read()
-    preamble = binarypreamble * 300
+    preamble = binarypreamble * 3000
     detect_sequence = b'sts'  # Sequence to detect preamble
     
     with open('/home/gnuradio/Desktop/DigitalCommDesign/src/tx.tmp', 'wb') as output_file:
-        output_file.write(preamble + detect_sequence + plaintext + detect_sequence + preamble)
+        output_file.write(preamble + detect_sequence + file_extension + detect_sequence + plaintext + detect_sequence + preamble)
 
 
 

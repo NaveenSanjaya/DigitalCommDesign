@@ -3,7 +3,7 @@ def remove_preamble(file_path):
     global content
     
     detect_sequence = b'sts'
-    preamble = bytes([0b10101010]) * 300
+    preamble = bytes([0b10101010]) * 3000
 
     with open(file_path, 'rb') as file:
         content = file.read()
@@ -11,6 +11,10 @@ def remove_preamble(file_path):
     start_index = content.find(detect_sequence)
     if start_index != -1:
         content = content[start_index + len(detect_sequence):]
+
+    second_detect_index = content.find(detect_sequence)
+    file_extension = content[:second_detect_index]
+    content = content[second_detect_index + len(detect_sequence):]
 
     end_index = content.rfind(detect_sequence)
     if end_index != -1:
@@ -31,10 +35,13 @@ def remove_preamble(file_path):
         else:
             content = content[:end_index]
 
+    return file_extension
+
 
 
 # Remove both front and back preambles and sequence from the output.tmp file
-remove_preamble('/home/gnuradio/Desktop/DigitalCommDesign/src/rx.tmp')
-with open('/home/gnuradio/Desktop/DigitalCommDesign/src/rx.txt', 'wb') as file:
-                file.write(content)
+file_extension =  remove_preamble('/home/gnuradio/Desktop/DigitalCommDesign/src/tx.tmp')
+output_file_path = f'/home/gnuradio/Desktop/DigitalCommDesign/src/rx{file_extension.decode()}'
+with open(output_file_path, 'wb') as output_file:
+    output_file.write(content)
 
