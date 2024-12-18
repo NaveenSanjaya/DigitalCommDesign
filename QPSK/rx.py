@@ -34,7 +34,7 @@ def remove_preamble(file_path):
 
 
 # Remove both front and back preambles and sequence from the output.tmp file
-remove_preamble('/home/gnuradio/Desktop/DigitalCommDesign/src/rx.tmp')
-with open('/home/gnuradio/Desktop/DigitalCommDesign/src/rx.txt', 'wb') as file:
+remove_preamble('E:\Projects\DigitalCommDesign\src\img_rx.tmp')
+with open('E:\Projects\DigitalCommDesign\src\img_rx.jpg', 'wb') as file:
                 file.write(content)
 

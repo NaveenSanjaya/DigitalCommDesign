@@ -3,13 +3,13 @@
 def add_preamble():
         # Example binary string
     binarypreamble = b'11000110101100111111010110101000011010110011111000110101100'
-    file_path = '/home/gnuradio/Desktop/DigitalCommDesign/src/tx.txt'
+    file_path = "E:\Projects\DigitalCommDesign\src\img_tx.jpg"
     with open(file_path, 'rb') as file:
         plaintext = file.read()
     preamble = binarypreamble * 300
     detect_sequence = b'sts'  # Sequence to detect preamble
     
-    with open('/home/gnuradio/Desktop/DigitalCommDesign/src/tx.tmp', 'wb') as output_file:
+    with open('E:\Projects\DigitalCommDesign\src\img_tx.tmp', 'wb') as output_file:
         output_file.write(preamble + detect_sequence + plaintext + detect_sequence + preamble)
 
 
