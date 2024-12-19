@@ -747,7 +747,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: E:\Projects\DigitalCommDesign\src\img_rx.tmp
+    file: E:\Projects\DigitalCommDesign\src\img_rx.jpg
     type: byte
     unbuffered: 'False'
     vlen: '1'
@@ -765,7 +765,7 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: E:\Projects\DigitalCommDesign\src\img_tx.tmp
+    file: E:\Projects\DigitalCommDesign\src\tx.jpg
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
