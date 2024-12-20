@@ -17,6 +17,7 @@ def add_preamble():
         plaintext = file.read()
     preamble = binarypreamble * 3000
     detect_sequence = b'sts'  # Sequence to detect preamble
+    end_sequence = b'end'  # Sequence to detect end of file
 
     # AES encryption
     key = b'Sixteen byte key'  # AES key must be either 16, 24, or 32 bytes long
@@ -24,33 +25,7 @@ def add_preamble():
     encrypted_plaintext = encrypt_data(plaintext, key, iv)
     
     with open('src/tx.tmp', 'wb') as output_file:
-        output_file.write(preamble + detect_sequence + file_name + detect_sequence + encrypted_plaintext + detect_sequence + preamble)
-
-
-
-
-# #Encryption
-# def pad(data):
-#     # Padding the data to be a multiple of 16 bytes
-#     return data + b"\0" * (AES.block_size - len(data) % AES.block_size)
-
-# def encrypt_file(file_path, key):
-#     global ciphertext
-    
-#     plaintext = pad(plaintext)
-#     cipher = AES.new(key, AES.MODE_ECB)  
-#     ciphertext = cipher.encrypt(plaintext)
-
-  
-
-
-
-# # Encryption details
-
-# predefined_key = b'Hello_IamMihiran'
-
-# # Encrypt the file
-# encrypt_file(file_path, predefined_key)
+        output_file.write(preamble + detect_sequence + file_name + b'|||' + plaintext + end_sequence + preamble)
 
 #Adds the preamble
 add_preamble()

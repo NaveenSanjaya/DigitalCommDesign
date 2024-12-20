@@ -691,7 +691,7 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    append: 'True'
+    append: 'False'
     comment: ''
     file: E:\Projects\DigitalCommDesign\src\rx.tmp
     type: byte

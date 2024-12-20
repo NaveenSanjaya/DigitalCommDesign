@@ -648,7 +648,7 @@ blocks:
     bus_structure: null
     coordinate: [464, 1012.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_char_to_float_1_1
   id: blocks_char_to_float
   parameters:
@@ -685,7 +685,7 @@ blocks:
     bus_structure: null
     coordinate: [688, 1012.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_file_sink_0
   id: blocks_file_sink
   parameters:
@@ -716,7 +716,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     offset: '0'
-    repeat: 'False'
+    repeat: 'True'
     type: byte
     vlen: '1'
   states:
@@ -937,7 +937,7 @@ blocks:
     bus_structure: null
     coordinate: [248, 1012.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -1629,7 +1629,7 @@ blocks:
     marker8: '-1'
     marker9: '-1'
     name: ''
-    nconnections: '2'
+    nconnections: '1'
     size: '128'
     srate: samp_rate
     stemplot: 'False'
@@ -1671,7 +1671,7 @@ blocks:
     bus_structure: null
     coordinate: [896, 976.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: received
   id: qtgui_tab_widget
   parameters:
@@ -1799,7 +1799,7 @@ blocks:
     bus_structure: null
     coordinate: [8, 1012.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: virtual_source_2
   id: virtual_source
   parameters:
@@ -1819,7 +1819,7 @@ connections:
 - [blocks_char_to_float_0_0, '0', qtgui_time_sink_x_0_0, '0']
 - [blocks_char_to_float_0_0_0, '0', blocks_delay_0, '0']
 - [blocks_char_to_float_1_1, '0', fec_extended_tagged_decoder_2, '0']
-- [blocks_delay_0, '0', qtgui_time_sink_x_0_0, '1']
+- [blocks_delay_0, '0', qtgui_time_sink_x_0_0, '0']
 - [blocks_file_source_0, '0', blocks_throttle2_0_0, '0']
 - [blocks_multiply_const_vxx_0, '0', soapy_bladerf_sink_0, '0']
 - [blocks_repack_bits_bb_0, '0', blocks_file_sink_0, '0']

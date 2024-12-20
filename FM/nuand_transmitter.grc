@@ -62,7 +62,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [680, 260.0]
+    coordinate: [536, 448.0]
     rotation: 0
     state: disabled
 - name: analog_wfm_tx_0
@@ -109,7 +109,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    const: '1'
+    const: '.8'
     maxoutbuf: '0'
     minoutbuf: '0'
     type: complex
@@ -118,7 +118,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [880, 492.0]
+    coordinate: [1016, 504.0]
     rotation: 0
     state: true
 - name: blocks_wavfile_source_0
@@ -205,7 +205,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 496.0]
+    coordinate: [1312, 508.0]
     rotation: 0
     state: true
 
@@ -222,4 +222,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.7.0
+  grc_version: 3.10.10.0

@@ -117,6 +117,13 @@ class Transmitter(gr.top_block, Qt.QWidget):
         self._freq_range = qtgui.Range(2e9, 6e9, 100e3, 2.4e9, 200)
         self._freq_win = qtgui.RangeWidget(self._freq_range, self.set_freq, "'freq'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._freq_win)
+        self._delay_range = qtgui.Range(0, 200, 1, 42, 200)
+        self._delay_win = qtgui.RangeWidget(self._delay_range, self.set_delay, "Delay", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_grid_layout.addWidget(self._delay_win, 1, 0, 1, 1)
+        for r in range(1, 2):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(0, 1):
+            self.top_grid_layout.setColumnStretch(c, 1)
         self.controls = Qt.QTabWidget()
         self.controls_widget_0 = Qt.QWidget()
         self.controls_layout_0 = Qt.QBoxLayout(Qt.QBoxLayout.TopToBottom, self.controls_widget_0)
@@ -184,6 +191,58 @@ class Transmitter(gr.top_block, Qt.QWidget):
         for r in range(2, 3):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 1):
+            self.top_grid_layout.setColumnStretch(c, 1)
+        self.qtgui_time_sink_x_0_0 = qtgui.time_sink_f(
+            128, #size
+            samp_rate, #samp_rate
+            '', #name
+            1, #number of inputs
+            None # parent
+        )
+        self.qtgui_time_sink_x_0_0.set_update_time(0.10)
+        self.qtgui_time_sink_x_0_0.set_y_axis(-1, 2)
+
+        self.qtgui_time_sink_x_0_0.set_y_label('Amplitude', "")
+
+        self.qtgui_time_sink_x_0_0.enable_tags(True)
+        self.qtgui_time_sink_x_0_0.set_trigger_mode(qtgui.TRIG_MODE_AUTO, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
+        self.qtgui_time_sink_x_0_0.enable_autoscale(False)
+        self.qtgui_time_sink_x_0_0.enable_grid(False)
+        self.qtgui_time_sink_x_0_0.enable_axis_labels(True)
+        self.qtgui_time_sink_x_0_0.enable_control_panel(False)
+        self.qtgui_time_sink_x_0_0.enable_stem_plot(False)
+
+
+        labels = ['Rx Bits', 'Tx Bits', '', '', '',
+            '', '', '', '', '']
+        widths = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        colors = ['blue', 'red', 'green', 'black', 'cyan',
+            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
+        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0, 1.0, 1.0]
+        styles = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        markers = [-1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1]
+
+
+        for i in range(1):
+            if len(labels[i]) == 0:
+                self.qtgui_time_sink_x_0_0.set_line_label(i, "Data {0}".format(i))
+            else:
+                self.qtgui_time_sink_x_0_0.set_line_label(i, labels[i])
+            self.qtgui_time_sink_x_0_0.set_line_width(i, widths[i])
+            self.qtgui_time_sink_x_0_0.set_line_color(i, colors[i])
+            self.qtgui_time_sink_x_0_0.set_line_style(i, styles[i])
+            self.qtgui_time_sink_x_0_0.set_line_marker(i, markers[i])
+            self.qtgui_time_sink_x_0_0.set_line_alpha(i, alphas[i])
+
+        self._qtgui_time_sink_x_0_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0_0.qwidget(), Qt.QWidget)
+        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_0_win, 2, 1, 1, 1)
+        for r in range(2, 3):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(1, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
         self.qtgui_freq_sink_x_0 = qtgui.freq_sink_c(
             1024, #size
@@ -269,32 +328,32 @@ class Transmitter(gr.top_block, Qt.QWidget):
             verbose=False,
             log=False,
             truncate=False)
-        self._delay_range = qtgui.Range(0, 200, 1, 42, 200)
-        self._delay_win = qtgui.RangeWidget(self._delay_range, self.set_delay, "Delay", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_grid_layout.addWidget(self._delay_win, 1, 0, 1, 1)
-        for r in range(1, 2):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(0, 1):
-            self.top_grid_layout.setColumnStretch(c, 1)
+        self.blocks_unpack_k_bits_bb_0_0 = blocks.unpack_k_bits_bb(8)
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
         self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 8, "packet_len")
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(0.8)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, 'E:\\Projects\\DigitalCommDesign\\src\\tx.tmp', False, 0, 0)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, 'E:\\Projects\\DigitalCommDesign\\src\\tx.tmp', True, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
+        self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, delay)
+        self.blocks_char_to_float_0_0_0 = blocks.char_to_float(1, 1)
 
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.blocks_char_to_float_0_0_0, 0), (self.blocks_delay_0, 0))
+        self.connect((self.blocks_delay_0, 0), (self.qtgui_time_sink_x_0_0, 0))
         self.connect((self.blocks_file_source_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.soapy_bladerf_sink_0, 0))
         self.connect((self.blocks_repack_bits_bb_0_0, 0), (self.fec_extended_tagged_encoder_0_1, 0))
         self.connect((self.blocks_repack_bits_bb_0_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))
         self.connect((self.blocks_repack_bits_bb_0_0_0, 0), (self.digital_protocol_formatter_bb_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.blocks_repack_bits_bb_0_0, 0))
+        self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_unpack_k_bits_bb_0_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_constellation_modulator_0, 0))
+        self.connect((self.blocks_unpack_k_bits_bb_0_0, 0), (self.blocks_char_to_float_0_0_0, 0))
         self.connect((self.digital_constellation_modulator_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.digital_constellation_modulator_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
@@ -411,6 +470,7 @@ class Transmitter(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate
         self.blocks_throttle2_1.set_sample_rate(self.samp_rate)
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
+        self.qtgui_time_sink_x_0_0.set_samp_rate(self.samp_rate)
 
     def get_rxbw(self):
         return self.rxbw
@@ -503,6 +563,7 @@ class Transmitter(gr.top_block, Qt.QWidget):
 
     def set_delay(self, delay):
         self.delay = delay
+        self.blocks_delay_0.set_dly(int(self.delay))
 
     def get_cc_enc(self):
         return self.cc_enc

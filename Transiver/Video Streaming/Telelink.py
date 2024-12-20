@@ -528,7 +528,7 @@ class Telelink(gr.top_block, Qt.QWidget):
         for c in range(0, 1):
             self.received_grid_layout_0.setColumnStretch(c, 1)
         self.network_udp_source_0 = network.udp_source(gr.sizeof_char, 1, 5000, 0, 1472, False, False, False)
-        self.network_udp_sink_0 = network.udp_sink(gr.sizeof_char, 1, '224.2.2.1', 1234, 0, 1472, False)
+        self.network_udp_sink_0 = network.udp_sink(gr.sizeof_char, 1, '127.0.0.1', 9000, 0, 1472, False)
         self._if_gain_range = qtgui.Range(0, 50, 1, 40, 200)
         self._if_gain_win = qtgui.RangeWidget(self._if_gain_range, self.set_if_gain, "IF gain", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._if_gain_win)

@@ -1262,13 +1262,13 @@ blocks:
 - name: network_udp_sink_0
   id: network_udp_sink
   parameters:
-    addr: 224.2.2.1
+    addr: 127.0.0.1
     affinity: ''
     alias: ''
     comment: ''
     header: '0'
     payloadsize: '1472'
-    port: '1234'
+    port: '9000'
     send_eof: 'False'
     type: byte
     vlen: '1'

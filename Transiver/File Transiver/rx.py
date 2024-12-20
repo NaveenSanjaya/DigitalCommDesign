@@ -1,5 +1,6 @@
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
+import time
 
 def decrypt_data(encrypted_data, key, iv):
     cipher = AES.new(key, AES.MODE_CBC, iv)
@@ -11,6 +12,33 @@ def remove_preamble(file_path):
     
     detect_sequence = b'sts'
     preamble = bytes([0b10101010]) * 3000
+
+    '''def rx():
+            global content
+            
+            while(True):
+                with open('rx src/rx.tmp', 'rb') as file:
+
+                    content = file.read()
+                    if(len(content)>10):print('conncted')
+                    time.sleep(1)
+
+                    start= content.find(b'sts')
+                    if start!= -1:
+                            print('file recieving')
+                            end_name= content.rfind(b'sts')
+                            name=content[start+3:end_name]
+                            print(name)
+                            end_index = content.rfind(b'end')
+                            if end_index != -1:
+                                start= content.find(b'sts')
+                                content = content[start+3:end_index]
+                                path='rx src/'+name.decode()
+                                with open(path,'wb') as output:
+                                    output.write(content)
+                                    with open('rx src/rx.tmp','wb') as output:pass
+                                       # open_file(path)
+                                break'''
 
     with open(file_path, 'rb') as file:
         content = file.read()
