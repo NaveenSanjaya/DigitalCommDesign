@@ -16,12 +16,12 @@ sidebar_frame = CTkFrame(master=app, fg_color="#522B5B",  width=150, height=480,
 sidebar_frame.pack_propagate(0)
 sidebar_frame.pack(fill="y", anchor="w", side="left")
 
-back_img_data = Image.open("/home/gnuradio/Desktop/DigitalCommDesign/User interface/back.png")
+back_img_data = Image.open("User interface/back.png")
 back_img = CTkImage(dark_image=back_img_data, light_image=back_img_data)
 
 def go_back_to_home():
     app.destroy()  # Close the current window
-    subprocess.run([sys.executable, "/home/gnuradio/Desktop/DigitalCommDesign/User interface/home.py"])  # Adjust the path to your home.py file
+    subprocess.run([sys.executable, "User interface/home.py"])  # Adjust the path to your home.py file
 
 back_button = CTkButton(
     master=sidebar_frame,
@@ -35,7 +35,7 @@ back_button = CTkButton(
 )
 back_button.pack(anchor="center", ipady=5, pady=(60, 0))
 
-antenna_img_data = Image.open("/home/gnuradio/Desktop/DigitalCommDesign/User interface/antenna.png")
+antenna_img_data = Image.open("User interface/antenna.png")
 antenna_img = CTkImage(dark_image=antenna_img_data, light_image=antenna_img_data, size=(100, 100))
 CTkLabel(master=sidebar_frame, text="", image=antenna_img).pack(pady=(120, 0), anchor="center")
 
@@ -59,7 +59,7 @@ CTkLabel(
 text_circle = CTkFrame(master=top_box, fg_color="#DFB6B2", width=50, height=50, corner_radius=100)
 text_circle.pack(side="left", padx=12)
 
-text_img_data = Image.open("/home/gnuradio/Desktop/DigitalCommDesign/User interface/text.png")
+text_img_data = Image.open("User interface/text.png")
 text_img = CTkImage(light_image=text_img_data, dark_image=text_img_data, size=(50, 50))
 
 CTkLabel(master=text_circle, image=text_img, text="").grid(row=0, column=0, padx=10, pady=10)
@@ -67,7 +67,7 @@ CTkLabel(master=text_circle, image=text_img, text="").grid(row=0, column=0, padx
 image_circle = CTkFrame(master=top_box, fg_color="#DFB6B2", width=50, height=50, corner_radius=100)
 image_circle.pack(side="left", padx=12)
 
-img_data = Image.open("/home/gnuradio/Desktop/DigitalCommDesign/User interface/image.png")
+img_data = Image.open("User interface/image.png")
 img = CTkImage(light_image=img_data, dark_image=img_data, size=(50, 50))
 
 CTkLabel(master=image_circle, image=img, text="").grid(row=0, column=0, padx=10, pady=10)
@@ -75,7 +75,7 @@ CTkLabel(master=image_circle, image=img, text="").grid(row=0, column=0, padx=10,
 audio_circle = CTkFrame(master=top_box, fg_color="#DFB6B2", width=50, height=50, corner_radius=100)
 audio_circle.pack(side="left", padx=12)
 
-audio_img_data = Image.open("/home/gnuradio/Desktop/DigitalCommDesign/User interface/audio.png")
+audio_img_data = Image.open("User interface/audio.png")
 audio_img = CTkImage(light_image=audio_img_data, dark_image=audio_img_data, size=(50, 50))
 
 CTkLabel(master=audio_circle, image=audio_img, text="").grid(row=0, column=0, padx=10, pady=10)
@@ -83,7 +83,7 @@ CTkLabel(master=audio_circle, image=audio_img, text="").grid(row=0, column=0, pa
 video_circle = CTkFrame(master=top_box, fg_color="#DFB6B2", width=50, height=50, corner_radius=100)
 video_circle.pack(side="left", padx=12)
 
-video_img_data = Image.open("/home/gnuradio/Desktop/DigitalCommDesign/User interface/video.png")
+video_img_data = Image.open("User interface/video.png")
 video_img = CTkImage(light_image=video_img_data, dark_image=video_img_data, size=(50, 50))
 
 CTkLabel(master=video_circle, image=video_img, text="").grid(row=0, column=0, padx=10, pady=10)
@@ -125,7 +125,7 @@ def start_receiving():
 
 # Add the "Receive" button
 
-receive_img_data = Image.open("/home/gnuradio/Desktop/DigitalCommDesign/User interface/receive_icon.png")
+receive_img_data = Image.open("User interface/receive_icon.png")
 receive_img = CTkImage(dark_image=receive_img_data, light_image=receive_img_data)
 
 receive_button = CTkButton(

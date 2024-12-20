@@ -10,7 +10,7 @@ app.resizable(0, 0)
 app.title("Home")  # Changed window title to "Home"
 
 # Load and set the left-side background image
-background_img = Image.open("/home/gnuradio/Desktop/DigitalCommDesign/User interface/background_img.jpg")
+background_img = Image.open("User interface/background_img.jpg")
 side_img = CTkImage(dark_image=background_img, light_image=background_img, size=(300, 480))
 CTkLabel(master=app, text="", image=side_img).pack(side="left")
 
@@ -70,7 +70,7 @@ send_button.bind("<Leave>", lambda e: on_leave(send_button, "#854F6C", "#190019"
 # Add the "Receive" button
 def go_to_receive():
     app.destroy()  # Close the current window
-    subprocess.run([sys.executable, "/home/gnuradio/Desktop/DigitalCommDesign/User interface/receiverUIDummy.py"])  # Adjust the path to your home.py file
+    subprocess.run([sys.executable, "User interface/receiverUIDummy.py"])  # Adjust the path to your home.py file
 
 receive_button = CTkButton(
     master=frame,
