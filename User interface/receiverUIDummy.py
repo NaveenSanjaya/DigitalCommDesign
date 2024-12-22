@@ -3,6 +3,7 @@ from PIL import Image
 import time
 import subprocess
 import sys
+import os
 
 
 # Initialize the app window
@@ -90,7 +91,7 @@ CTkLabel(master=video_circle, image=video_img, text="").grid(row=0, column=0, pa
 
 CTkLabel(
     master=frame, 
-    text="Text               Image             Audio              Video   ", 
+    text="Document           Image              Audio              Video           ", 
     text_color="#522B5B", 
     font=("Arial", 14), 
     anchor="center"
@@ -121,7 +122,30 @@ def start_receiving():
         app.update()  # Refresh the UI
         time.sleep(0.03)  # Simulate receiving delay
     receive_button.configure(state="normal", text="Receive")
-    status_label.configure(text="File received successfully!\n\nFile name: received_file.txt")
+    received_file_path = "User interface/DummyImgReceived.jpeg"  # Update with actual file path
+    status_label.configure(
+        text="File received successfully!"
+    )
+    # Add clickable file name
+    file_label = CTkLabel(
+        master=frame,
+        text=received_file_path,
+        text_color="#522B5B",
+        font=("Arial", 14),
+        cursor="hand2"
+    )
+    file_label.pack(pady=(0, 0), anchor="center")
+    file_label.bind("<Button-1>", lambda e: open_file(received_file_path))  # Bind click event
+
+# Function to open the file
+def open_file(file_path):
+    try:
+        if os.name == "nt":  # For Windows
+            os.startfile(file_path)
+        elif os.name == "posix":  # For macOS and Linux
+            subprocess.run(["xdg-open", file_path], check=True)
+    except Exception as e:
+        status_label.configure(text=f"Failed to open file: {e}")
 
 # Add the "Receive" button
 
