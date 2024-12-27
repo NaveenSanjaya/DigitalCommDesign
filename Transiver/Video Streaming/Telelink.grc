@@ -776,7 +776,7 @@ blocks:
     bus_structure: null
     coordinate: [740.0, 408]
     rotation: 90
-    state: enabled
+    state: disabled
 - name: blocks_repack_bits_bb_0
   id: blocks_repack_bits_bb
   parameters:
@@ -846,7 +846,7 @@ blocks:
     len_tag_key: '"packet_len"'
     maxoutbuf: '0'
     minoutbuf: '0'
-    packet_len: '8'
+    packet_len: '16'
     type: byte
     vlen: '1'
   states:
@@ -917,7 +917,7 @@ blocks:
     bus_structure: null
     coordinate: [264, 148.0]
     rotation: 0
-    state: enabled
+    state: bypassed
 - name: blocks_throttle2_1
   id: blocks_throttle2
   parameters:
@@ -938,7 +938,7 @@ blocks:
     bus_structure: null
     coordinate: [248, 540.0]
     rotation: 0
-    state: enabled
+    state: bypassed
 - name: blocks_unpack_k_bits_bb_0
   id: blocks_unpack_k_bits_bb
   parameters:
@@ -1887,7 +1887,7 @@ blocks:
     bus_structure: null
     coordinate: [904, 320.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: soapy_bladerf_source_0
   id: soapy_bladerf_source
   parameters:
@@ -2026,4 +2026,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.9.2
+  grc_version: 3.10.10.0

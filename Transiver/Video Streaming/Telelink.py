@@ -130,9 +130,6 @@ class Telelink(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self._txgain_range = qtgui.Range(18, 60, 1, 50, 200)
-        self._txgain_win = qtgui.RangeWidget(self._txgain_range, self.set_txgain, "'txgain'", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._txgain_win)
         self.received = Qt.QTabWidget()
         self.received_widget_0 = Qt.QWidget()
         self.received_layout_0 = Qt.QBoxLayout(Qt.QBoxLayout.TopToBottom, self.received_widget_0)
@@ -173,6 +170,9 @@ class Telelink(gr.top_block, Qt.QWidget):
         self._variable_qtgui_entry_0_line_edit.editingFinished.connect(
             lambda: self.set_variable_qtgui_entry_0(str(str(self._variable_qtgui_entry_0_line_edit.text()))))
         self.top_layout.addWidget(self._variable_qtgui_entry_0_tool_bar)
+        self._txgain_range = qtgui.Range(18, 60, 1, 50, 200)
+        self._txgain_win = qtgui.RangeWidget(self._txgain_range, self.set_txgain, "'txgain'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._txgain_win)
         self._timing_loop_bw_range = qtgui.Range(0.0, 0.2, 0.01, 6.28/100.0, 200)
         self._timing_loop_bw_win = qtgui.RangeWidget(self._timing_loop_bw_range, self.set_timing_loop_bw, "Time: BW", "slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_1.addWidget(self._timing_loop_bw_win, 0, 0, 1, 1)
@@ -200,19 +200,6 @@ class Telelink(gr.top_block, Qt.QWidget):
         self.soapy_bladerf_source_0.set_frequency(0, freq)
         self.soapy_bladerf_source_0.set_frequency_correction(0, 0)
         self.soapy_bladerf_source_0.set_gain(0, min(max(30.0, -1.0), 60.0))
-        self.soapy_bladerf_sink_0 = None
-        dev = 'driver=bladerf'
-        stream_args = ''
-        tune_args = ['']
-        settings = ['']
-
-        self.soapy_bladerf_sink_0 = soapy.sink(dev, "fc32", 1, '',
-                                  stream_args, tune_args, settings)
-        self.soapy_bladerf_sink_0.set_sample_rate(0, samp_rate_blade*2)
-        self.soapy_bladerf_sink_0.set_bandwidth(0, 10000)
-        self.soapy_bladerf_sink_0.set_frequency(0, freq)
-        self.soapy_bladerf_sink_0.set_frequency_correction(0, 0)
-        self.soapy_bladerf_sink_0.set_gain(0, min(max(txgain, 17.0), 73.0))
         self._rf_gain_sink_range = qtgui.Range(0, 60, 1, 10, 200)
         self._rf_gain_sink_win = qtgui.RangeWidget(self._rf_gain_sink_range, self.set_rf_gain_sink, "RF gain sink", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._rf_gain_sink_win)
@@ -548,14 +535,11 @@ class Telelink(gr.top_block, Qt.QWidget):
         self.digital_constellation_decoder_cb_0 = digital.constellation_decoder_cb(qpsk)
         self.blocks_unpack_k_bits_bb_0_0 = blocks.unpack_k_bits_bb(8)
         self.blocks_unpack_k_bits_bb_0 = blocks.unpack_k_bits_bb(2)
-        self.blocks_throttle2_1 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
-        self.blocks_throttle2_0_0 = blocks.throttle( gr.sizeof_char*1, spr, True, 0 if "auto" == "auto" else max( int(float(0.1) * spr) if "auto" == "time" else int(0.1), 1) )
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
-        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 8, "packet_len")
+        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, 16, "packet_len")
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(1, 8, '', True, gr.GR_MSB_FIRST)
-        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(0.8)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, './out.ts', False)
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, delay)
@@ -575,7 +559,6 @@ class Telelink(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_char_to_float_1, 0), (self.qtgui_number_sink_0, 0))
         self.connect((self.blocks_char_to_float_1_1, 0), (self.fec_extended_tagged_decoder_2, 0))
         self.connect((self.blocks_delay_0, 0), (self.qtgui_time_sink_x_0_0, 1))
-        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.soapy_bladerf_sink_0, 0))
         self.connect((self.blocks_repack_bits_bb_0, 0), (self.blocks_file_sink_0, 0))
         self.connect((self.blocks_repack_bits_bb_0, 0), (self.network_udp_sink_0, 0))
         self.connect((self.blocks_repack_bits_bb_0_0, 0), (self.blocks_char_to_float_1, 0))
@@ -583,16 +566,13 @@ class Telelink(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_repack_bits_bb_0_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))
         self.connect((self.blocks_repack_bits_bb_0_0_0, 0), (self.digital_protocol_formatter_bb_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.blocks_repack_bits_bb_0_0, 0))
-        self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_throttle2_1, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_unpack_k_bits_bb_0_0, 0))
-        self.connect((self.blocks_throttle2_0_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
-        self.connect((self.blocks_throttle2_1, 0), (self.digital_constellation_modulator_0, 0))
+        self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_constellation_modulator_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.digital_correlate_access_code_xx_ts_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0_0, 0), (self.blocks_char_to_float_0_0_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.blocks_char_to_float_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_diff_decoder_bb_0, 0))
-        self.connect((self.digital_constellation_modulator_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.digital_constellation_modulator_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0, 0), (self.digital_map_bb_0_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_constellation_decoder_cb_0, 0))
@@ -603,7 +583,7 @@ class Telelink(gr.top_block, Qt.QWidget):
         self.connect((self.digital_map_bb_0_0, 0), (self.blocks_char_to_float_1_1, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_linear_equalizer_0_0, 0))
-        self.connect((self.epy_block_0, 0), (self.blocks_throttle2_0_0, 0))
+        self.connect((self.epy_block_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
         self.connect((self.fec_extended_tagged_decoder_2, 0), (self.blocks_repack_bits_bb_0, 0))
         self.connect((self.fec_extended_tagged_encoder_0_1, 0), (self.blocks_repack_bits_bb_0_0_0, 0))
         self.connect((self.soapy_bladerf_source_0, 0), (self.digital_symbol_sync_xx_0, 0))
@@ -676,7 +656,6 @@ class Telelink(gr.top_block, Qt.QWidget):
 
     def set_txgain(self, txgain):
         self.txgain = txgain
-        self.soapy_bladerf_sink_0.set_gain(0, min(max(self.txgain, 17.0), 73.0))
 
     def get_txbw(self):
         return self.txbw
@@ -720,7 +699,6 @@ class Telelink(gr.top_block, Qt.QWidget):
 
     def set_samp_rate_blade(self, samp_rate_blade):
         self.samp_rate_blade = samp_rate_blade
-        self.soapy_bladerf_sink_0.set_sample_rate(0, self.samp_rate_blade*2)
         self.soapy_bladerf_source_0.set_sample_rate(0, self.samp_rate_blade*2)
 
     def get_samp_rate(self):
@@ -809,7 +787,6 @@ class Telelink(gr.top_block, Qt.QWidget):
 
     def set_freq(self, freq):
         self.freq = freq
-        self.soapy_bladerf_sink_0.set_frequency(0, self.freq)
         self.soapy_bladerf_source_0.set_frequency(0, self.freq)
 
     def get_excess_bw(self):
