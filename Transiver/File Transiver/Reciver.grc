@@ -693,7 +693,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: E:\Projects\DigitalCommDesign\src\rx.tmp
+    file: E:\Projects\DigitalCommDesign\src\rx files\rx.tmp
     type: byte
     unbuffered: 'False'
     vlen: '1'
