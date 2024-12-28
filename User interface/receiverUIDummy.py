@@ -7,6 +7,8 @@ import os
 
 class ReceiverApp:
     def __init__(self, master):
+        super().__init__()
+        self.path=os.path.dirname(os.path.abspath(__file__))
         self.master = master
         self.master.geometry("700x560")
         self.master.resizable(0, 0)
@@ -154,16 +156,18 @@ class ReceiverApp:
         subprocess.run([sys.executable, "User interface/home.py"])
 
     def start_receiving(self):
-        self.receive_button.configure(state="disabled", text="Receiving...")
-        for i in range(101):
-            self.progress_bar.set(i / 100)
-            self.status_label.configure(text=f"Receiving... {i}%")
-            self.master.update()
-            time.sleep(0.03)
-        self.receive_button.configure(state="normal", text="Receive")
-        received_file_path = "User interface/DummyImgReceived.jpeg"
-        self.status_label.configure(text="File received successfully!")
-        self.create_file_label(received_file_path)
+        """Run StarLik receiver script and handle results"""
+        try:
+            
+            # Resolve the path to the script
+            reciver_path = os.path.abspath(os.path.join(self.path, '../Transiver/File Transiver/Reciver.py'))
+            print(reciver_path)
+            # Start the subprocess
+            subprocess.Popen(['python', reciver_path],text=True)
+
+            
+        except Exception as e:
+           pass
 
     def create_file_label(self, file_path):
         file_label = CTkLabel(
@@ -184,6 +188,37 @@ class ReceiverApp:
                 subprocess.run(["xdg-open", file_path], check=True)
         except Exception as e:
             self.status_label.configure(text=f"Failed to open file: {e}")
+
+    def file_decoder(self):
+            global content
+
+            def open_file(file_path):
+                subprocess.run(["xdg-open", file_path])
+            print("file decoder started")
+            while(True):
+                with open('./rx.tmp', 'rb') as file:
+
+                    content = file.read()
+                    if(len(content)>10):print('conncted')
+                    time.sleep(1)
+
+                    start= content.find(b'sts')
+                    if start!= -1:
+                            print('file recieving')
+                            end_name= content.rfind(b'|||')
+                            name=content[start+3:end_name]
+                            print(name)
+                            end_index = content.rfind(b'end')
+                            if end_index != -1:
+                                start= content.find(b'|||')
+                                content = content[start+3:end_index]
+                                os.environ['RECEIVE_FILE']=name.decode()
+                                path='./'+name.decode()
+                                with open(path,'wb') as output:
+                                    output.write(content)
+                                    with open('./rx.tmp','wb') as output:pass
+                                open_file(path)
+
 
 def main():
     app = CTk()

@@ -173,8 +173,7 @@ class TransmitterApp(CTk):
         '''if not self.selected_file_path:
             tk.messagebox.showerror("Error", "Please select a file!")
             return'''
-
-    
+  
         try:
             def encrypt_data(data, key, iv):
                 cipher = AES.new(key, AES.MODE_CBC, iv)
