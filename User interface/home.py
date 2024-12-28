@@ -1,14 +1,27 @@
 from customtkinter import *
 from PIL import Image
+import tkinter as tk
 import subprocess
 import sys
 
 class HomeApp(CTk):
     def __init__(self):
         super().__init__()
+        self.path=os.path.dirname(os.path.abspath(__file__))
         self.geometry("700x560")
         self.resizable(0, 0)
-        self.title("Home")  # Changed window title to "Home"
+        self.title("StarLink")  # Changed window title to "Home"
+
+        # Logo ico Image
+        try:
+            # Load the icon
+            icon_path = self.path + r"logo.ico"
+            try:
+                self.iconbitmap(icon_path)  # Use for .ico files
+            except tk.TclError:
+                pass
+        except Exception as e:
+            print(f"Error setting icon: {e}")
         
         # Initialize UI elements
         self.create_left_side_background()

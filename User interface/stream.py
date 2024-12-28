@@ -10,6 +10,9 @@ from tkinter import filedialog
 class TransmitterApp(CTk):
     def __init__(self):
         super().__init__()
+        self.path=os.path.dirname(os.path.abspath(__file__))
+
+        super().__init__()
         self.geometry("700x560")
         self.resizable(0, 0)
         self.title("Transmitter")
@@ -100,10 +103,16 @@ class TransmitterApp(CTk):
         subprocess.run([sys.executable, "User interface/home.py"])  # Adjust the path to your home.py file
 
     def server(self):
-        self.streaming_label.configure(text="Streaming....")
+        # Resolve the path to the script
+        reciver_path = os.path.abspath(os.path.join(self.path, '../Transiver/Video Streaming/Telelink.py'))
+        # Start the subprocess
+        subprocess.Popen(['python', reciver_path],text=True)
 
     def viewer(self):
-        self.streaming_label.configure(text="Streaming....")
+        # Resolve the path to the script
+        reciver_path = os.path.abspath(os.path.join(self.path, '../Transiver/Video Streaming/Reciver.py'))
+        # Start the subprocess
+        subprocess.Popen(['python', reciver_path],text=True)
 
 
 if __name__ == "__main__":
