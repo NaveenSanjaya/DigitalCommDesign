@@ -4,6 +4,8 @@ import time
 import subprocess
 import sys
 import os
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
 
 class ReceiverApp:
     def __init__(self, master):

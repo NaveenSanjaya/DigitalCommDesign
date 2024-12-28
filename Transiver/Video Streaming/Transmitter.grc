@@ -65,7 +65,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2816, 508.0]
+    coordinate: [2816, 532.0]
     rotation: 0
     state: enabled
 - name: cc_enc
@@ -734,9 +734,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1648, 1192.0]
+    coordinate: [1840, 1192.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_file_source_0
   id: blocks_file_source
   parameters:
@@ -744,7 +744,7 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: ''
+    file: C:\Users\Naveen\Downloads\[US] 2013 Cloudy with a Chance of Meatballs.mp4
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -756,7 +756,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 116.0]
+    coordinate: [0, 120.0]
     rotation: 0
     state: disabled
 - name: blocks_multiply_const_vxx_0
@@ -776,7 +776,7 @@ blocks:
     bus_structure: null
     coordinate: [740.0, 408]
     rotation: 90
-    state: disabled
+    state: enabled
 - name: blocks_repack_bits_bb_0
   id: blocks_repack_bits_bb
   parameters:
@@ -846,14 +846,14 @@ blocks:
     len_tag_key: '"packet_len"'
     maxoutbuf: '0'
     minoutbuf: '0'
-    packet_len: '16'
+    packet_len: '8'
     type: byte
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 148.0]
+    coordinate: [448, 0.0]
     rotation: 0
     state: enabled
 - name: blocks_tagged_stream_mux_0
@@ -1260,7 +1260,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 284.0]
+    coordinate: [24, 248.0]
     rotation: 0
     state: enabled
 - name: fec_extended_tagged_decoder_2
@@ -1320,7 +1320,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1624, 1044.0]
+    coordinate: [1840, 996.0]
     rotation: 0
     state: enabled
 - name: qtgui_const_sink_x_0
@@ -1734,7 +1734,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1872, 984.0]
+    coordinate: [2040, 1120.0]
     rotation: 180
     state: enabled
 - name: qtgui_time_sink_x_0_0
@@ -1868,6 +1868,34 @@ blocks:
     coordinate: [3392, 292.0]
     rotation: 0
     state: enabled
+- name: snippet_0
+  id: snippet
+  parameters:
+    alias: ''
+    code: "#This modules will start the VLC in ubuntu\n\nimport threading\nimport\
+      \ subprocess\n\ndef run_command(command):\n    \"\"\"Function to run a terminal\
+      \ command.\"\"\"\n    try:\n        result = subprocess.run(command, shell=True,\
+      \ text=True, capture_output=True)\n        print(f\"Command Output:\\n{result.stdout}\"\
+      )\n        if result.stderr:\n            print(f\"Command Error:\\n{result.stderr}\"\
+      )\n    except Exception as e:\n        print(f\"Error running command: {e}\"\
+      )\n\ndef run_in_thread(command):\n    \"\"\"Function to run the command in a\
+      \ separate thread.\"\"\"\n    thread = threading.Thread(target=run_command,\
+      \ args=(command,))\n    thread.start()\n    return thread\n\nif __name__ ==\
+      \ \"__main__\":\n    # Example command to run\n    cmd = r'vlc dshow:///dev/video0\
+      \ --sout=\"#transcode{vcodec=mp2v,vb=200,scale=0.5,acodec=none,scodec=none}:duplicate{dst=file{dst=./im.ts,no-overwrite},dst=display}\"\
+      \ --sout-all --sout-keep'\n    thread = run_in_thread(cmd)\n\n    # Do other\
+      \ tasks while the command runs\n    # Optionally, wait for the thread to complete\n\
+      \    # thread.join()\nprint(\"vlc started.\")"
+    comment: ''
+    priority: '0'
+    section: main_after_init
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2648, 864.0]
+    rotation: 0
+    state: enabled
 - name: soapy_bladerf_sink_0
   id: soapy_bladerf_sink
   parameters:
@@ -1887,7 +1915,7 @@ blocks:
     bus_structure: null
     coordinate: [904, 320.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: soapy_bladerf_source_0
   id: soapy_bladerf_source
   parameters:
