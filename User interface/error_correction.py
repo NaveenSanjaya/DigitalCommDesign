@@ -32,8 +32,8 @@ class App(ctk.CTk):
         self.geometry("800x600")
         self.configure(fg_color="#FFFFFF")
 
-        # Create frame for landing page
-        self.landing_frame = ctk.CTkFrame(self, fg_color="white")
+        # Create frame for landing page#FBE4D8
+        self.landing_frame = ctk.CTkFrame(self, fg_color="#FBE4D8")
         self.landing_frame.pack(expand=True, fill="both")
 
         # Transmit Button
@@ -63,14 +63,25 @@ class App(ctk.CTk):
             height=50  
         )
         recieve_button.pack(pady=(20,0))
+        # Load and display an image on the landing page
+        try:
+            image_path = self.path + r"User interface/antenna.png"  # Update with your image path
+            image = Image.open(image_path)
+            image = image.resize((200, 200), Image.ANTIALIAS)  # Resize the image if needed
+            photo = ImageTk.PhotoImage(image)
+            image_label = ctk.CTkLabel(self.landing_frame, image=photo, text="")
+            image_label.image = photo  # Keep a reference to avoid garbage collection
+            image_label.pack(pady=(20, 20))
+        except Exception as e:
+            print(f"Error loading image: {e}")
 
         '''
         Transmtter Page (initially hidden)
         '''
-        self.transmitter_frame = ctk.CTkFrame(self, fg_color="white")
+        self.transmitter_frame = ctk.CTkFrame(self, fg_color="#FBE4D8")
         
         # Selected File Display Frame
-        self.file_display_frame = ctk.CTkFrame(self.transmitter_frame, fg_color="white")
+        self.file_display_frame = ctk.CTkFrame(self.transmitter_frame, fg_color="#FBE4D8")
         self.file_display_frame.pack(pady=20)
 
         # Selected File Path Label
@@ -152,10 +163,10 @@ class App(ctk.CTk):
         '''
         Receive Page Frame
         '''
-        self.receive_frame = ctk.CTkFrame(self, fg_color="white")
+        self.receive_frame = ctk.CTkFrame(self, fg_color="#FBE4D8")
 
         # Receive Status Frame
-        self.receive_status_frame = ctk.CTkFrame(self.receive_frame, fg_color="white")
+        self.receive_status_frame = ctk.CTkFrame(self.receive_frame, fg_color="#FBE4D8")
         self.receive_status_frame.pack(expand=True)
 
         # Receive Status Icon (Buffering/Result)
