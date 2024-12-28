@@ -36,6 +36,39 @@ class App(ctk.CTk):
         self.landing_frame = ctk.CTkFrame(self, fg_color="#FBE4D8")
         self.landing_frame.pack(expand=True, fill="both")
 
+        header_label = ctk.CTkLabel(
+        self.landing_frame,
+        text="Welcome to StarLink",
+        font=("Roboto", 28, "bold"),
+        text_color="#522B5B"
+        )
+        header_label.pack(pady=(20, 10))
+
+        subheading_label = ctk.CTkLabel(
+            self.landing_frame,
+            text="Your reliable communication tool.",
+            font=("Roboto", 18),
+            text_color="#654F6C"
+        )
+        subheading_label.pack(pady=(0, 20))
+
+        divider = ctk.CTkLabel(
+            self.landing_frame,
+            text="-" * 50,
+            text_color="#654F6C",
+            font=("Roboto", 14)
+        )
+        divider.pack(pady=(10, 10))
+
+        footer_label = ctk.CTkLabel(
+            self.landing_frame,
+            text="© 2024 StarLink Inc. All Rights Reserved.",
+            font=("Roboto", 12),
+            text_color="#654F6C"
+        )
+        footer_label.pack(side="bottom", pady=(10, 10))
+
+
         # Transmit Button
         transmit_button = ctk.CTkButton(
             self.landing_frame, 
