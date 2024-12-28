@@ -112,7 +112,7 @@ class App(ctk.CTk):
             width=200, 
             height=50
         )
-        select_file_button.pack(pady =(0,0))
+        select_file_button.pack(pady =(10,10))
 
         # Send File Button (initially disabled)
         self.send_file_button = ctk.CTkButton(
@@ -127,7 +127,8 @@ class App(ctk.CTk):
             height=40, 
             state="disabled",
         )
-        self.send_file_button.pack(padx=(0,0))
+        self.send_file_button.pack(padx=(20,20))
+        self.send_file_button.pack(pady=(10,10))
 
 
         # Back Button
@@ -142,7 +143,8 @@ class App(ctk.CTk):
             height=40,
             text_color="white"
         )
-        back_button.pack(padx=(0,0))
+        back_button.pack(padx=(20,20))
+        back_button.pack(side="bottom",pady=(10,10))
 
         # Initialize selected file path
         self.selected_file_path = None
@@ -246,6 +248,21 @@ class App(ctk.CTk):
         # Clear any previous status message
         self.status_label.configure(text="")
 
+        # Create and show progress bar
+        self.progress_bar = ctk.CTkProgressBar(self.transmitter_frame, orientation="horizontal", width=400)
+        self.progress_bar.pack(pady=(10, 10))  # Adjust the padding to change the position
+        #self.progress_bar.pack(before=select_file_button)  # Place the progress bar before the select file button
+        self.progress_bar.set(0)  # Initialize progress to 0
+
+        def update_progress_bar():
+            for i in range(1, 101):
+                time.sleep(0.05)  # Simulate progress
+                self.progress_bar.set(i / 100.0)
+            self.progress_bar.pack_forget()  # Hide the progress bar after completion
+
+        # Run the progress bar update in a separate thread
+        threading.Thread(target=update_progress_bar, daemon=True).start()
+
         def file_encoder():
             try:
                 def encrypt_data(data, key, iv):
@@ -257,7 +274,6 @@ class App(ctk.CTk):
                     binarypreamble = b'11000110101100111111010110101000011010110011111000110101100'
                     file_path = self.selected_file_path
                     file_name = os.path.basename(file_path).encode()
-                    # file_extension = os.path.splitext(file_path)[1].encode()
                     with open(file_path, 'rb') as file:
                         plaintext = file.read()
                     preamble = binarypreamble * 3000
@@ -305,6 +321,8 @@ class App(ctk.CTk):
 
         # Run in a separate thread to prevent GUI freezing
         threading.Thread(target=file_encoder, daemon=True).start()
+
+        
 
     def start_receiver(self):
         """Run StarLik receiver script and handle results"""
@@ -424,7 +442,7 @@ class App(ctk.CTk):
         # Stop progress bar updates and show success
         self.progress_bar.set(1.0)  # Complete the progress bar
         self.progress_bar.pack_forget()  # Hide the progress bar
-        self.receive_status_icon.configure(text="🌳", text_color="green")
+        self.receive_status_icon.configure(text="Received", text_color="green")
         self.receive_status_text.configure(text="File(s) Received Successfully", text_color="green")
         # Try to extract the received file name
         
