@@ -1,15 +1,24 @@
 from customtkinter import *
-from PIL import Image, ImageTk
-import time
-import subprocess
-import sys
+import customtkinter as ctk
 import os
+import threading
+import subprocess
+import tkinter as tk
 from tkinter import filedialog
+from PIL import Image, ImageTk  # Import Image and ImageTk
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+import time
+from tkinter import filedialog
+import sys
+from sympy import true
 
 
 class TransmitterApp(CTk):
     def __init__(self):
         super().__init__()
+        self.path=os.path.dirname(os.path.abspath(__file__))
+
         self.geometry("700x560")
         self.resizable(0, 0)
         self.title("Transmitter")
@@ -121,7 +130,10 @@ class TransmitterApp(CTk):
         subprocess.run([sys.executable, "User interface/home.py"])  # Adjust the path to your home.py file
 
     def select_file(self):
-        file_types = [
+
+        self.selected_file_path = filedialog.askopenfilename()
+
+        '''file_types = [
             ("All files", "*.*"),
             ("Text files", "*.txt"),
             ("Audio files", "*.wav *.mp3 *.ts"),
@@ -153,24 +165,100 @@ class TransmitterApp(CTk):
             elif self.file_path.endswith(('.mp4', '.avi', '.ts')):
                 img_data = Image.open("User interface/video.png")
                 img = CTkImage(light_image=img_data, dark_image=img_data, size=(50, 50))
-                self.preview_label.configure(image=img, text="Video file selected", compound="top", wraplength=480)
+                self.preview_label.configure(image=img, text="Video file selected", compound="top", wraplength=480)'''
 
     def send_file(self):
-        if self.file_path:
-            self.sending_label.configure(text="Sending file...")
-            self.progress_bar.set(0)
-            self.progress_bar.pack(pady=(10, 20), anchor="center")
+        """Send file using transmitter.py"""
 
-            def update_progress_bar():
-                for i in range(101):
-                    self.progress_bar.set(i / 100)
-                    self.update_idletasks()
-                    time.sleep(0.05)
+        '''if not self.selected_file_path:
+            tk.messagebox.showerror("Error", "Please select a file!")
+            return'''
 
-                self.sending_label.configure(text="File sent")
+    
+        try:
+            def encrypt_data(data, key, iv):
+                cipher = AES.new(key, AES.MODE_CBC, iv)
+                return cipher.encrypt(pad(data, AES.block_size))
 
-            self.after(0, update_progress_bar)
+            def add_preamble():
+                # Example binary string
+                binarypreamble = b'11000110101100111111010110101000011010110011111000110101100'
+                file_path = self.selected_file_path
+                file_name = os.path.basename(file_path).encode()
+                # file_extension = os.path.splitext(file_path)[1].encode()
+                with open(file_path, 'rb') as file:
+                    plaintext = file.read()
+                preamble = binarypreamble * 3000
+                detect_sequence = b'sts'  # Sequence to detect preamble
+                end_sequence = b'end'  # Sequence to detect end of file
 
+                # AES encryption
+                key = b'Sixteen byte key'  # AES key must be either 16, 24, or 32 bytes long
+                iv = b'This is an IV456'  # AES IV must be 16 bytes long
+                encrypted_plaintext = encrypt_data(plaintext, key, iv)
+                
+                with open('src/tx.tmp', 'wb') as output_file:
+                    output_file.write(preamble + detect_sequence + file_name + b'|||' + encrypted_plaintext + end_sequence + preamble)
+
+            # Adds the preamble
+            add_preamble()
+
+            # Resolve the path to the script
+            transmitter_path = os.path.abspath(os.path.join(self.path, '../Transiver/File Transiver/Transmitter.py'))
+            print(transmitter_path)
+            '''if not os.path.exists(transmitter_path):
+                raise FileNotFoundError(f"File not found: {transmitter_path}")'''
+
+            # Start the subprocess
+            print("subprocess started")
+            subprocess.Popen(['python', transmitter_path], text=True)
+
+            '''stdout, stderr = process.communicate()
+
+            if process.returncode == 0:
+                self.after(0, self.handle_transmission_success, stdout)
+            else:
+                self.after(0, self.handle_transmission_error, stderr)
+
+        except subprocess.CalledProcessError as e:
+            # Handle subprocess errors
+            self.after(0, self.handle_transmission_error, str(e))'''
+        except Exception as e:
+            # Handle other unexpected errors
+            #self.after(0, self.handle_transmission_error, str(e))
+            pass
+
+    def file_decoder(self):
+            global content
+
+            def open_file(file_path):
+                subprocess.run(["xdg-open", file_path])
+            print("file decoder started")
+            while(True):
+                with open('./rx.tmp', 'rb') as file:
+
+                    content = file.read()
+                    if(len(content)>10):print('conncted')
+                    time.sleep(1)
+
+                    start= content.find(b'sts')
+                    if start!= -1:
+                            print('file recieving')
+                            end_name= content.rfind(b'|||')
+                            name=content[start+3:end_name]
+                            print(name)
+                            end_index = content.rfind(b'end')
+                            if end_index != -1:
+                                start= content.find(b'|||')
+                                content = content[start+3:end_index]
+                                os.environ['RECEIVE_FILE']=name.decode()
+                                path='./'+name.decode()
+                                with open(path,'wb') as output:
+                                    output.write(content)
+                                    with open('./rx.tmp','wb') as output:pass
+                                open_file(path)
+
+    
 
 if __name__ == "__main__":
     app = TransmitterApp()
