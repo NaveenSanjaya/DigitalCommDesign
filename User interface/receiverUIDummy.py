@@ -163,7 +163,7 @@ class ReceiverApp:
             reciver_path = os.path.abspath(os.path.join(self.path, '../Transiver/File Transiver/Reciver.py'))
             print(reciver_path)
             # Start the subprocess
-            subprocess.Popen(['python', reciver_path],text=True)
+            subprocess.Popen(['python3', reciver_path],text=True)
 
             
         except Exception as e:

@@ -711,12 +711,12 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: E:\Projects\DigitalCommDesign\src\tx.tmp
+    file: /home/gnuradio/Desktop/DigitalCommDesign/src/tx.tmp
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
     offset: '0'
-    repeat: 'True'
+    repeat: 'False'
     type: byte
     vlen: '1'
   states:
@@ -1860,4 +1860,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.10.0
+  grc_version: 3.10.7.0

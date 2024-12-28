@@ -12,6 +12,7 @@ import time
 from tkinter import filedialog
 import sys
 from sympy import true
+import tkinter.scrolledtext as scrolledtext  # For scrollable terminal output
 
 
 class TransmitterApp(CTk):
@@ -26,6 +27,7 @@ class TransmitterApp(CTk):
         # Initialize variables
         self.file_path = None
         self.preview_photo = None
+        self.process = None
 
         # Initialize UI
         self.create_sidebar()
@@ -74,11 +76,11 @@ class TransmitterApp(CTk):
         )
         send_button.pack(pady=(10, 20), anchor="center")
 
-        bottom_box = CTkFrame(master=frame, width=500, height=200, fg_color="#DFB6B2")
-        bottom_box.pack(side="bottom", fill="both", expand=True, padx=20, pady=20)
+        self.bottom_box = CTkFrame(master=frame, width=500, height=200, fg_color="#DFB6B2")
+        self.bottom_box.pack( fill="both", expand=True, padx=20, pady=20)
 
         self.preview_label = CTkLabel(
-            master=bottom_box,
+            master=self.bottom_box,
             text="",
             font=("Arial", 14),
             text_color="#522B5B",
@@ -86,22 +88,17 @@ class TransmitterApp(CTk):
         )
         self.preview_label.pack(pady=(10, 10), anchor="center")
 
-        self.progress_bar = CTkProgressBar(
-            master=bottom_box,
-            width=300,
-            height=20,
-            progress_color="#854F6C"
+        # Terminal output window
+        self.terminal_output = scrolledtext.ScrolledText(
+            master=frame,
+            wrap=tk.WORD,
+            font=("Courier", 10),
+            bg="#DFB6B2",
+            fg="#000000",
+            height=10
         )
-        self.progress_bar.set(0)
-        self.progress_bar.pack_forget()
-
-        self.sending_label = CTkLabel(
-            master=bottom_box,
-            text="",
-            font=("Arial", 14),
-            text_color="#522B5B"
-        )
-        self.sending_label.pack(pady=(10, 10), anchor="center")
+        self.terminal_output.pack(fill="both", expand=True, pady=(0,10), padx=(10,10))
+        self.terminal_output.configure(state="disabled")  # Initially non-editable
 
     def create_button(self, master, text, command):
         button = CTkButton(
@@ -128,10 +125,30 @@ class TransmitterApp(CTk):
     def go_back_to_home(self):
         self.destroy()
         subprocess.run([sys.executable, "User interface/home.py"])  # Adjust the path to your home.py file
+    
+    def format_file_size(self, size_bytes):
+        """Convert file size to human-readable format"""
+        for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+            if size_bytes < 1024.0:
+                return f"{size_bytes:.1f} {unit}"
+            size_bytes /= 1024.0
 
     def select_file(self):
-
         self.selected_file_path = filedialog.askopenfilename()
+        if self.selected_file_path:
+            # Extract file name
+            file_name = os.path.basename(self.selected_file_path)
+
+            # Get file size
+            file_size = os.path.getsize(self.selected_file_path)
+            size_str = self.format_file_size(file_size)
+
+            # Update the preview label with file name and size on separate lines
+            self.preview_label.configure(
+                text=f"File Name: {file_name}\nFile Size: {size_str}"
+            )
+
+
 
         '''file_types = [
             ("All files", "*.*"),
@@ -168,34 +185,27 @@ class TransmitterApp(CTk):
                 self.preview_label.configure(image=img, text="Video file selected", compound="top", wraplength=480)'''
 
     def send_file(self):
-        """Send file using transmitter.py"""
-
-        '''if not self.selected_file_path:
-            tk.messagebox.showerror("Error", "Please select a file!")
-            return'''
-  
+        """Send file using transmitter.py and display terminal output in the app."""
         try:
             def encrypt_data(data, key, iv):
                 cipher = AES.new(key, AES.MODE_CBC, iv)
                 return cipher.encrypt(pad(data, AES.block_size))
 
             def add_preamble():
-                # Example binary string
                 binarypreamble = b'11000110101100111111010110101000011010110011111000110101100'
                 file_path = self.selected_file_path
                 file_name = os.path.basename(file_path).encode()
-                # file_extension = os.path.splitext(file_path)[1].encode()
+
                 with open(file_path, 'rb') as file:
                     plaintext = file.read()
                 preamble = binarypreamble * 3000
-                detect_sequence = b'sts'  # Sequence to detect preamble
-                end_sequence = b'end'  # Sequence to detect end of file
+                detect_sequence = b'sts'
+                end_sequence = b'end'
 
-                # AES encryption
-                key = b'Sixteen byte key'  # AES key must be either 16, 24, or 32 bytes long
-                iv = b'This is an IV456'  # AES IV must be 16 bytes long
+                key = b'Sixteen byte key'
+                iv = b'This is an IV456'
                 encrypted_plaintext = encrypt_data(plaintext, key, iv)
-                
+
                 with open('src/tx.tmp', 'wb') as output_file:
                     output_file.write(preamble + detect_sequence + file_name + b'|||' + encrypted_plaintext + end_sequence + preamble)
 
@@ -205,27 +215,23 @@ class TransmitterApp(CTk):
             # Resolve the path to the script
             transmitter_path = os.path.abspath(os.path.join(self.path, '../Transiver/File Transiver/Transmitter.py'))
             print(transmitter_path)
-            '''if not os.path.exists(transmitter_path):
-                raise FileNotFoundError(f"File not found: {transmitter_path}")'''
 
-            # Start the subprocess
-            print("subprocess started")
-            subprocess.Popen(['python', transmitter_path], text=True)
+            # Start the subprocess and redirect its output
+            self.process = subprocess.Popen(
+                ['python3', transmitter_path],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
 
-            '''stdout, stderr = process.communicate()
+            # Start a thread to read the output
+            threading.Thread(target=self.read_terminal_output, daemon=True).start()
 
-            if process.returncode == 0:
-                self.after(0, self.handle_transmission_success, stdout)
-            else:
-                self.after(0, self.handle_transmission_error, stderr)
-
-        except subprocess.CalledProcessError as e:
-            # Handle subprocess errors
-            self.after(0, self.handle_transmission_error, str(e))'''
         except Exception as e:
-            # Handle other unexpected errors
-            #self.after(0, self.handle_transmission_error, str(e))
-            pass
+            self.terminal_output.configure(state="normal")
+            self.terminal_output.insert(tk.END, f"Error: {str(e)}\n")
+            self.terminal_output.see(tk.END)
+            self.terminal_output.configure(state="disabled")
 
     def file_decoder(self):
             global content
@@ -257,7 +263,28 @@ class TransmitterApp(CTk):
                                     with open('./rx.tmp','wb') as output:pass
                                 open_file(path)
 
-    
+    def read_terminal_output(self):
+        """Read the subprocess output and display it in the terminal window."""
+        while self.process.poll() is None:  # While the process is still running
+            line = self.process.stdout.readline()
+            if line:
+                self.terminal_output.configure(state="normal")
+                self.terminal_output.insert(tk.END, line)
+                self.terminal_output.see(tk.END)  # Auto-scroll to the latest line
+                self.terminal_output.configure(state="disabled")
+
+        # Capture any remaining output after the process ends
+        remaining_output, errors = self.process.communicate()
+        if remaining_output:
+            self.terminal_output.configure(state="normal")
+            self.terminal_output.insert(tk.END, remaining_output)
+            self.terminal_output.see(tk.END)
+            self.terminal_output.configure(state="disabled")
+        if errors:
+            self.terminal_output.configure(state="normal")
+            self.terminal_output.insert(tk.END, errors)
+            self.terminal_output.see(tk.END)
+            self.terminal_output.configure(state="disabled") 
 
 if __name__ == "__main__":
     app = TransmitterApp()

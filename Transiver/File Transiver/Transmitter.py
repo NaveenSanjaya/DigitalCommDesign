@@ -9,11 +9,11 @@
 # Author: Telelink
 # Copyright: Telelink
 # Description: cdp project
-# GNU Radio version: 3.10.10.0
+# GNU Radio version: 3.10.7.0
 
+from packaging.version import Version as StrictVersion
 from PyQt5 import Qt
 from gnuradio import qtgui
-from PyQt5 import QtCore
 from gnuradio import blocks
 import pmt
 from gnuradio import digital
@@ -28,6 +28,8 @@ from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio import soapy
+from gnuradio.qtgui import Range, RangeWidget
+from PyQt5 import QtCore
 import sip
 
 
@@ -58,9 +60,10 @@ class Transmitter(gr.top_block, Qt.QWidget):
         self.settings = Qt.QSettings("GNU Radio", "Transmitter")
 
         try:
-            geometry = self.settings.value("geometry")
-            if geometry:
-                self.restoreGeometry(geometry)
+            if StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
+                self.restoreGeometry(self.settings.value("geometry").toByteArray())
+            else:
+                self.restoreGeometry(self.settings.value("geometry"))
         except BaseException as exc:
             print(f"Qt GUI: Could not restore geometry: {str(exc)}", file=sys.stderr)
 
@@ -111,14 +114,14 @@ class Transmitter(gr.top_block, Qt.QWidget):
         # Blocks
         ##################################################
 
-        self._txgain_range = qtgui.Range(18, 60, 1, 50, 200)
-        self._txgain_win = qtgui.RangeWidget(self._txgain_range, self.set_txgain, "'txgain'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._txgain_range = Range(18, 60, 1, 50, 200)
+        self._txgain_win = RangeWidget(self._txgain_range, self.set_txgain, "'txgain'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._txgain_win)
-        self._freq_range = qtgui.Range(2e9, 6e9, 100e3, 2.4e9, 200)
-        self._freq_win = qtgui.RangeWidget(self._freq_range, self.set_freq, "'freq'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._freq_range = Range(2e9, 6e9, 100e3, 2.4e9, 200)
+        self._freq_win = RangeWidget(self._freq_range, self.set_freq, "'freq'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._freq_win)
-        self._delay_range = qtgui.Range(0, 200, 1, 42, 200)
-        self._delay_win = qtgui.RangeWidget(self._delay_range, self.set_delay, "Delay", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._delay_range = Range(0, 200, 1, 42, 200)
+        self._delay_win = RangeWidget(self._delay_range, self.set_delay, "Delay", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_grid_layout.addWidget(self._delay_win, 1, 0, 1, 1)
         for r in range(1, 2):
             self.top_grid_layout.setRowStretch(r, 1)
@@ -140,15 +143,15 @@ class Transmitter(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self._timing_loop_bw_range = qtgui.Range(0.0, 0.2, 0.01, 6.28/100.0, 200)
-        self._timing_loop_bw_win = qtgui.RangeWidget(self._timing_loop_bw_range, self.set_timing_loop_bw, "Time: BW", "slider", float, QtCore.Qt.Horizontal)
+        self._timing_loop_bw_range = Range(0.0, 0.2, 0.01, 6.28/100.0, 200)
+        self._timing_loop_bw_win = RangeWidget(self._timing_loop_bw_range, self.set_timing_loop_bw, "Time: BW", "slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_1.addWidget(self._timing_loop_bw_win, 0, 0, 1, 1)
         for r in range(0, 1):
             self.controls_grid_layout_1.setRowStretch(r, 1)
         for c in range(0, 1):
             self.controls_grid_layout_1.setColumnStretch(c, 1)
-        self._time_offset_range = qtgui.Range(0.999, 1.001, 0.0001, 1.00, 200)
-        self._time_offset_win = qtgui.RangeWidget(self._time_offset_range, self.set_time_offset, "Timing Offset", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._time_offset_range = Range(0.999, 1.001, 0.0001, 1.00, 200)
+        self._time_offset_win = RangeWidget(self._time_offset_range, self.set_time_offset, "Timing Offset", "counter_slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_0.addWidget(self._time_offset_win, 0, 2, 1, 1)
         for r in range(0, 1):
             self.controls_grid_layout_0.setRowStretch(r, 1)
@@ -167,14 +170,14 @@ class Transmitter(gr.top_block, Qt.QWidget):
         self.soapy_bladerf_sink_0.set_frequency(0, freq)
         self.soapy_bladerf_sink_0.set_frequency_correction(0, 0)
         self.soapy_bladerf_sink_0.set_gain(0, min(max(txgain, 17.0), 73.0))
-        self._rf_gain_sink_range = qtgui.Range(0, 60, 1, 10, 200)
-        self._rf_gain_sink_win = qtgui.RangeWidget(self._rf_gain_sink_range, self.set_rf_gain_sink, "RF gain sink", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._rf_gain_sink_range = Range(0, 60, 1, 10, 200)
+        self._rf_gain_sink_win = RangeWidget(self._rf_gain_sink_range, self.set_rf_gain_sink, "RF gain sink", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._rf_gain_sink_win)
-        self._rf_gain_0_range = qtgui.Range(0, 60, 1, 60, 200)
-        self._rf_gain_0_win = qtgui.RangeWidget(self._rf_gain_0_range, self.set_rf_gain_0, "RF gain", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._rf_gain_0_range = Range(0, 60, 1, 60, 200)
+        self._rf_gain_0_win = RangeWidget(self._rf_gain_0_range, self.set_rf_gain_0, "RF gain", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._rf_gain_0_win)
-        self._rf_gain_range = qtgui.Range(0, 60, 1, 60, 200)
-        self._rf_gain_win = qtgui.RangeWidget(self._rf_gain_range, self.set_rf_gain, "RF gain", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._rf_gain_range = Range(0, 60, 1, 60, 200)
+        self._rf_gain_win = RangeWidget(self._rf_gain_range, self.set_rf_gain, "RF gain", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._rf_gain_win)
         self.received = Qt.QTabWidget()
         self.received_widget_0 = Qt.QWidget()
@@ -286,33 +289,33 @@ class Transmitter(gr.top_block, Qt.QWidget):
 
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
-        self._phase_bw_range = qtgui.Range(0.0, 1.0, 0.01, 6.28/100.0, 200)
-        self._phase_bw_win = qtgui.RangeWidget(self._phase_bw_range, self.set_phase_bw, "Phase: Bandwidth", "slider", float, QtCore.Qt.Horizontal)
+        self._phase_bw_range = Range(0.0, 1.0, 0.01, 6.28/100.0, 200)
+        self._phase_bw_win = RangeWidget(self._phase_bw_range, self.set_phase_bw, "Phase: Bandwidth", "slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_1.addWidget(self._phase_bw_win, 0, 2, 1, 1)
         for r in range(0, 1):
             self.controls_grid_layout_1.setRowStretch(r, 1)
         for c in range(2, 3):
             self.controls_grid_layout_1.setColumnStretch(c, 1)
-        self._noise_volt_range = qtgui.Range(0, 1, 0.01, 0.0001, 200)
-        self._noise_volt_win = qtgui.RangeWidget(self._noise_volt_range, self.set_noise_volt, "Noise Voltage", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._noise_volt_range = Range(0, 1, 0.01, 0.0001, 200)
+        self._noise_volt_win = RangeWidget(self._noise_volt_range, self.set_noise_volt, "Noise Voltage", "counter_slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_0.addWidget(self._noise_volt_win, 0, 0, 1, 1)
         for r in range(0, 1):
             self.controls_grid_layout_0.setRowStretch(r, 1)
         for c in range(0, 1):
             self.controls_grid_layout_0.setColumnStretch(c, 1)
-        self._if_gain_range = qtgui.Range(0, 50, 1, 40, 200)
-        self._if_gain_win = qtgui.RangeWidget(self._if_gain_range, self.set_if_gain, "IF gain", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._if_gain_range = Range(0, 50, 1, 40, 200)
+        self._if_gain_win = RangeWidget(self._if_gain_range, self.set_if_gain, "IF gain", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._if_gain_win)
-        self._freq_offset_range = qtgui.Range(-0.1, 0.1, 0.001, 0, 200)
-        self._freq_offset_win = qtgui.RangeWidget(self._freq_offset_range, self.set_freq_offset, "Frequency Offset", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._freq_offset_range = Range(-0.1, 0.1, 0.001, 0, 200)
+        self._freq_offset_win = RangeWidget(self._freq_offset_range, self.set_freq_offset, "Frequency Offset", "counter_slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_0.addWidget(self._freq_offset_win, 0, 1, 1, 1)
         for r in range(0, 1):
             self.controls_grid_layout_0.setRowStretch(r, 1)
         for c in range(1, 2):
             self.controls_grid_layout_0.setColumnStretch(c, 1)
         self.fec_extended_tagged_encoder_0_1 = fec.extended_tagged_encoder(encoder_obj_list=cc_enc, puncpat='11', lentagname="packet_len", mtu=MTU)
-        self._eq_gain_range = qtgui.Range(0.0, 0.1, 0.001, 0.01, 200)
-        self._eq_gain_win = qtgui.RangeWidget(self._eq_gain_range, self.set_eq_gain, "Equalizer: rate", "slider", float, QtCore.Qt.Horizontal)
+        self._eq_gain_range = Range(0.0, 0.1, 0.001, 0.01, 200)
+        self._eq_gain_win = RangeWidget(self._eq_gain_range, self.set_eq_gain, "Equalizer: rate", "slider", float, QtCore.Qt.Horizontal)
         self.controls_grid_layout_1.addWidget(self._eq_gain_win, 0, 1, 1, 1)
         for r in range(0, 1):
             self.controls_grid_layout_1.setRowStretch(r, 1)
@@ -334,7 +337,7 @@ class Transmitter(gr.top_block, Qt.QWidget):
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(0.8)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, 'E:\\Projects\\DigitalCommDesign\\src\\tx.tmp', True, 0, 0)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/gnuradio/Desktop/DigitalCommDesign/src/tx.tmp', False, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, delay)
         self.blocks_char_to_float_0_0_0 = blocks.char_to_float(1, 1)
@@ -531,7 +534,6 @@ class Transmitter(gr.top_block, Qt.QWidget):
 
     def set_hdr_format(self, hdr_format):
         self.hdr_format = hdr_format
-        self.digital_protocol_formatter_bb_0.set_header_format(self.hdr_format)
 
     def get_freq_offset(self):
         return self.freq_offset
@@ -598,6 +600,9 @@ def main(top_block_cls=Transmitter, options=None):
     if options is None:
         options = argument_parser().parse_args()
 
+    if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
+        style = gr.prefs().get_string('qtgui', 'style', 'raster')
+        Qt.QApplication.setGraphicsSystem(style)
     qapp = Qt.QApplication(sys.argv)
 
     tb = top_block_cls(MTU=options.MTU)
