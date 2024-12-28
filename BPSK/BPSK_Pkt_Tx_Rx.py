@@ -550,5 +550,5 @@ def main(top_block_cls=BPSK_Pkt_Tx_Rx, options=None):
 
 if __name__ == '__main__':
 
-    ext = add_preamble(fil)
+    ext = add_preamble()
     main()

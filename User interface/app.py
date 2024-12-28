@@ -8,8 +8,7 @@ from PIL import Image, ImageTk  # Import Image and ImageTk
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 import time
-from tkinter import filedialog
-import sys
+
 from sympy import true
 
 class App(ctk.CTk):

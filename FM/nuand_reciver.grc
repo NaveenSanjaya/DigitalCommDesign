@@ -80,7 +80,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [736, 260.0]
+    coordinate: [1024, 260.0]
     rotation: 0
     state: true
 - name: audio_sink_0
@@ -97,7 +97,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [992, 268.0]
+    coordinate: [1288, 272.0]
     rotation: 0
     state: true
 - name: qtgui_freq_sink_x_0
@@ -178,7 +178,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [320, 412.0]
+    coordinate: [560, 420.0]
     rotation: 0
     state: true
 - name: qtgui_time_sink_x_0
@@ -275,7 +275,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [320, 124.0]
+    coordinate: [560, 100.0]
     rotation: 0
     state: true
 - name: rational_resampler_xxx_0
@@ -295,7 +295,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 244.0]
+    coordinate: [760, 244.0]
     rotation: 0
     state: true
 - name: soapy_bladerf_source_0
@@ -317,7 +317,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [40, 252.0]
+    coordinate: [328, 260.0]
     rotation: 0
     state: true
 
@@ -330,4 +330,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.7.0
+  grc_version: 3.10.10.0
