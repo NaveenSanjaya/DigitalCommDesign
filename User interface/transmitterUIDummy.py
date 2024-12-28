@@ -1,5 +1,4 @@
 from customtkinter import *
-import customtkinter as ctk
 import os
 import threading
 import subprocess
@@ -148,42 +147,6 @@ class TransmitterApp(CTk):
                 text=f"File Name: {file_name}\nFile Size: {size_str}"
             )
 
-
-
-        '''file_types = [
-            ("All files", "*.*"),
-            ("Text files", "*.txt"),
-            ("Audio files", "*.wav *.mp3 *.ts"),
-            ("Image files", "*.png *.jpg *.jpeg"),
-            ("Video files", "*.mp4 *.avi")
-        ]
-
-        self.file_path = filedialog.askopenfilename(filetypes=file_types)
-        if self.file_path:
-            self.preview_label.configure(image="", text=f"Selected File: {os.path.basename(self.file_path)}")
-            self.sending_label.configure(text="")
-
-            if self.file_path.endswith('.txt'):
-                with open(self.file_path, 'r') as file:
-                    content = file.read()
-                self.preview_label.configure(text=content, wraplength=480)
-
-            elif self.file_path.endswith(('.wav', '.mp3')):
-                img_data = Image.open("User interface/audio.png")
-                img = CTkImage(light_image=img_data, dark_image=img_data, size=(50, 50))
-                self.preview_label.configure(image=img, text="Audio file selected", compound="top", wraplength=480)
-
-            elif self.file_path.endswith(('.png', '.jpg', '.jpeg')):
-                image = Image.open(self.file_path)
-                image.thumbnail((200, 200), Image.LANCZOS)
-                self.preview_photo = ImageTk.PhotoImage(image)
-                self.preview_label.configure(image=self.preview_photo, text="")
-
-            elif self.file_path.endswith(('.mp4', '.avi', '.ts')):
-                img_data = Image.open("User interface/video.png")
-                img = CTkImage(light_image=img_data, dark_image=img_data, size=(50, 50))
-                self.preview_label.configure(image=img, text="Video file selected", compound="top", wraplength=480)'''
-
     def send_file(self):
         """Send file using transmitter.py and display terminal output in the app."""
         try:
@@ -206,7 +169,7 @@ class TransmitterApp(CTk):
                 iv = b'This is an IV456'
                 encrypted_plaintext = encrypt_data(plaintext, key, iv)
 
-                with open('src/tx.tmp', 'wb') as output_file:
+                with open('./Transiver/File Transiver/tx.tmp', 'wb') as output_file:
                     output_file.write(preamble + detect_sequence + file_name + b'|||' + encrypted_plaintext + end_sequence + preamble)
 
             # Adds the preamble
@@ -218,7 +181,7 @@ class TransmitterApp(CTk):
 
             # Start the subprocess and redirect its output
             self.process = subprocess.Popen(
-                ['python3', transmitter_path],
+                ['python', transmitter_path],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True
@@ -232,36 +195,6 @@ class TransmitterApp(CTk):
             self.terminal_output.insert(tk.END, f"Error: {str(e)}\n")
             self.terminal_output.see(tk.END)
             self.terminal_output.configure(state="disabled")
-
-    def file_decoder(self):
-            global content
-
-            def open_file(file_path):
-                subprocess.run(["xdg-open", file_path])
-            print("file decoder started")
-            while(True):
-                with open('./rx.tmp', 'rb') as file:
-
-                    content = file.read()
-                    if(len(content)>10):print('conncted')
-                    time.sleep(1)
-
-                    start= content.find(b'sts')
-                    if start!= -1:
-                            print('file recieving')
-                            end_name= content.rfind(b'|||')
-                            name=content[start+3:end_name]
-                            print(name)
-                            end_index = content.rfind(b'end')
-                            if end_index != -1:
-                                start= content.find(b'|||')
-                                content = content[start+3:end_index]
-                                os.environ['RECEIVE_FILE']=name.decode()
-                                path='./'+name.decode()
-                                with open(path,'wb') as output:
-                                    output.write(content)
-                                    with open('./rx.tmp','wb') as output:pass
-                                open_file(path)
 
     def read_terminal_output(self):
         """Read the subprocess output and display it in the terminal window."""
