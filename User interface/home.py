@@ -62,13 +62,21 @@ class HomeApp(CTk):
             text="Send",
             command=self.go_to_send
         )
-        send_button.pack(pady=(10, 5), anchor="center")  # Reduced gap before and after buttons
+        send_button.pack(pady=(10, 10), anchor="center")  # Reduced gap before and after buttons
 
         # Add the "Receive" button
         receive_button = self.create_button(
             master=frame,
             text="Receive",
             command=self.go_to_receive
+        )
+        receive_button.pack(pady=(0, 10), anchor="center")  # Reduced gap between buttons
+
+        # Add the "Stream" button
+        receive_button = self.create_button(
+            master=frame,
+            text="Stream",
+            command=self.go_to_stream
         )
         receive_button.pack(pady=(0, 10), anchor="center")  # Reduced gap between buttons
 
@@ -101,6 +109,10 @@ class HomeApp(CTk):
     def go_to_receive(self):
         self.destroy()  # Close the current window
         subprocess.run([sys.executable, "User interface/receiverUIDummy.py"])  # Adjust the path to your home.py file
+
+    def go_to_stream(self):
+        self.destroy()  # Close the current window
+        subprocess.run([sys.executable, "User interface/stream.py"])  # Adjust the path to your home.py file
 
 # Run the app
 if __name__ == "__main__":

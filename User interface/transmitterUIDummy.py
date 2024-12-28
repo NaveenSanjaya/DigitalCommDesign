@@ -56,21 +56,14 @@ class TransmitterApp(CTk):
             text="Select File",
             command=self.select_file
         )
-        select_file_button.pack(pady=(10, 5), anchor="center")
+        select_file_button.pack(pady=(20, 10), anchor="center")
 
         send_button = self.create_button(
             master=frame,
             text="Send",
             command=self.send_file
         )
-        send_button.pack(pady=(10, 5), anchor="center")
-
-        stream_button = self.create_button(
-            master=frame,
-            text="Stream",
-            command=None
-        )
-        stream_button.pack(pady=(10, 5), anchor="center")
+        send_button.pack(pady=(10, 20), anchor="center")
 
         bottom_box = CTkFrame(master=frame, width=500, height=200, fg_color="#DFB6B2")
         bottom_box.pack(side="bottom", fill="both", expand=True, padx=20, pady=20)
