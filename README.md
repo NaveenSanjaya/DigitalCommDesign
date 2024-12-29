@@ -24,6 +24,12 @@ This repository contains the files and code for the **EN2130 Communication Desig
 - `/docs` - Documentation related to system design and implementation.
 - `/tests` - Test scripts for evaluating system performance.
 - `/media` - Example image, voice, and video files for transmission.
+- `/BPSK` - Contains BPSK modulation related files.
+- `/FM` - Contains FM modulation related files.
+- `/QPSK` - Contains QPSK modulation related files.
+- `/temp` - Temporary files and scripts.
+- `/Transiver` - Transceiver related files.
+- `/User interface` - User interface related files.
 
 ## Usage
 
