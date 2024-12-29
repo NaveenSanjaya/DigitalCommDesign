@@ -99,6 +99,9 @@ class TransmitterApp(CTk):
         self.terminal_output.pack(fill="both", expand=True, pady=(0,10), padx=(10,10))
         self.terminal_output.configure(state="disabled")  # Initially non-editable
 
+        # Start a thread to read the terminal output
+        threading.Thread(target=self.terminal_output, daemon=True).start()
+
     def create_button(self, master, text, command):
         button = CTkButton(
             master=master,
@@ -243,6 +246,7 @@ class TransmitterApp(CTk):
             threading.Thread(target=run_transmitter, daemon=True).start()
             threading.Thread(target=update_progress_bar, daemon=True).start()
 
+            threading.Thread(target=update_progress_bar, daemon=True).start()
 
         except Exception as e:
             self.terminal_output.configure(state="normal")
