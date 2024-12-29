@@ -198,40 +198,57 @@ class ReceiverApp:
         except Exception as e:
            print(e)
 
+
     def file_decoder(self):
-            global content
+        global content
 
-            def open_file(file_path):
-                if platform.system() == "Windows":
-                    os.startfile(file_path)
-                else:
-                    subprocess.run(["xdg-open", file_path])
+        def open_file(file_path):
+            if platform.system() == "Windows":
+                print(file_path)
+                os.startfile(file_path)
+            else:
+                subprocess.run(["xdg-open", file_path])
 
-            print("file decoding started")
-            
-            while(True):
-                with open('./Transiver/File Transiver/rx.tmp', 'rb') as file:
+        print("File decoding started")
 
-                    content = file.read()
-                    if(len(content)>10):print('conncted')
+        while True:
+            with open('./Transiver/File Transiver/rx.tmp', 'rb') as file:
+                content = file.read()
+                if len(content) > 10:
+                    print('Connected')
                     time.sleep(1)
 
-                    start= content.find(b'sts')
-                    if start!= -1:
-                            print('file recieving')
-                            end_name= content.rfind(b'|||')
-                            name=content[start+3:end_name]
+                    start = content.find(b'sts')
+                    if start != -1:
+                        print('File receiving')
+                        end_name = content.rfind(b'|||')
+                        if end_name != -1:
+                            name = content[start + 3:end_name].decode()  # Decoding the file name
                             print(name)
+
                             end_index = content.rfind(b'end')
                             if end_index != -1:
-                                start= content.find(b'|||')
-                                content = content[start+3:end_index]
-                                os.environ['RECEIVE_FILE']=name.decode()
-                                path='./Transiver/File Transiver/'+name.decode()
-                                with open(path,'wb') as output:
+                                start = content.find(b'|||')
+                                content = content[start + 3:end_index]
+
+                                os.environ['RECEIVE_FILE'] = name
+
+                                # Use os.path.join for correct path concatenation
+                                base_dir = './Transiver/File Transiver'
+                                path = os.path.abspath(os.path.join(base_dir, name))  # Convert to absolute path
+
+                                # Ensure the directory exists
+                                os.makedirs(base_dir, exist_ok=True)
+
+                                with open(path, 'wb') as output:
                                     output.write(content)
-                                    with open('./Transiver/File Transiver/rx.tmp','wb') as output:pass
-                                    open_file(path)
+
+                                # Clear the temporary file
+                                with open('./Transiver/File Transiver/rx.tmp', 'wb') as output:
+                                    pass
+                                print('Path is', path)
+                                # Open the file
+                                open_file(path)
 
 
 def main():
