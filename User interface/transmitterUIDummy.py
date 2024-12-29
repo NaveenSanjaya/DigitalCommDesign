@@ -37,7 +37,7 @@ class TransmitterApp(CTk):
         sidebar_frame.pack_propagate(0)
         sidebar_frame.pack(fill="y", anchor="w", side="left")
 
-        back_img_data = Image.open("User interface/back.png")
+        back_img_data = Image.open("User interface/src/back.png")
         back_img = CTkImage(dark_image=back_img_data, light_image=back_img_data)
 
         back_button = CTkButton(
@@ -52,7 +52,7 @@ class TransmitterApp(CTk):
         )
         back_button.pack(anchor="center", ipady=5, pady=(60, 0))
 
-        antenna_img_data = Image.open("User interface/antenna.png")
+        antenna_img_data = Image.open("User interface/src/antenna.png")
         antenna_img = CTkImage(dark_image=antenna_img_data, light_image=antenna_img_data, size=(100, 100))
         CTkLabel(master=sidebar_frame, text="", image=antenna_img).pack(pady=(120, 0), anchor="center")
 
@@ -179,7 +179,30 @@ class TransmitterApp(CTk):
             transmitter_path = os.path.abspath(os.path.join(self.path, '../Transiver/File Transiver/Transmitter.py'))
             print(transmitter_path)
 
-            # Start the subprocess in a separate thread and redirect its output
+            # Function to read subprocess output
+            def read_output(process):
+                while process.poll() is None:  # While the process is running
+                    output_line = process.stdout.readline()
+                    if output_line:
+                        self.terminal_output.configure(state="normal")
+                        self.terminal_output.insert(tk.END, output_line)
+                        self.terminal_output.see(tk.END)
+                        self.terminal_output.configure(state="disabled")
+                
+                # Capture any remaining output after process ends
+                remaining_output, errors = process.communicate()
+                if remaining_output:
+                    self.terminal_output.configure(state="normal")
+                    self.terminal_output.insert(tk.END, remaining_output)
+                    self.terminal_output.see(tk.END)
+                    self.terminal_output.configure(state="disabled")
+                if errors:
+                    self.terminal_output.configure(state="normal")
+                    self.terminal_output.insert(tk.END, errors)
+                    self.terminal_output.see(tk.END)
+                    self.terminal_output.configure(state="disabled")
+
+            # Function to start the subprocess
             def run_transmitter():
                 self.process = subprocess.Popen(
                     ['python', transmitter_path],
@@ -187,12 +210,11 @@ class TransmitterApp(CTk):
                     stderr=subprocess.PIPE,
                     text=True
                 )
-                self.read_terminal_output()
+                # Start reading the output in another thread
+                threading.Thread(target=read_output, args=(self.process,), daemon=True).start()
 
+            # Start the subprocess in a new thread
             threading.Thread(target=run_transmitter, daemon=True).start()
-
-            # Start a thread to read the output
-            threading.Thread(target=self.read_terminal_output, daemon=True).start()
 
         except Exception as e:
             self.terminal_output.configure(state="normal")
