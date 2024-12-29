@@ -726,7 +726,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: ./out.ts
+    file: ./Transiver/Video Streaming/out.ts
     type: byte
     unbuffered: 'False'
     vlen: '1'

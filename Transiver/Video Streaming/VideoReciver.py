@@ -472,7 +472,7 @@ class VideoReciver(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setColumnStretch(c, 1)
         self.blocks_unpack_k_bits_bb_0 = blocks.unpack_k_bits_bb(2)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(1, 8, '', True, gr.GR_MSB_FIRST)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, './out.ts', False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, './Transiver/Video Streaming/out.ts', False)
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_char_to_float_1_1 = blocks.char_to_float(1, 1)
         self.blocks_char_to_float_0_0 = blocks.char_to_float(1, 1)

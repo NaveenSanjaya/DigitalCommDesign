@@ -1248,7 +1248,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    file_path: '"im.ts"'
+    file_path: '"in.ts"'
     maxoutbuf: '0'
     minoutbuf: '0'
     n_bytes: '1000'
@@ -1882,7 +1882,7 @@ blocks:
       \ separate thread.\"\"\"\n    thread = threading.Thread(target=run_command,\
       \ args=(command,))\n    thread.start()\n    return thread\n\nif __name__ ==\
       \ \"__main__\":\n    # Example command to run\n    cmd = r'vlc dshow:///dev/video0\
-      \ --sout=\"#transcode{vcodec=mp2v,vb=200,scale=0.5,acodec=none,scodec=none}:duplicate{dst=file{dst=./im.ts,no-overwrite},dst=display}\"\
+      \ --sout=\"#transcode{vcodec=mp2v,vb=200,scale=0.5,acodec=none,scodec=none}:duplicate{dst=file{dst=./in.ts,no-overwrite},dst=display}\"\
       \ --sout-all --sout-keep'\n    thread = run_in_thread(cmd)\n\n    # Do other\
       \ tasks while the command runs\n    # Optionally, wait for the thread to complete\n\
       \    # thread.join()\nprint(\"vlc started.\")"
