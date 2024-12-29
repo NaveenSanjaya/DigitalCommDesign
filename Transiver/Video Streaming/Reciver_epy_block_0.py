@@ -56,6 +56,6 @@ class file_reader(gr.sync_block):
             # If the file is not found, output zeros
             pass
 
-        return 10
+        return 0
 # Example usage:
 # block = file_reader("/path/to/file", 1024)

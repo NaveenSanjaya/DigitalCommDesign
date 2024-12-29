@@ -57,7 +57,7 @@ def snipfcn_snippet_0(self):
 
     if __name__ == "__main__":
         # Example command to run
-        cmd = r'vlc dshow:///dev/video0 --sout="#transcode{vcodec=mp2v,vb=400,scale=0.25,acodec=none,scodec=none}:duplicate{dst=file{dst=./in.ts,no-overwrite},dst=display}" --sout-all --sout-keep'
+        cmd = r'vlc dshow:///dev/video0 --sout="#transcode{vcodec=mp2v,vb=200,scale=0.5,acodec=none,scodec=none}:duplicate{dst=file{dst=./in.ts,no-overwrite},dst=display}" --sout-all --sout-keep'
         thread = run_in_thread(cmd)
 
         # Do other tasks while the command runs

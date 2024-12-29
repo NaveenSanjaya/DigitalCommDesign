@@ -736,7 +736,7 @@ blocks:
     bus_structure: null
     coordinate: [1648, 1192.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_file_source_0
   id: blocks_file_source
   parameters:
