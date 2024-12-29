@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: Reciver_grc
+# Title: VideoReciver_grc
 # Author: StarLink
 # Copyright: StarLink
 # Description: Video streaming - Receiver side
@@ -66,12 +66,12 @@ def snipfcn_snippet_0(self):
 def snippets_main_after_init(tb):
     snipfcn_snippet_0(tb)
 
-class Reciver(gr.top_block, Qt.QWidget):
+class VideoReciver(gr.top_block, Qt.QWidget):
 
     def __init__(self, MTU=1500):
-        gr.top_block.__init__(self, "Reciver_grc", catch_exceptions=True)
+        gr.top_block.__init__(self, "VideoReciver_grc", catch_exceptions=True)
         Qt.QWidget.__init__(self)
-        self.setWindowTitle("Reciver_grc")
+        self.setWindowTitle("VideoReciver_grc")
         qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
@@ -89,7 +89,7 @@ class Reciver(gr.top_block, Qt.QWidget):
         self.top_grid_layout = Qt.QGridLayout()
         self.top_layout.addLayout(self.top_grid_layout)
 
-        self.settings = Qt.QSettings("GNU Radio", "Reciver")
+        self.settings = Qt.QSettings("GNU Radio", "VideoReciver")
 
         try:
             geometry = self.settings.value("geometry")
@@ -505,7 +505,7 @@ class Reciver(gr.top_block, Qt.QWidget):
 
 
     def closeEvent(self, event):
-        self.settings = Qt.QSettings("GNU Radio", "Reciver")
+        self.settings = Qt.QSettings("GNU Radio", "VideoReciver")
         self.settings.setValue("geometry", self.saveGeometry())
         self.stop()
         self.wait()
@@ -739,7 +739,7 @@ def argument_parser():
     return parser
 
 
-def main(top_block_cls=Reciver, options=None):
+def main(top_block_cls=VideoReciver, options=None):
     if options is None:
         options = argument_parser().parse_args()
 
