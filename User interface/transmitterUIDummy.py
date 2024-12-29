@@ -170,7 +170,7 @@ class TransmitterApp(CTk):
                 encrypted_plaintext = encrypt_data(plaintext, key, iv)
 
                 with open('./Transiver/File Transiver/tx.tmp', 'wb') as output_file:
-                    output_file.write(preamble + detect_sequence + file_name + b'|||' + encrypted_plaintext + end_sequence + preamble)
+                    output_file.write(preamble + detect_sequence + file_name + b'|||' + plaintext + end_sequence + preamble)
 
             # Adds the preamble
             add_preamble()

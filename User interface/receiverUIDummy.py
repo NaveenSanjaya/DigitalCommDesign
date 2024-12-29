@@ -2,8 +2,10 @@ from customtkinter import *
 from PIL import Image
 import time
 import subprocess
+import threading
 import sys
 import os
+import platform
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 
@@ -158,25 +160,6 @@ class ReceiverApp:
         self.master.destroy()
         subprocess.run([sys.executable, "User interface/home.py"])
 
-    def start_receiving(self):
-        """Run StarLik receiver script and handle results"""
-        try:
-            
-            # Resolve the path to the script
-            reciver_path = os.path.abspath(os.path.join(self.path, '../Transiver/File Transiver/Reciver.py'))
-            # Start the subprocess
-<<<<<<< HEAD
-            subprocess.Popen(['python3', reciver_path],text=True)
-
-=======
-            self.file_decoder()
-            subprocess.Popen(['python', reciver_path],text=True)
-            
->>>>>>> ea118739867d6a322837c13ea82c31130311aa91
-            
-        except Exception as e:
-           pass
-
     def create_file_label(self, file_path):
         file_label = CTkLabel(
             master=self.frame,
@@ -197,15 +180,37 @@ class ReceiverApp:
         except Exception as e:
             self.status_label.configure(text=f"Failed to open file: {e}")
 
+    def start_receiving(self):
+        threading.Thread(target=self.start_receiver, daemon=True).start()
+        with open('./Transiver/File Transiver/rx.tmp','wb') as output:pass
+        threading.Thread(target=self.file_decoder,daemon=True).start()
+
+    def start_receiver(self):
+        """Run StarLik receiver script and handle results"""
+        try:
+            
+            # Resolve the path to the script
+            reciver_path = os.path.abspath(os.path.join(self.path, '../Transiver/File Transiver/Reciver.py'))
+            # Start the subprocess
+            subprocess.Popen(['python', reciver_path],text=True)
+
+            
+        except Exception as e:
+           print(e)
+
     def file_decoder(self):
             global content
 
             def open_file(file_path):
-                subprocess.run(["xdg-open", file_path])
-            print("file decoder started")
+                if platform.system() == "Windows":
+                    os.startfile(file_path)
+                else:
+                    subprocess.run(["xdg-open", file_path])
+
+            print("file decoding started")
             
             while(True):
-                with open('./src/rx files/rx.tmp', 'rb') as file:
+                with open('./Transiver/File Transiver/rx.tmp', 'rb') as file:
 
                     content = file.read()
                     if(len(content)>10):print('conncted')
@@ -222,10 +227,10 @@ class ReceiverApp:
                                 start= content.find(b'|||')
                                 content = content[start+3:end_index]
                                 os.environ['RECEIVE_FILE']=name.decode()
-                                path='./'+name.decode()
+                                path='./Transiver/File Transiver/'+name.decode()
                                 with open(path,'wb') as output:
                                     output.write(content)
-                                    with open('./src/rx files/rx.tmp','wb') as output:pass
+                                    with open('./Transiver/File Transiver/rx.tmp','wb') as output:pass
                                     open_file(path)
 
 
