@@ -7,7 +7,7 @@ import os
 from tkinter import filedialog
 
 
-class TransmitterApp(CTk):
+class StreamApp(CTk):
     def __init__(self):
         super().__init__()
         self.path=os.path.dirname(os.path.abspath(__file__))
@@ -116,5 +116,5 @@ class TransmitterApp(CTk):
 
 
 if __name__ == "__main__":
-    app = TransmitterApp()
+    app = StreamApp()
     app.mainloop()
