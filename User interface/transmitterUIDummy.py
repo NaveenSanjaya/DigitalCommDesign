@@ -202,6 +202,25 @@ class TransmitterApp(CTk):
                     self.terminal_output.see(tk.END)
                     self.terminal_output.configure(state="disabled")
 
+            # Remove existing progress bar if it exists
+            if hasattr(self, 'progress_bar'):
+                self.progress_bar.pack_forget()
+                del self.progress_bar
+
+            # Remove existing status label if it exists
+            if hasattr(self, 'status_label'):
+                self.status_label.pack_forget()
+                del self.status_label
+
+            # Create and pack the progress bar
+            self.progress_bar = CTkProgressBar(master=self.bottom_box, width=400)
+            self.progress_bar.pack(pady=(10, 10), anchor="center")
+            self.progress_bar.set(0)
+
+            # Create and pack the status label
+            self.status_label = CTkLabel(master=self.bottom_box, text="Initializing...", font=("Arial", 14), text_color="#522B5B")
+            self.status_label.pack(pady=(5, 10), anchor="center")
+
             # Function to start the subprocess
             def run_transmitter():
                 self.process = subprocess.Popen(
@@ -213,8 +232,17 @@ class TransmitterApp(CTk):
                 # Start reading the output in another thread
                 threading.Thread(target=read_output, args=(self.process,), daemon=True).start()
 
-            # Start the subprocess in a new thread
+            def update_progress_bar():
+                start_time = time.time()
+                while time.time() - start_time < 8.5:
+                    self.progress_bar.set((time.time() - start_time) / 8.5)
+                    time.sleep(0.1)
+                self.progress_bar.set(1.0)
+                self.status_label.configure(text="Sending...")
+
             threading.Thread(target=run_transmitter, daemon=True).start()
+            threading.Thread(target=update_progress_bar, daemon=True).start()
+
 
         except Exception as e:
             self.terminal_output.configure(state="normal")
