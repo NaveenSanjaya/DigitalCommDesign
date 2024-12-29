@@ -12,7 +12,6 @@ class StreamApp(CTk):
         super().__init__()
         self.path=os.path.dirname(os.path.abspath(__file__))
 
-        super().__init__()
         self.geometry("700x560")
         self.resizable(0, 0)
         self.title("Transmitter")
