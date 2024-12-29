@@ -179,13 +179,17 @@ class TransmitterApp(CTk):
             transmitter_path = os.path.abspath(os.path.join(self.path, '../Transiver/File Transiver/Transmitter.py'))
             print(transmitter_path)
 
-            # Start the subprocess and redirect its output
-            self.process = subprocess.Popen(
-                ['python', transmitter_path],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True
-            )
+            # Start the subprocess in a separate thread and redirect its output
+            def run_transmitter():
+                self.process = subprocess.Popen(
+                    ['python', transmitter_path],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+                self.read_terminal_output()
+
+            threading.Thread(target=run_transmitter, daemon=True).start()
 
             # Start a thread to read the output
             threading.Thread(target=self.read_terminal_output, daemon=True).start()
