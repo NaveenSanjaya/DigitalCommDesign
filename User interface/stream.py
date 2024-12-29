@@ -104,13 +104,13 @@ class StreamApp(CTk):
 
     def server(self):
         # Resolve the path to the script
-        reciver_path = os.path.abspath(os.path.join(self.path, '../Transiver/Video Streaming/Telelink.py'))
+        reciver_path = os.path.abspath(os.path.join(self.path, '../Transiver/Video Streaming/Transiver/VideoTransmitter.py'))
         # Start the subprocess
         subprocess.Popen(['python', reciver_path],text=True)
 
     def viewer(self):
         # Resolve the path to the script
-        reciver_path = os.path.abspath(os.path.join(self.path, '../Transiver/Video Streaming/Reciver.py'))
+        reciver_path = os.path.abspath(os.path.join(self.path, '../Transiver/Video Streaming/VideoReciver.py'))
         # Start the subprocess
         subprocess.Popen(['python', reciver_path],text=True)
 
