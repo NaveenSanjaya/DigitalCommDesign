@@ -246,7 +246,7 @@ class ReceiverApp:
                                 # Clear the temporary file
                                 with open('./Transiver/File Transiver/rx.tmp', 'wb') as output:
                                     pass
-                                print('Path is', path)
+                            
                                 # Open the file
                                 open_file(path)
 
