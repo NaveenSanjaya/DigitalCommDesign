@@ -25,7 +25,7 @@ class ReceiverApp:
         self.sidebar_frame.pack(fill="y", anchor="w", side="left")
 
         # Back button
-        self.back_img_data = Image.open("User interface/back.png")
+        self.back_img_data = Image.open("User interface/src/back.png")
         self.back_img = CTkImage(dark_image=self.back_img_data, light_image=self.back_img_data)
         self.back_button = CTkButton(
             master=self.sidebar_frame,
@@ -40,7 +40,7 @@ class ReceiverApp:
         self.back_button.pack(anchor="center", ipady=5, pady=(60, 0))
 
         # Antenna image
-        self.antenna_img_data = Image.open("User interface/antenna.png")
+        self.antenna_img_data = Image.open("User interface/src/antenna.png")
         self.antenna_img = CTkImage(dark_image=self.antenna_img_data, light_image=self.antenna_img_data, size=(100, 100))
         CTkLabel(master=self.sidebar_frame, text="", image=self.antenna_img).pack(pady=(120, 0), anchor="center")
 
@@ -104,7 +104,7 @@ class ReceiverApp:
             circle_frame.pack(fill="both", pady=(0, 10))
 
             # Image
-            img_data = Image.open(f"User interface/{icon}")
+            img_data = Image.open(f"User interface/src/{icon}")
             img = CTkImage(light_image=img_data, dark_image=img_data, size=(50, 50))
             CTkLabel(master=circle_frame, image=img, text="").pack(fill="both", padx=10, pady=10)  # Image inside the circle frame
 
@@ -119,7 +119,7 @@ class ReceiverApp:
             label_text.pack(fill="both")
 
     def create_receive_button(self):
-        receive_img_data = Image.open("User interface/receive_icon.png")
+        receive_img_data = Image.open("User interface/src/receive_icon.png")
         receive_img = CTkImage(dark_image=receive_img_data, light_image=receive_img_data)
 
         receive_button = CTkButton(
@@ -171,15 +171,6 @@ class ReceiverApp:
         file_label.pack(pady=(0, 0), anchor="center")
         file_label.bind("<Button-1>", lambda e: self.open_file(file_path))
 
-    def open_file(self, file_path):
-        try:
-            if os.name == "nt":
-                os.startfile(file_path)
-            elif os.name == "posix":
-                subprocess.run(["xdg-open", file_path], check=True)
-        except Exception as e:
-            self.status_label.configure(text=f"Failed to open file: {e}")
-
     def start_receiving(self):
         threading.Thread(target=self.start_receiver, daemon=True).start()
         with open('./Transiver/File Transiver/rx.tmp','wb') as output:pass
@@ -197,7 +188,6 @@ class ReceiverApp:
             
         except Exception as e:
            print(e)
-
 
     def file_decoder(self):
         global content

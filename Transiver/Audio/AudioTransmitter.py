@@ -109,7 +109,7 @@ class AudioTransmitter(gr.top_block, Qt.QWidget):
 
         self.top_layout.addWidget(self._qtgui_sink_x_0_win)
         self.blocks_multiply_const_vxx_1 = blocks.multiply_const_cc(.8)
-        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(2)
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(20)
         self.audio_source_0 = audio.source(48000, 'Headset Microphone', True)
         self.analog_wfm_tx_0 = analog.wfm_tx(
         	audio_rate=44100,

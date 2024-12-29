@@ -29,7 +29,7 @@ class HomeApp(CTk):
 
     def create_left_side_background(self):
         # Load and set the left-side background image
-        background_img = Image.open("User interface/background_img.jpg")
+        background_img = Image.open("User interface/src/background_img.jpg")
         side_img = CTkImage(dark_image=background_img, light_image=background_img, size=(350, 560))
         CTkLabel(master=self, text="", image=side_img).pack(side="left")
 

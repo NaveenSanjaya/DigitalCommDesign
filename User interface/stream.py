@@ -26,7 +26,7 @@ class StreamApp(CTk):
         sidebar_frame.pack_propagate(0)
         sidebar_frame.pack(fill="y", anchor="w", side="left")
 
-        back_img_data = Image.open("User interface/back.png")
+        back_img_data = Image.open("User interface/src/back.png")
         back_img = CTkImage(dark_image=back_img_data, light_image=back_img_data)
 
         back_button = CTkButton(
@@ -41,7 +41,7 @@ class StreamApp(CTk):
         )
         back_button.pack(anchor="center", ipady=5, pady=(60, 0))
 
-        antenna_img_data = Image.open("User interface/antenna.png")
+        antenna_img_data = Image.open("User interface/src/antenna.png")
         antenna_img = CTkImage(dark_image=antenna_img_data, light_image=antenna_img_data, size=(100, 100))
         CTkLabel(master=sidebar_frame, text="", image=antenna_img).pack(pady=(120, 0), anchor="center")
 
@@ -75,7 +75,6 @@ class StreamApp(CTk):
         )
         self.streaming_label.pack(pady=(10, 10), anchor="center")
 
-
     def create_button(self, master, text, command):
         button = CTkButton(
             master=master,
@@ -100,7 +99,7 @@ class StreamApp(CTk):
 
     def go_back_to_home(self):
         self.destroy()
-        subprocess.run([sys.executable, "User interface/home.py"])  # Adjust the path to your home.py file
+        subprocess.run([sys.executable, "User interface/home.py"])
 
     def server(self):
         # Resolve the path to the script
@@ -113,7 +112,6 @@ class StreamApp(CTk):
         reciver_path = os.path.abspath(os.path.join(self.path, '../Transiver/Video Streaming/VideoReciver.py'))
         # Start the subprocess
         subprocess.Popen(['python', reciver_path],text=True)
-
 
 if __name__ == "__main__":
     app = StreamApp()
