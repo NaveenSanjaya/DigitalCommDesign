@@ -1,5 +1,0 @@
-:sout=#transcode{vcodec=mp2v,vb=400,scale=0.25,acodec=none,scodec=none}:duplicate{dst=file{dst=./im.ts,no-overwrite},dst=display} :sout-all :sout-keep
-
-
-vlc v4l2:///dev/video0 --sout="#transcode{vcodec=mp2v,vb=400,scale=0.25,acodec=none,scodec=none}:duplicate{dst=file{dst=./im.ts,no-overwrite},dst=display}" --sout-all --sout-keep
-
