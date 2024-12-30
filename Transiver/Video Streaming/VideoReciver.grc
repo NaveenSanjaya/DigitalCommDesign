@@ -734,7 +734,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1648, 1192.0]
+    coordinate: [1584, 1540.0]
     rotation: 0
     state: disabled
 - name: blocks_file_source_0
@@ -1320,7 +1320,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1624, 1044.0]
+    coordinate: [1704, 1168.0]
     rotation: 0
     state: enabled
 - name: qtgui_const_sink_x_0

@@ -550,7 +550,7 @@ class VideoTransmitter(gr.top_block, Qt.QWidget):
             self.controls_grid_layout_1.setRowStretch(r, 1)
         for c in range(1, 2):
             self.controls_grid_layout_1.setColumnStretch(c, 1)
-        self.epy_block_0 = epy_block_0.file_reader(file_path="in.ts", n_bytes=1000)
+        self.epy_block_0 = epy_block_0.Dynamic_file_source(file_path="in.ts", n_bytes=1000)
         self.digital_symbol_sync_xx_0 = digital.symbol_sync_cc(
             digital.TED_SIGNAL_TIMES_SLOPE_ML,
             sps,

@@ -5,6 +5,7 @@ import subprocess
 import sys
 import os
 from tkinter import filedialog
+import tkinter as tk
 
 
 class StreamApp(CTk):
@@ -111,6 +112,30 @@ class StreamApp(CTk):
         reciver_path = os.path.abspath(os.path.join(self.path, '../Transiver/Video Streaming/VideoReciver.py'))
         # Start the subprocess
         subprocess.Popen(['python', reciver_path],text=True)
+
+    def read_terminal_output(self):
+        """Read the subprocess output and display it in the terminal window."""
+        while self.process.poll() is None:  # While the process is still running
+            line = self.process.stdout.readline()
+            if line:
+                self.terminal_output.configure(state="normal")
+                self.terminal_output.insert(tk.END, line)
+                self.terminal_output.see(tk.END)  # Auto-scroll to the latest line
+                self.terminal_output.configure(state="disabled")
+
+        # Capture any remaining output after the process ends
+        remaining_output, errors = self.process.communicate()
+        if remaining_output:
+            self.terminal_output.configure(state="normal")
+            self.terminal_output.insert(tk.END, remaining_output)
+            self.terminal_output.see(tk.END)
+            self.terminal_output.configure(state="disabled")
+        if errors:
+            self.terminal_output.configure(state="normal")
+            self.terminal_output.insert(tk.END, errors)
+            self.terminal_output.see(tk.END)
+            self.terminal_output.configure(state="disabled") 
+
 
 if __name__ == "__main__":
     app = StreamApp()
