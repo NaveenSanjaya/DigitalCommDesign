@@ -1,17 +1,17 @@
 options:
   parameters:
-    author: Telelink
+    author: StarLink
     catch_exceptions: 'True'
     category: Custom
     cmake_opt: ''
     comment: ''
-    copyright: Telelink
-    description: cdp project
+    copyright: StarLink
+    description: Video streaming - Transmitter side
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
     hier_block_src_path: '.:'
-    id: Telelink
+    id: VideoTransmitter
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -22,7 +22,7 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: Telelink_cdp
+    title: VideoTransmitter_grc
     window_size: (1000,1000)
   states:
     bus_sink: false
@@ -65,7 +65,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2816, 508.0]
+    coordinate: [2816, 532.0]
     rotation: 0
     state: enabled
 - name: cc_enc
@@ -135,7 +135,7 @@ blocks:
   id: variable
   parameters:
     comment: Set Bandwidth
-    value: '.35'
+    value: '.5'
   states:
     bus_sink: false
     bus_source: false
@@ -163,7 +163,7 @@ blocks:
     bus_structure: null
     coordinate: [3400, 132.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: freq_offset
   id: variable_qtgui_range
   parameters:
@@ -219,7 +219,7 @@ blocks:
     bus_structure: null
     coordinate: [3416, 8.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: k
   id: variable
   parameters:
@@ -338,7 +338,7 @@ blocks:
     bus_structure: null
     coordinate: [3312, 248.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: rf_gain_0
   id: variable_qtgui_range
   parameters:
@@ -359,7 +359,7 @@ blocks:
     bus_structure: null
     coordinate: [3312, 120.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: rf_gain_sink
   id: variable_qtgui_range
   parameters:
@@ -380,7 +380,7 @@ blocks:
     bus_structure: null
     coordinate: [3240, 112.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: rrc_taps
   id: variable
   parameters:
@@ -581,6 +581,22 @@ blocks:
     coordinate: [3064, 460.0]
     rotation: 0
     state: enabled
+- name: variable_qtgui_entry_0
+  id: variable_qtgui_entry
+  parameters:
+    comment: ''
+    entry_signal: editingFinished
+    gui_hint: ''
+    label: ''
+    type: string
+    value: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [32, 44.0]
+    rotation: 0
+    state: enabled
 - name: MTU
   id: parameter
   parameters:
@@ -598,23 +614,6 @@ blocks:
     coordinate: [2872, 164.0]
     rotation: 0
     state: enabled
-- name: audio_sink_0
-  id: audio_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    device_name: ''
-    num_inputs: '1'
-    ok_to_block: 'True'
-    samp_rate: '32000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1896, 1172.0]
-    rotation: 0
-    state: true
 - name: blocks_char_to_float_0
   id: blocks_char_to_float
   parameters:
@@ -648,7 +647,7 @@ blocks:
     bus_structure: null
     coordinate: [928, 860.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: blocks_char_to_float_0_0_0
   id: blocks_char_to_float
   parameters:
@@ -665,8 +664,8 @@ blocks:
     bus_structure: null
     coordinate: [464, 1012.0]
     rotation: 0
-    state: disabled
-- name: blocks_char_to_float_0_1
+    state: enabled
+- name: blocks_char_to_float_1
   id: blocks_char_to_float
   parameters:
     affinity: ''
@@ -680,7 +679,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1664, 1164.0]
+    coordinate: [912, 36.0]
     rotation: 0
     state: enabled
 - name: blocks_char_to_float_1_1
@@ -697,7 +696,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [808, 1308.0]
+    coordinate: [800, 1212.0]
     rotation: 0
     state: enabled
 - name: blocks_delay_0
@@ -719,7 +718,7 @@ blocks:
     bus_structure: null
     coordinate: [688, 1012.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_file_sink_0
   id: blocks_file_sink
   parameters:
@@ -727,7 +726,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: ./rx.tmp
+    file: ./out.ts
     type: byte
     unbuffered: 'False'
     vlen: '1'
@@ -735,9 +734,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1656, 1284.0]
+    coordinate: [1840, 1192.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_file_source_0
   id: blocks_file_source
   parameters:
@@ -745,8 +744,7 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: /home/praveen/Desktop/cdp/EN2130_Communication_Design_Project/gnu radio
-      files/tx.tmp
+    file: C:\Users\Naveen\Downloads\[US] 2013 Cloudy with a Chance of Meatballs.mp4
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -758,7 +756,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 116.0]
+    coordinate: [0, 120.0]
     rotation: 0
     state: disabled
 - name: blocks_multiply_const_vxx_0
@@ -778,7 +776,7 @@ blocks:
     bus_structure: null
     coordinate: [740.0, 408]
     rotation: 90
-    state: disabled
+    state: enabled
 - name: blocks_repack_bits_bb_0
   id: blocks_repack_bits_bb
   parameters:
@@ -796,7 +794,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1376, 1300.0]
+    coordinate: [1368, 1204.0]
     rotation: 0
     state: enabled
 - name: blocks_repack_bits_bb_0_0
@@ -816,9 +814,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [672, 148.0]
+    coordinate: [720, 148.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_repack_bits_bb_0_0_0
   id: blocks_repack_bits_bb
   parameters:
@@ -836,9 +834,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1208, 156.0]
+    coordinate: [1304, 148.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_stream_to_tagged_stream_0
   id: blocks_stream_to_tagged_stream
   parameters:
@@ -855,9 +853,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [384, 148.0]
+    coordinate: [448, 0.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_tagged_stream_mux_0
   id: blocks_tagged_stream_mux
   parameters:
@@ -877,7 +875,7 @@ blocks:
     bus_structure: null
     coordinate: [1752, 148.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_throttle2_0
   id: blocks_throttle2
   parameters:
@@ -917,9 +915,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [216, 148.0]
+    coordinate: [264, 148.0]
     rotation: 0
-    state: disabled
+    state: bypassed
 - name: blocks_throttle2_1
   id: blocks_throttle2
   parameters:
@@ -940,7 +938,7 @@ blocks:
     bus_structure: null
     coordinate: [248, 540.0]
     rotation: 0
-    state: disabled
+    state: bypassed
 - name: blocks_unpack_k_bits_bb_0
   id: blocks_unpack_k_bits_bb
   parameters:
@@ -972,7 +970,7 @@ blocks:
     bus_structure: null
     coordinate: [248, 1012.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -1053,7 +1051,7 @@ blocks:
     comment: Modulation block
     constellation: qpsk
     differential: 'True'
-    excess_bw: '0.5'
+    excess_bw: excess_bw
     log: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -1066,7 +1064,7 @@ blocks:
     bus_structure: null
     coordinate: [504, 516.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: digital_correlate_access_code_xx_ts_0
   id: digital_correlate_access_code_xx_ts
   parameters:
@@ -1083,7 +1081,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [312, 1284.0]
+    coordinate: [304, 1192.0]
     rotation: 0
     state: enabled
 - name: digital_costas_loop_cc_0
@@ -1172,7 +1170,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [648, 1308.0]
+    coordinate: [640, 1212.0]
     rotation: 0
     state: enabled
 - name: digital_protocol_formatter_bb_0
@@ -1191,7 +1189,7 @@ blocks:
     bus_structure: null
     coordinate: [1456, 44.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: digital_symbol_sync_xx_0
   id: digital_symbol_sync_xx
   parameters:
@@ -1219,6 +1217,52 @@ blocks:
     coordinate: [1528, 456.0]
     rotation: 0
     state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "import os\nimport numpy as np\nfrom gnuradio import gr\nimport\
+      \ time\n\nclass file_reader(gr.sync_block):\n    \"\"\"\n    Reads N bytes from\
+      \ a file and outputs them as a stream.\n    Handles dynamic file size changes\
+      \ and end-of-file scenarios.\n    \"\"\"\n\n    def __init__(self, file_path=\"\
+      \", n_bytes=0):\n        super().__init__(\n            name=\"file_reader\"\
+      ,\n            in_sig=None,\n            out_sig=[np.uint8]\n        )\n   \
+      \     self.time = time.time()\n        self.file_path = file_path\n        self.n_bytes\
+      \ = n_bytes\n        self.file_position = 0  # Tracks the last read position\n\
+      \n    def work(self, input_items, output_items):\n        out = output_items[0]\n\
+      \        num_to_fill = len(out)  # Number of bytes to fill\n        out[:] =\
+      \ 0  # Default output to zero\n\n        try:\n\n            # Check the current\
+      \ file size\n            file_size = os.path.getsize(self.file_path)\n     \
+      \       # Open the file in binary read mode\n            with open(self.file_path,\
+      \ 'rb') as f:\n                # Seek to the current read position\n       \
+      \         f.seek(self.file_position)\n\n                # Read data up to the\
+      \ desired number of bytes\n                data = f.read(num_to_fill)\n    \
+      \    \n                # Update the output buffer\n                #out=data\n\
+      \                #print(out)\n                out[:len(data)] = np.frombuffer(data,\
+      \ dtype=np.uint8)\n                #print(out)\n               \n\n        \
+      \        #content=f.read()\n                #with open(self.file_path, 'wb')\
+      \ as file:\n                #    f.write(content)\n                #    print(len(content))\n\
+      \                self.file_position+=len(data)\n                return len(data)\n\
+      \n\n        except FileNotFoundError:\n            # If the file is not found,\
+      \ output zeros\n            pass\n\n        return 10\n# Example usage:\n# block\
+      \ = file_reader(\"/path/to/file\", 1024)\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    file_path: '"in.ts"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    n_bytes: '1000'
+  states:
+    _io_cache: ('file_reader', 'file_reader', [('file_path', "''"), ('n_bytes', '0')],
+      [], [('0', 'byte', 1)], '\n    Reads N bytes from a file and outputs them as
+      a stream.\n    Handles dynamic file size changes and end-of-file scenarios.\n    ',
+      ['file_path', 'n_bytes'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [24, 248.0]
+    rotation: 0
+    state: enabled
 - name: fec_extended_tagged_decoder_2
   id: fec_extended_tagged_decoder
   parameters:
@@ -1237,7 +1281,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1016, 1268.0]
+    coordinate: [1008, 1172.0]
     rotation: 0
     state: enabled
 - name: fec_extended_tagged_encoder_0_1
@@ -1256,32 +1300,29 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [896, 132.0]
+    coordinate: [944, 132.0]
     rotation: 0
-    state: disabled
-- name: network_udp_source_0
-  id: network_udp_source
+    state: enabled
+- name: network_udp_sink_0
+  id: network_udp_sink
   parameters:
+    addr: 127.0.0.1
     affinity: ''
     alias: ''
     comment: ''
     header: '0'
-    ipv6: 'False'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    notify_missed: 'False'
-    payloadsize: '1472'
-    port: '1234'
-    src_zeros: 'False'
+    payloadsize: '200'
+    port: '2000'
+    send_eof: 'False'
     type: byte
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 316.0]
+    coordinate: [1840, 996.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_const_sink_x_0
   id: qtgui_const_sink_x
   parameters:
@@ -1454,7 +1495,7 @@ blocks:
     bus_structure: null
     coordinate: [784, 676.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_freq_sink_x_1
   id: qtgui_freq_sink_x
   parameters:
@@ -1505,7 +1546,7 @@ blocks:
     legend: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    name: con
+    name: RX-SPECTRUM
     nconnections: '1'
     norm_window: 'False'
     showports: 'False'
@@ -1533,7 +1574,70 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1560, 300.0]
+    coordinate: [1520, 300.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_number_sink_0
+  id: qtgui_number_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    autoscale: 'False'
+    avg: '0'
+    color1: ("black", "black")
+    color10: ("black", "black")
+    color2: ("black", "black")
+    color3: ("black", "black")
+    color4: ("black", "black")
+    color5: ("black", "black")
+    color6: ("black", "black")
+    color7: ("black", "black")
+    color8: ("black", "black")
+    color9: ("black", "black")
+    comment: ''
+    factor1: '1'
+    factor10: '1'
+    factor2: '1'
+    factor3: '1'
+    factor4: '1'
+    factor5: '1'
+    factor6: '1'
+    factor7: '1'
+    factor8: '1'
+    factor9: '1'
+    graph_type: qtgui.NUM_GRAPH_HORIZ
+    gui_hint: ''
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    max: '1'
+    min: '-1'
+    name: '""'
+    nconnections: '1'
+    type: float
+    unit1: ''
+    unit10: ''
+    unit2: ''
+    unit3: ''
+    unit4: ''
+    unit5: ''
+    unit6: ''
+    unit7: ''
+    unit8: ''
+    unit9: ''
+    update_time: '0.10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1120, 4.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -1630,7 +1734,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1872, 984.0]
+    coordinate: [2040, 1120.0]
     rotation: 180
     state: enabled
 - name: qtgui_time_sink_x_0_0
@@ -1729,7 +1833,7 @@ blocks:
     bus_structure: null
     coordinate: [896, 976.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: received
   id: qtgui_tab_widget
   parameters:
@@ -1764,6 +1868,34 @@ blocks:
     coordinate: [3392, 292.0]
     rotation: 0
     state: enabled
+- name: snippet_0
+  id: snippet
+  parameters:
+    alias: ''
+    code: "#This modules will start the VLC in ubuntu\n\nimport threading\nimport\
+      \ subprocess\n\ndef run_command(command):\n    \"\"\"Function to run a terminal\
+      \ command.\"\"\"\n    try:\n        result = subprocess.run(command, shell=True,\
+      \ text=True, capture_output=True)\n        print(f\"Command Output:\\n{result.stdout}\"\
+      )\n        if result.stderr:\n            print(f\"Command Error:\\n{result.stderr}\"\
+      )\n    except Exception as e:\n        print(f\"Error running command: {e}\"\
+      )\n\ndef run_in_thread(command):\n    \"\"\"Function to run the command in a\
+      \ separate thread.\"\"\"\n    thread = threading.Thread(target=run_command,\
+      \ args=(command,))\n    thread.start()\n    return thread\n\nif __name__ ==\
+      \ \"__main__\":\n    # Example command to run\n    cmd = r'vlc dshow:///dev/video0\
+      \ --sout=\"#transcode{vcodec=mp2v,vb=200,scale=0.5,acodec=none,scodec=none}:duplicate{dst=file{dst=./in.ts,no-overwrite},dst=display}\"\
+      \ --sout-all --sout-keep'\n    thread = run_in_thread(cmd)\n\n    # Do other\
+      \ tasks while the command runs\n    # Optionally, wait for the thread to complete\n\
+      \    # thread.join()\nprint(\"vlc started.\")"
+    comment: ''
+    priority: '0'
+    section: main_after_init
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2648, 864.0]
+    rotation: 0
+    state: enabled
 - name: soapy_bladerf_sink_0
   id: soapy_bladerf_sink
   parameters:
@@ -1772,7 +1904,7 @@ blocks:
     bandwidth: '10000'
     center_freq: freq
     comment: ''
-    dev_args: bladerf="0"
+    dev_args: ''
     freq_correction: '0'
     gain: txgain
     samp_rate: samp_rate_blade*2
@@ -1781,9 +1913,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [880, 312.0]
+    coordinate: [904, 320.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: soapy_bladerf_source_0
   id: soapy_bladerf_source
   parameters:
@@ -1792,7 +1924,7 @@ blocks:
     bandwidth: rxbw
     center_freq: freq
     comment: ''
-    dev_args: bladerf=0
+    dev_args: ''
     freq_correction: '0'
     gain: '30.0'
     maxoutbuf: '0'
@@ -1818,7 +1950,7 @@ blocks:
     bus_structure: null
     coordinate: [2064, 148.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: virtual_sink_1
   id: virtual_sink
   parameters:
@@ -1829,7 +1961,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1216, 1012.0]
+    coordinate: [1240, 1004.0]
     rotation: 0
     state: enabled
 - name: virtual_source_0
@@ -1844,7 +1976,7 @@ blocks:
     bus_structure: null
     coordinate: [8, 548.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: virtual_source_1
   id: virtual_source
   parameters:
@@ -1857,7 +1989,7 @@ blocks:
     bus_structure: null
     coordinate: [8, 1012.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: virtual_source_2
   id: virtual_source
   parameters:
@@ -1868,7 +2000,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 1300.0]
+    coordinate: [16, 1212.0]
     rotation: 0
     state: enabled
 
@@ -1876,13 +2008,14 @@ connections:
 - [blocks_char_to_float_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_char_to_float_0_0, '0', qtgui_time_sink_x_0_0, '0']
 - [blocks_char_to_float_0_0_0, '0', blocks_delay_0, '0']
-- [blocks_char_to_float_0_1, '0', audio_sink_0, '0']
+- [blocks_char_to_float_1, '0', qtgui_number_sink_0, '0']
 - [blocks_char_to_float_1_1, '0', fec_extended_tagged_decoder_2, '0']
 - [blocks_delay_0, '0', qtgui_time_sink_x_0_0, '1']
 - [blocks_file_source_0, '0', blocks_throttle2_0_0, '0']
 - [blocks_multiply_const_vxx_0, '0', soapy_bladerf_sink_0, '0']
-- [blocks_repack_bits_bb_0, '0', blocks_char_to_float_0_1, '0']
 - [blocks_repack_bits_bb_0, '0', blocks_file_sink_0, '0']
+- [blocks_repack_bits_bb_0, '0', network_udp_sink_0, '0']
+- [blocks_repack_bits_bb_0_0, '0', blocks_char_to_float_1, '0']
 - [blocks_repack_bits_bb_0_0, '0', fec_extended_tagged_encoder_0_1, '0']
 - [blocks_repack_bits_bb_0_0_0, '0', blocks_tagged_stream_mux_0, '1']
 - [blocks_repack_bits_bb_0_0_0, '0', digital_protocol_formatter_bb_0, '0']
@@ -1910,9 +2043,9 @@ connections:
 - [digital_map_bb_0_0, '0', blocks_char_to_float_1_1, '0']
 - [digital_protocol_formatter_bb_0, '0', blocks_tagged_stream_mux_0, '0']
 - [digital_symbol_sync_xx_0, '0', digital_linear_equalizer_0_0, '0']
+- [epy_block_0, '0', blocks_throttle2_0_0, '0']
 - [fec_extended_tagged_decoder_2, '0', blocks_repack_bits_bb_0, '0']
 - [fec_extended_tagged_encoder_0_1, '0', blocks_repack_bits_bb_0_0_0, '0']
-- [network_udp_source_0, '0', blocks_throttle2_0_0, '0']
 - [soapy_bladerf_source_0, '0', digital_symbol_sync_xx_0, '0']
 - [soapy_bladerf_source_0, '0', qtgui_freq_sink_x_1, '0']
 - [virtual_source_0, '0', blocks_throttle2_1, '0']
@@ -1921,4 +2054,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.7.0
+  grc_version: 3.10.10.0

@@ -5,10 +5,10 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: Telelink_cdp
-# Author: Telelink
-# Copyright: Telelink
-# Description: cdp project
+# Title: Transmitter_grc
+# Author: StarLink
+# Copyright: StarLink
+# Description: QPSK file transmitter
 # GNU Radio version: 3.10.10.0
 
 from PyQt5 import Qt
@@ -35,9 +35,9 @@ import sip
 class Transmitter(gr.top_block, Qt.QWidget):
 
     def __init__(self, MTU=1500):
-        gr.top_block.__init__(self, "Telelink_cdp", catch_exceptions=True)
+        gr.top_block.__init__(self, "Transmitter_grc", catch_exceptions=True)
         Qt.QWidget.__init__(self)
-        self.setWindowTitle("Telelink_cdp")
+        self.setWindowTitle("Transmitter_grc")
         qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
@@ -334,7 +334,7 @@ class Transmitter(gr.top_block, Qt.QWidget):
         self.blocks_repack_bits_bb_0_0_0 = blocks.repack_bits_bb(1, 8, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, 'packet_len', False, gr.GR_MSB_FIRST)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(0.8)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, 'E:\\Projects\\DigitalCommDesign\\src\\tx.tmp', True, 0, 0)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, './Transiver/File Transiver/tx.tmp', False, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, delay)
         self.blocks_char_to_float_0_0_0 = blocks.char_to_float(1, 1)
@@ -586,7 +586,7 @@ class Transmitter(gr.top_block, Qt.QWidget):
 
 
 def argument_parser():
-    description = 'cdp project'
+    description = 'QPSK file transmitter'
     parser = ArgumentParser(description=description)
     parser.add_argument(
         "--MTU", dest="MTU", type=intx, default=1500,

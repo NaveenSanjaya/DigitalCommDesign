@@ -1,12 +1,12 @@
 options:
   parameters:
-    author: Telelink
+    author: StarLink
     catch_exceptions: 'True'
     category: Custom
     cmake_opt: ''
     comment: ''
-    copyright: Telelink
-    description: cdp project
+    copyright: StarLink
+    description: QPSK file reciver
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -22,13 +22,13 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: Telelink_cdp
+    title: Reciver_grc
     window_size: (1000,1000)
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3440, 776.0]
+    coordinate: [3328, 616.0]
     rotation: 0
     state: enabled
 
@@ -65,7 +65,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2824, 588.0]
+    coordinate: [2560, 568.0]
     rotation: 0
     state: enabled
 - name: cc_enc
@@ -86,7 +86,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3440, 900.0]
+    coordinate: [2600, 820.0]
     rotation: 0
     state: enabled
 - name: delay
@@ -196,7 +196,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3200, 588.0]
+    coordinate: [3024, 556.0]
     rotation: 0
     state: enabled
 - name: if_gain
@@ -315,7 +315,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3024, 588.0]
+    coordinate: [2800, 564.0]
     rotation: 0
     state: enabled
 - name: rf_gain
@@ -578,7 +578,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3200, 684.0]
+    coordinate: [3024, 684.0]
     rotation: 0
     state: enabled
 - name: MTU
@@ -631,7 +631,7 @@ blocks:
     bus_structure: null
     coordinate: [920, 1888.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: blocks_char_to_float_0_0_0
   id: blocks_char_to_float
   parameters:
@@ -693,7 +693,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: E:\Projects\DigitalCommDesign\src\rx.tmp
+    file: ./Transiver/File Transiver/rx.tmp
     type: byte
     unbuffered: 'False'
     vlen: '1'
@@ -1475,7 +1475,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1272, 1700.0]
+    coordinate: [1248, 1700.0]
     rotation: 180
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -1572,7 +1572,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1944, 2020.0]
+    coordinate: [1888, 2012.0]
     rotation: 180
     state: enabled
 - name: qtgui_time_sink_x_0_0
@@ -1629,7 +1629,7 @@ blocks:
     marker8: '-1'
     marker9: '-1'
     name: ''
-    nconnections: '2'
+    nconnections: '1'
     size: '128'
     srate: samp_rate
     stemplot: 'False'
@@ -1671,7 +1671,7 @@ blocks:
     bus_structure: null
     coordinate: [888, 1996.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: received
   id: qtgui_tab_widget
   parameters:
@@ -1819,7 +1819,7 @@ connections:
 - [blocks_char_to_float_0_0, '0', qtgui_time_sink_x_0_0, '0']
 - [blocks_char_to_float_0_0_0, '0', blocks_delay_0, '0']
 - [blocks_char_to_float_1_1, '0', fec_extended_tagged_decoder_2, '0']
-- [blocks_delay_0, '0', qtgui_time_sink_x_0_0, '1']
+- [blocks_delay_0, '0', qtgui_time_sink_x_0_0, '0']
 - [blocks_file_source_0, '0', blocks_throttle2_0_0, '0']
 - [blocks_multiply_const_vxx_0, '0', soapy_bladerf_sink_0, '0']
 - [blocks_repack_bits_bb_0, '0', blocks_file_sink_0, '0']
