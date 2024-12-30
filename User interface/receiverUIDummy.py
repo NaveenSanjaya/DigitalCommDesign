@@ -78,6 +78,16 @@ class ReceiverApp:
         )
         self.status_label.pack(pady=(10, 20), anchor="center")
 
+        # Add the data rate label
+        self.data_rate_label = CTkLabel(
+            master=self.frame,
+            text="Data rate: 0.00 KB/s",
+            text_color="#522B5B",
+            font=("Arial", 14),
+            anchor="center"
+        )
+        self.data_rate_label.pack(pady=(10, 20), anchor="center")
+
     def create_top_box_labels(self):
         CTkLabel(
             master=self.top_box,
@@ -184,7 +194,7 @@ class ReceiverApp:
                 if elapsed_time > 0:
                     data_rate = (current_size - last_size) / elapsed_time  # Bytes per second
                     # Format data rate in KB/s for better readability
-                    data_rate_kb = data_rate / 1024
+                    data_rate_kb = data_rate / 1024 * 8
                     start_time = time.time()
                     last_size = current_size
 
@@ -198,7 +208,7 @@ class ReceiverApp:
 
     def update_data_rate_label(self, data_rate_kb):
         """Updates the data rate label on the GUI."""
-        text = f"Data rate: {data_rate_kb:.2f} KB/s" if data_rate_kb > 0 else "Waiting for data..."
+        text = f"Data rate: {data_rate_kb:.2f} Kbps" if data_rate_kb > 0 else "Waiting for data..."
         self.data_rate_label.configure(text=text)
 
     def start_receiving(self):
@@ -216,6 +226,21 @@ class ReceiverApp:
         # Start the file decoding thread
         threading.Thread(target=self.file_decoder, daemon=True).start()
 
+        # Start progress bar thread
+        threading.Thread(target=self.update_progress_bar, daemon=True).start()
+
+        
+    def update_progress_bar(self):
+        """Completes the progress bar in 8 seconds."""
+        duration = 8  # seconds
+        steps = 100  # Number of steps to divide the progress
+        step_duration = duration / steps  # Time per step
+
+        for i in range(steps + 1):  # +1 to ensure it reaches 100%
+            progress = i / steps  # Progress value (0 to 1)
+            self.progress_bar.set(progress)
+            time.sleep(step_duration)
+            
     def data_rate_elements(self):
         """Adds GUI elements for data rate display."""
         # Add a label for showing the data rate
