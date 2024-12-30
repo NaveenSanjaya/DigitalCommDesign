@@ -3,7 +3,7 @@ import numpy as np
 from gnuradio import gr
 import time
 
-class file_reader(gr.sync_block):
+class Dynamic_file_source(gr.sync_block):
     """
     Reads N bytes from a file and outputs them as a stream.
     Handles dynamic file size changes and end-of-file scenarios.
@@ -11,7 +11,7 @@ class file_reader(gr.sync_block):
 
     def __init__(self, file_path="", n_bytes=0):
         super().__init__(
-            name="file_reader",
+            name="Dynamic_file_source",
             in_sig=None,
             out_sig=[np.uint8]
         )

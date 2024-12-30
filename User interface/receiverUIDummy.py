@@ -171,10 +171,61 @@ class ReceiverApp:
         file_label.pack(pady=(0, 0), anchor="center")
         file_label.bind("<Button-1>", lambda e: self.open_file(file_path))
 
+    def calculate_data_rate(self, file_path):
+        """Calculates and displays the data rate of the given file."""
+        last_size = 0
+        start_time = time.time()
+
+        while True:
+            try:
+                current_size = os.path.getsize(file_path)
+                elapsed_time = time.time() - start_time
+
+                if elapsed_time > 0:
+                    data_rate = (current_size - last_size) / elapsed_time  # Bytes per second
+                    # Format data rate in KB/s for better readability
+                    data_rate_kb = data_rate / 1024
+                    start_time = time.time()
+                    last_size = current_size
+
+                    # Update the label text in a thread-safe way
+                    self.update_data_rate_label(data_rate_kb)
+
+                time.sleep(1)  # Check every second
+            except FileNotFoundError:
+                self.update_data_rate_label(0)
+                time.sleep(1)
+
+    def update_data_rate_label(self, data_rate_kb):
+        """Updates the data rate label on the GUI."""
+        text = f"Data rate: {data_rate_kb:.2f} KB/s" if data_rate_kb > 0 else "Waiting for data..."
+        self.data_rate_label.configure(text=text)
+
     def start_receiving(self):
+        """Starts the receiver and data rate calculation in separate threads."""
         threading.Thread(target=self.start_receiver, daemon=True).start()
-        with open('./Transiver/File Transiver/rx.tmp','wb') as output:pass
-        threading.Thread(target=self.file_decoder,daemon=True).start()
+        
+        # Clear the temporary file
+        with open('./Transiver/File Transiver/rx.tmp', 'wb') as output:
+            pass
+
+        # Start the data rate thread
+        file_path = './Transiver/File Transiver/rx.tmp'
+        threading.Thread(target=self.calculate_data_rate, args=(file_path,), daemon=True).start()
+        
+        # Start the file decoding thread
+        threading.Thread(target=self.file_decoder, daemon=True).start()
+
+    def data_rate_elements(self):
+        """Adds GUI elements for data rate display."""
+        # Add a label for showing the data rate
+        self.data_rate_label = CTkLabel(
+            master=self.frame,
+            text="Data rate: 0.00 KB/s",
+            text_color="#522B5B",
+            font=("Arial", 14),
+        )
+        self.data_rate_label.pack(pady=(10, 20), anchor="center")
 
     def start_receiver(self):
         """Run StarLik receiver script and handle results"""
@@ -240,6 +291,7 @@ class ReceiverApp:
                                 # Open the file
                                 open_file(path)
 
+    
 
 def main():
     app = CTk()
