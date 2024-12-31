@@ -49,6 +49,8 @@ python VideoReciver.py
 
 ## Code Snippet for VLC
 
+To start capturing video feed from the webcam and save it using VLC.
+
 ### For Ubuntu
 
 ```python
@@ -63,8 +65,8 @@ cmd = r'vlc dshow:///dev/video0 --sout="#transcode{vcodec=mp2v,vb=800,scale=1,ac
 
 ## Directory Structure
 
-VideoTransmitter.py - Transmitter side code for video streaming.
-VideoReciver.py - Receiver side code for video streaming.
+-VideoTransmitter.py - Transmitter side code for video streaming.
+-VideoReciver.py - Receiver side code for video streaming.
 
 ## Additional Information
 
