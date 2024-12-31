@@ -79,37 +79,38 @@ For additional information follow this [link](https://github.com/ryanvolz/radioc
 
 To start working with the project, follow these steps:
 
-1. **Clone the repository**:
-   ```sh
-   git clone https://github.com/NaveenSanjaya/DigitalCommDesign.git
-   cd DigitalCommDesign
-   ```
+1. **Clone the Repository**:
+   - Run the following command to clone the repository:
+     ```sh
+     git clone https://github.com/NaveenSanjaya/DigitalCommDesign.git
+     cd DigitalCommDesign
+     ```
 
-2. **Open GNU Radio Companion (GRC)**:
-   ```sh
-   gnuradio-companion
-   ```
+2. **Set Up the Environment**:
+   - Ensure that you have installed GNU Radio using the Radioconda installer as described earlier.
+   - Use **Visual Studio Code (VS Code)** with the **Radioconda interpreter** to run the system.
 
-3. **Load the desired flowgraph**:
-   - For BPSK, open: BPSK_Pkt_Tx_Rx.grc
+3. **Run the Home Script**:
+   - Locate the `User interface` folder:
+   - Run the `home.py` script to start the system:
 
-.
-   - For QPSK, open: QPSK_Pkt_Tx_Rx.grc
+   - **The `home.py` script serves as the main entry point for the system. From this interface, you can navigate to different modules**:
+     - **Transmitter Window**: Configure and start data transmission.
+     - **Receiver Window**: Set up the receiver for incoming data.
+     - **Video Stream Window**: Stream video over the wireless channel.
 
-.
-   - For FM, open: nuand_transmitter.grc or nuand_reciver.grc
+4. **Load Flowgraphs in GNU Radio (Optional)**:
+   - If you want to directly run specific flowgraphs for debugging or analysis, open GNU Radio Companion (GRC):
+   - Load the desired flowgraph:
+     - For BPSK: `BPSK_Pkt_Tx_Rx.grc`
+     - For QPSK: `QPSK_Pkt_Tx_Rx.grc`
+     - For FM: `nuand_transmitter.grc` or `nuand_receiver.grc`
 
-4. **Configure the flowgraph**:
-   - Set the appropriate parameters such as sample rate, frequency, and gain.
-   - Ensure that the BladeRF device is selected as the source or sink.
+5. **Transmitter and Receiver Demonstration**:
+   - **The final demonstration uses the files in the `/Transiver` folder.**
 
-5. **Run the flowgraph**:
-   - Click the "Run" button in GRC to start the flowgraph.
-   - Monitor the output and make adjustments as necessary.
-
-6. **Transmit and Receive Data**:
-   - Use the provided user interface scripts in the `User interface` directory to transmit and receive data.
-   - For example, run `User interface/transmitterUIDummy.py` to start the transmitter UI.
+6. **Verify and Adjust**:
+   - Monitor the system's performance and make adjustments to parameters (e.g., frequency, gain, sample rate) as needed.
 
 ## Additional Topics
 
@@ -122,14 +123,6 @@ To start working with the project, follow these steps:
 
 If you would like to contribute to this project, please fork the repository and submit a pull request with your changes.
 
-### License
-
-This project is licensed under the GPL-3.0 License. See the LICENSE file for more details.
-
 ### Contact
 
-For any questions or issues, please contact the project maintainers at [email@example.com](mailto:email@example.com).
-```
-
-This `README.md` provides a comprehensive overview of the project, key features, optional features, project structure, and detailed usage instructions, including installing GNU Radio, installing BladeRF drivers, and starting to work with the project.
-This `README.md` provides a comprehensive overview of the project, key features, optional features, project structure, and detailed usage instructions, including installing GNU Radio, installing BladeRF drivers, and starting to work with the project.
+For any questions or issues, please contact the project maintainers at [naveensanjayab@gmail.com](naveensanjayab@gmail.com),[hpelagewatta@gmail.com](hpelagewatta@gmail.com), [nethmiamashamso1671@gmail.com](nethmiamashamso1671@gmail.com).
