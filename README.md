@@ -12,7 +12,7 @@ This repository contains the files and code for the **EN2130 Communication Desig
 
 - **Transmission of Images, Voice, and Video** over a wireless channel.
 - Communication in the **2.4 GHz ISM band**, adhering to power limitations.
-- Utilizes **BladeRF A9 and A4 devices** for transmission and reception.
+- Utilizes **BladeRF 2.0 micro xA9 and A4 devices** for transmission and reception.
 - Performance evaluation based on:
   - Distance
   - End-to-end delay
