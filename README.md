@@ -6,7 +6,7 @@ This repository contains the files and code for the **EN2130 Communication Desig
 
 ## Watch the Project Demo
 
-[![Project Demo](http://img.youtube.com/vi/KdEGzrJ_zQ/0.jpg)](http://www.youtube.com/watch?v=KdEGzrJ_zQ)
+[![Project Demo](http://img.youtube.com/vi/-KdEGzrJ_zQ/0.jpg)](https://www.youtube.com/watch?v=-KdEGzrJ_zQ)
 
 ### Key Features
 
