@@ -4,6 +4,10 @@
 
 This repository contains the files and code for the **EN2130 Communication Design Project**, focused on building a point-to-point digital wireless communication system using software-defined radios (SDRs).
 
+## Watch the Project Demo
+
+[![Project Demo](http://img.youtube.com/vi/KdEGzrJ_zQ/0.jpg)](http://www.youtube.com/watch?v=KdEGzrJ_zQ)
+
 ### Key Features
 
 - **Transmission of Images, Voice, and Video** over a wireless channel.
